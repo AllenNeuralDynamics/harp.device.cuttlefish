@@ -1,25 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>AllenNeuralDynamics.Cuttlefish</Title>
+    <Title>AllenNeuralDynamics.CuttlefishCamTrigger</Title>
     <Authors></Authors>
-    <Copyright>Copyright © 2024 Allen Institute for Neural Dynamics</Copyright>
-    <PackageProjectUrl>https://github.com/AllenNeuralDynamics/bonsai.allen-neural-dynamics</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AllenNeuralDynamics/harp.device.cuttlefish</RepositoryUrl>
+    <Copyright>Copyright © 2025 Allen Institute for Neural Dynamics</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
-    <Description>Bonsai Library containing interfaces for data acquisition and control of AllenNeuralDynamics Cuttlefish device.</Description>
+    <Description>Bonsai Library containing interfaces for data acquisition and control of AllenNeuralDynamics CuttlefishCamTrigger devices.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>AllenNeuralDynamics Cuttlefish Bonsai Rx</PackageTags>
+    <PackageType>Dependency;BonsaiLibrary</PackageType>
+    <PackageTags>AllenNeuralDynamics CuttlefishCamTrigger Bonsai Rx</PackageTags>
+    <PackageProjectUrl></PackageProjectUrl>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageOutputPath></PackageOutputPath>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.1.0</VersionPrefix>
     <LangVersion>9.0</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +28,7 @@
   <ItemGroup>
     <Content Include="..\LICENSE" PackagePath="/" />
     <Content Include="..\icon.png" PackagePath="/" />
-    <EmbeddedResource Include="..\..\..\..\device.yml" />
+    <EmbeddedResource Include="..\..\device.yml" />
   </ItemGroup>
 
 </Project>

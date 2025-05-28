@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <RootNamespace>AllenNeuralDynamics.Cuttlefish</RootNamespace>
+    <RootNamespace>AllenNeuralDynamics.CuttlefishCamTrigger</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <OutputPath>bin</OutputPath>
@@ -11,11 +11,11 @@
     <IOMetadata>..\ios.yml</IOMetadata>
   </PropertyGroup>
   <PropertyGroup>
-    <InterfacePath>..\Interface\AllenNeuralDynamics.Cuttlefish</InterfacePath>
-    <FirmwarePath>..\Firmware\AllenNeuralDynamics.Cuttlefish</FirmwarePath>
+    <InterfacePath>..\Interface\AllenNeuralDynamics.CuttlefishCamTrigger</InterfacePath>
+    <FirmwarePath>..\Firmware\AllenNeuralDynamics.CuttlefishCamTrigger</FirmwarePath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Harp.Generators" Version="0.3.0" GeneratePathProperty="true" />
+    <PackageReference Include="Harp.Generators" Version="0.4.0" GeneratePathProperty="true" />
   </ItemGroup>
   <Target Name="TextTransform" BeforeTargets="AfterBuild">
     <PropertyGroup>
