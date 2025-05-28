@@ -6,108 +6,61 @@ whoAmI: 1408
 firmwareVersion: "0.1"
 hardwareTargets: "0.0"
 registers:
-  PWMEnabledMask:
+  EnableOutput:
     address: 32
     type: U8
     access: Write
     maskType: Ports
-    description: "Bitmask to enable/disable each of the 8 PWM outputs"
-  PWMInvertedMask:
+    description: "BitMask to enable/disable each of generated outputs."
+  InvertOutputMask:
     address: 33
     type: U8
     access: Write
     maskType: Ports
-    description: "Bitmask to invert each of the 8 PWM outputs if set to 1"
-  RisingEdgeEventMask:
+    description: "BitMask to invert each of the output lines. If a bit is set, the corresponding output will be inverted."
+  EnableRisingEdgeEvent:
     address: 34
     type: U8
     access: Write
-    description: "Bitmask to enable/disable dispatch of a rising edge event message for each of the corresponding PWM outputs"
+    description: "If enabled, an event will be dispatched from register RisingEdgeEvent if any of the specified outputs produces a rising edge."
   RisingEdgeEvent:
     address: 35
     type: U8
     access: Event
-    description: "Bitmask with the current state of the PWM outputs. This event is dispatched if any of the specified outputs sees a rising edge."
-  PWM0FrequencyHz:
+    description: "An event that is dispatched when any of the enabled outputs produces a rising edge. The event will be dispatched only if EnableRisingEdgeEvent is set."
+  Port0FrequencyHz: &frequencyHz
     address: 36
     type: Float
     access: Write
-    description: "PWM output 0 frequency setting in Hz."
-  PWM0DutyCycle:
-    address: 37
-    type: Float
-    access: Write
-    description: "PWM output 0 duty cycle setting (range: 0.0 - 1.0)."
-  PWM1FrequencyHz:
+    description: "Frequency of the pulse train generated on Port0. The value is in Hz."
+  Port1FrequencyHz:
+    <<: *frequencyHz
     address: 38
-    type: Float
-    access: Write
-    description: "PWM output 1 frequency setting in Hz."
-  PWM1DutyCycle:
-    address: 39
-    type: Float
-    access: Write
-    description: "PWM output 1 duty cycle setting (range: 0.0 - 1.0)."
-  PWM2FrequencyHz:
+    description: "Frequency of the pulse train generated on Port1. The value is in Hz."
+  Port2FrequencyHz:
+    <<: *frequencyHz
     address: 40
-    type: Float
-    access: Write
-    description: "PWM output 2 frequency setting in Hz."
-  PWM2DutyCycle:
-    address: 41
-    type: Float
-    access: Write
-    description: "PWM output 2 duty cycle setting (range: 0.0 - 1.0)."
-  PWM3FrequencyHz:
+    description: "Frequency of the pulse train generated on Port2. The value is in Hz."
+  Port3FrequencyHz:
+    <<: *frequencyHz
     address: 42
-    type: Float
-    access: Write
-    description: "PWM output 3 frequency setting in Hz."
-  PWM3DutyCycle:
-    address: 43
-    type: Float
-    access: Write
-    description: "PWM output 3 duty cycle setting (range: 0.0 - 1.0)."
-  PWM4FrequencyHz:
+    description: "Frequency of the pulse train generated on Port3. The value is in Hz."
+  Port4FrequencyHz:
+    <<: *frequencyHz
     address: 44
-    type: Float
-    access: Write
-    description: "PWM output 4 frequency setting in Hz."
-  PWM4DutyCycle:
-    address: 45
-    type: Float
-    access: Write
-    description: "PWM output 4 duty cycle setting (range: 0.0 - 1.0)."
-  PWM5FrequencyHz:
+    description: "Frequency of the pulse train generated on Port4. The value is in Hz."
+  Port5FrequencyHz:
+    <<: *frequencyHz
     address: 46
-    type: Float
-    access: Write
-    description: "PWM output 5 frequency setting in Hz."
-  PWM5DutyCycle:
-    address: 47
-    type: Float
-    access: Write
-    description: "PWM output 5 duty cycle setting (range: 0.0 - 1.0)."
-  PWM6FrequencyHz:
+    description: "Frequency of the pulse train generated on Port5. The value is in Hz."
+  Port6FrequencyHz:
+    <<: *frequencyHz
     address: 48
-    type: Float
-    access: Write
-    description: "PWM output 6 frequency setting in Hz."
-  PWM6DutyCycle:
-    address: 49
-    type: Float
-    access: Write
-    description: "PWM output 6 duty cycle setting (range: 0.0 - 1.0)."
-  PWM7FrequencyHz:
+    description: "Frequency of the pulse train generated on Port6. The value is in Hz."
+  Port7FrequencyHz:
+    <<: *frequencyHz
     address: 50
-    type: Float
-    access: Write
-    description: "PWM output 7 frequency setting in Hz."
-  PWM7DutyCycle:
-    address: 51
-    type: Float
-    access: Write
-    description: "PWM output 7 duty cycle setting (range: 0.0 - 1.0)."
+    description: "Frequency of the pulse train generated on Port7. The value is in Hz."
 bitMasks:
   Ports:
     description: "Available ports on the device"
