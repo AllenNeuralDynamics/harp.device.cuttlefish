@@ -10,13 +10,10 @@ An octal TTL input-or-output board with programmable square wave output
 * 6-20VDC input (2.1 x 5.5mm barrel jack, positive center)
 * isolated USB to prevent forming ground loops with the PC.
 
-## Wiring Diagram
-TODO
+## PWM Waveform Setup
+
+![pwm_specs.png](./assets/pics/pwm_specs.png)
 
 
-## Theory of Operation
-TODO: awesome diagram {here}
 
-## Harp Register Map
-TODO
 
