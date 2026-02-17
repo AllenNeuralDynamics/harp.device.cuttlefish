@@ -11,16 +11,20 @@
 //#include <pwm_scheduler.h>
 //#include <pwm_task.h>
 #include <pwm_settings.h>
+#include <edge_event_queue.h>
 #include <schedule_ctrl_queues.h>
 #include <core1_main.h>
 #include <pico/multicore.h>
+#include <hardware/irq.h>
+#include <hardware/gpio.h>
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
 #endif
 
 // Setup for Harp App
-const size_t reg_count = 6;
+inline constexpr size_t reg_count = 6;
+inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 4;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -74,6 +78,14 @@ void write_rising_edge_events(msg_t& msg);
 void read_falling_edge_events(uint8_t msg_address);
 void write_falling_edge_events(msg_t& msg);
 
+/**
+ * \brief a single callback to handle all GPIO pin change events including
+ *  simultaneous events.
+ * \warning this function replaces the pico-sdk's gpio_default_irq_handler().
+ *  That means we can't use gpio_set_irq_enabled_with_callback() to assign
+ *  pin change interrupts to single GPIO pin changes.
+ */
+void handle_edge_event_callback(void);
 
 /**
  * \brief update the app state. Called in a loop.

@@ -4,10 +4,13 @@
 #include <harp_c_app.h>
 #include <harp_synchronizer.h>
 #include <cuttlefish_app.h>
+#include <edge_event_queue.h>
 #include <schedule_ctrl_queues.h>
 #include <pico/multicore.h>
 #include <hardware/structs/bus_ctrl.h>
 #include <core1_main.h>
+
+queue_t edge_event_queue;
 
 queue_t pwm_task_setup_queue;
 queue_t cmd_signal_queue;
@@ -33,6 +36,8 @@ int main()
     app.set_synchronizer(&HarpSynchronizer::instance());
     // Configure core1 to have high priority on the bus.
     bus_ctrl_hw->priority = 0x00000010;
+    // Initialize queue for edge event message handling
+    queue_init(&edge_event_queue, sizeof(EdgeEvent), 32);
     // Initialize queues for multicore communication.
     queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
     queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);

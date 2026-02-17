@@ -2,6 +2,8 @@
 #define CONFIG_H
 
 inline constexpr size_t NUM_GPIOS = 8;
+inline constexpr size_t PORT_BASE = 8;
+inline constexpr size_t PORT_DIR_BASE = 16;
 
 #define DEBUG_UART (uart0)
 #define SYNC_UART (uart1)
@@ -27,8 +29,6 @@ inline constexpr size_t FW_VERSION_PATCH = 1;
 inline constexpr size_t UNUSED_SERIAL_NUMBER = 0; // Deprecated in favor of R_UUID
 
 
-#define PORT_BASE (8)
-#define PORT_DIR_BASE (16)
 
 
 #endif // CONFIG_H
