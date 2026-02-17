@@ -22,7 +22,7 @@ else: # assume Windows.
 print("Configuring TTL pin 0, 1, and 2 as output.")
 device.send(WriteU8HarpMessage(AppRegs.PortDir, int(0x07)).frame)
 print("Configuring RISING interrupts on pins 0, 1, 2.")
-device.send(WriteU8HarpMessage(AppRegs.RisingEdgeEvents, int(0x07)).frame)
+device.send(WriteU8HarpMessage(AppRegs.EnableRisingEdgeEvents, int(0x07)).frame)
 sleep(0.5)
 for i in range(3):
     print("Writing: 0x01", end = " ")

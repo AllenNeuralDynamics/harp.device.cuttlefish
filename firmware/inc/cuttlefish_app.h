@@ -23,10 +23,10 @@
 #endif
 
 // Setup for Harp App
-inline constexpr size_t reg_count = 6;
+inline constexpr size_t reg_count = 8;
 
-inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 4;
-inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
+inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
+inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 7;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -42,6 +42,8 @@ struct app_regs_t
     volatile uint8_t port_set;
     volatile uint8_t port_clear;
 
+    volatile uint8_t enable_rising_edge_events;
+    volatile uint8_t enable_falling_edge_events;
     volatile uint8_t rising_edge_events;
     volatile uint8_t falling_edge_events;
 
@@ -74,9 +76,14 @@ void write_port_state(msg_t& msg);
 void write_port_set(msg_t& msg);
 void write_port_clear(msg_t& msg);
 
+
+void read_enable_rising_edge_events(uint8_t msg_address);
+void write_enable_rising_edge_events(msg_t& msg);
+void read_enable_falling_edge_events(uint8_t msg_address);
+void write_enable_falling_edge_events(msg_t& msg);
+
 void read_rising_edge_events(uint8_t msg_address);
 void write_rising_edge_events(msg_t& msg);
-
 void read_falling_edge_events(uint8_t msg_address);
 void write_falling_edge_events(msg_t& msg);
 

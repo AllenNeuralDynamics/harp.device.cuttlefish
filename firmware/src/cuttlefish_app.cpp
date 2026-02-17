@@ -10,8 +10,10 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.port_set, sizeof(app_regs.port_set), U8},
     {(uint8_t*)&app_regs.port_clear, sizeof(app_regs.port_clear), U8},
 
+    {(uint8_t*)&app_regs.enable_rising_edge_events, sizeof(app_regs.enable_rising_edge_events), U8},
+    {(uint8_t*)&app_regs.enable_falling_edge_events, sizeof(app_regs.enable_falling_edge_events), U8},
     {(uint8_t*)&app_regs.rising_edge_events, sizeof(app_regs.rising_edge_events), U8},
-    {(uint8_t*)&app_regs.falling_edge_events, sizeof(app_regs.rising_edge_events), U8},
+    {(uint8_t*)&app_regs.falling_edge_events, sizeof(app_regs.falling_edge_events), U8},
 
 };
 
@@ -19,9 +21,11 @@ RegFnPair reg_handler_fns[reg_count]
 {
     {HarpCore::read_reg_generic, write_port_dir},           // 32
     {read_port_state, write_port_state},                    // 33
-    {HarpCore::read_reg_generic, write_port_set},    // "write-only"
-    {HarpCore::read_reg_generic, write_port_clear},  // "write-only"
+    {HarpCore::read_reg_generic, write_port_set},
+    {HarpCore::read_reg_generic, write_port_clear},
 
+    {read_enable_rising_edge_events, write_enable_rising_edge_events},
+    {read_enable_falling_edge_events, write_enable_falling_edge_events},
     {read_rising_edge_events, write_rising_edge_events},
     {read_falling_edge_events, write_falling_edge_events},
 
@@ -79,16 +83,37 @@ void write_port_clear(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
-void read_rising_edge_events(uint8_t reg_address)
+void read_enable_rising_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
 
-void write_rising_edge_events(msg_t& msg)
+void write_enable_rising_edge_events(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
-        bool enabled = ((app_regs.rising_edge_events >> i) & 1u);
+        bool enabled = ((app_regs.enable_rising_edge_events >> i) & 1u);
         gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_RISE, enabled);
+    }
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+void read_rising_edge_events(uint8_t reg_address)
+{HarpCore::read_reg_generic(reg_address);}
+
+void write_rising_edge_events(msg_t& msg)
+{HarpCore::write_to_read_only_reg_error(msg);}
+
+void read_enable_falling_edge_events(uint8_t reg_address)
+{HarpCore::read_reg_generic(reg_address);}
+
+void write_enable_falling_edge_events(msg_t& msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    for (size_t i = 0; i < NUM_GPIOS; ++i)
+    {
+        bool enabled = ((app_regs.enable_falling_edge_events >> i) & 1u);
+        gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_FALL, enabled);
     }
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -98,16 +123,7 @@ void read_falling_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
 
 void write_falling_edge_events(msg_t& msg)
-{
-    HarpCore::copy_msg_payload_to_register(msg);
-    for (size_t i = 0; i < NUM_GPIOS; ++i)
-    {
-        bool enabled = ((app_regs.falling_edge_events >> i) & 1u);
-        gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_FALL, enabled);
-    }
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
-}
+{HarpCore::write_to_read_only_reg_error(msg);}
 
 void handle_edge_event_callback(void)
 {
@@ -147,23 +163,21 @@ void update_app_state()
     {
         if (HarpCore::is_muted())
             continue;
-        uint8_t rise_pins = uint8_t(event.rise_pins >> PORT_BASE);
-        uint8_t fall_pins = uint8_t(event.fall_pins >> PORT_BASE);
+        // Copy to EVENT-only register and filter for enabled pins.
+        app_regs.rising_edge_events = uint8_t(event.rise_pins >> PORT_BASE) &
+                                       app_regs.enable_rising_edge_events;
+        app_regs.falling_edge_events = uint8_t(event.fall_pins >> PORT_BASE) &
+                                        app_regs.enable_falling_edge_events;
         // Push queued messages from rising or falling edge events register.
-        if (rise_pins & app_regs.rising_edge_events) // apply bitmask.
+        if (app_regs.rising_edge_events)
         {
             uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-//            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
-            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS,
-                                      &rise_pins, sizeof(rise_pins), U8,
-                                      harp_time_us);
+            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
-        if (fall_pins & app_regs.falling_edge_events) // apply bitmask
+        if (app_regs.falling_edge_events) // filter
         {
             uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-            HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS,
-                                      &fall_pins, sizeof(fall_pins), U8,
-                                      harp_time_us);
+            HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
 

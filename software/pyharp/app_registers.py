@@ -8,8 +8,10 @@ class AppRegs(IntEnum):
     PortSet = 34
     PortClear = 35
 
-    RisingEdgeEvents = 36
-    FallingEdgeEvents = 37
+    EnableRisingEdgeEvents = 36
+    EnableFallingEdgeEvents = 37
+    RisingEdgeEvents = 38
+    FallingEdgeEvents = 39
 
     PWMStart = 38
     PWMStop = 39
