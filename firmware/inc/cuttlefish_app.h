@@ -24,7 +24,9 @@
 
 // Setup for Harp App
 inline constexpr size_t reg_count = 6;
+
 inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 4;
+inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;

@@ -118,17 +118,19 @@ void handle_edge_event_callback(void)
     // we can get away with doing a single register read to access the entire
     // interrupt state (rising, falling, high low) for the 8 pins of interest.
     EdgeEvent event;
-    uint32_t intr_state = io_bank0_hw->intr[PORT_BASE >> 3];
     event.timestamp_us = time_us_64(); // ISR safe.
-    // Split up rising/falling edge events.
+    event.rise_pins = 0;
+    event.fall_pins = 0;
+    uint32_t intr_state = io_bank0_hw->intr[PORT_BASE >> 3];
     uint32_t gpio_flags;
+    // Split up rising/falling edge events.
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
         gpio_flags = intr_state >> (i * 4); // 4 flags per gpio pin.
-        event.rise_pins |= ((gpio_flags >> GPIO_IRQ_EDGE_RISE) & 1u) << i;
-        event.fall_pins |= ((gpio_flags >> GPIO_IRQ_EDGE_FALL) & 1u) << i;
+        event.rise_pins |= (((gpio_flags >> 3) & 1u) << i + PORT_BASE);
+        event.fall_pins |= (((gpio_flags >> 2) & 1u) << i + PORT_BASE);
     }
-    // push the event
+    // Push the event
     queue_try_add(&edge_event_queue, &event);
     // Clear the INTR[n] state since we dealt with all pin changes.
     // Clear by "writing a 1" to the set bits.
@@ -147,16 +149,21 @@ void update_app_state()
             continue;
         uint8_t rise_pins = uint8_t(event.rise_pins >> PORT_BASE);
         uint8_t fall_pins = uint8_t(event.fall_pins >> PORT_BASE);
+        // Push queued messages from rising or falling edge events register.
         if (rise_pins & app_regs.rising_edge_events) // apply bitmask.
         {
-            // Push queued messages from rising or falling edge events register.
             uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
+//            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
+            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS,
+                                      &rise_pins, sizeof(rise_pins), U8,
+                                      harp_time_us);
         }
         if (fall_pins & app_regs.falling_edge_events) // apply bitmask
         {
             uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
+            HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS,
+                                      &fall_pins, sizeof(fall_pins), U8,
+                                      harp_time_us);
         }
     }
 
