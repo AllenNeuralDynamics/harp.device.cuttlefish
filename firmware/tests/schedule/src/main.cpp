@@ -9,14 +9,25 @@ __not_in_flash("scheduler") PWMScheduler scheduler;
 
 std::array<pwm_settings_t, 8> pwm_settings
 {{{0, 500, 500, 0, 0},     // offset, on time, off time, cycles, invert
-  {250, 500, 500, 0, 0},
-  {350, 500, 500, 0, 0},
+  {100, 500, 500, 0, 0},
+  {150, 500, 500, 0, 0},
   {450, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0}
 }};
+
+// Did not work. 50us between initial schedule time is too fast?
+//{{{0, 500, 500, 0, 0},     // offset, on time, off time, cycles, invert
+//  {50, 500, 500, 0, 0},
+//  {350, 500, 500, 0, 0},
+//  {450, 500, 500, 0, 0},
+//  {0, 500, 500, 0, 0},
+//  {0, 500, 500, 0, 0},
+//  {0, 500, 500, 0, 0},
+//  {0, 500, 500, 0, 0}
+//}};
 
 // Did not work.
 //{{{0, 1000, 1000, 0, 0},     // offset, on time, off time, cycles, invert

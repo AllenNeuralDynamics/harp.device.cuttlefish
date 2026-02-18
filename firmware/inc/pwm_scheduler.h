@@ -82,12 +82,10 @@ private:
                         etl::vector<std::reference_wrapper<PWMTask>, NUM_ENTRIES>,
                         etl::greater<std::reference_wrapper<PWMTask>>> pq_;
 
-// FIXME: make this private again.
-public:
-    static volatile int32_t alarm_num_;
 private:
+    static volatile int32_t alarm_num_;
     // FIXME: considere pico multicore queue data structure instead.
-    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_; // FIXME: should be volatile
+    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_; // FIXME: volatile?
     static volatile uint32_t next_gpio_port_state_;
     static volatile uint32_t next_gpio_port_mask_;
     static volatile bool alarm_queued_;
