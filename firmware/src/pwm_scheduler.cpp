@@ -78,8 +78,10 @@ void PWMScheduler::start()
     // Apply initial pending GPIO change immediately so the schedule starts now.
     // Note: starting GPIO state was aggregated when we add each PWMTask.
     gpio_put_masked(next_gpio_port_mask_, next_gpio_port_state_);
+#if defined(DEBUG)
     printf("GPIO Put: 0x%08x (mask), 0x%08x (val)\r\n",
            next_gpio_port_mask_, next_gpio_port_state_);
+#endif
     // Set starting time of all PWMTasks.
     // Note that tasks are pre-sorted at this point bc they are sorted upon
     //  being stored.
@@ -129,8 +131,8 @@ void PWMScheduler::update(bool first_update)
     }
     uint32_t alarm_time_us = next_pwm_task_update_time_us;
 #if defined(DEBUG)
-    printf("Updating done. ISR set for %lu | Next update at : %lu\r\n",
-            alarm_time_us, alarm_time_us);
+    printf("Updating done at %lu. ISR set for %lu | Next update at : %lu\r\n",
+            timer_hw->timerawl, alarm_time_us, alarm_time_us);
 #endif
     // TODO: figure out how to disambiguate Harp/Pico time.
     // Schedule the GPIO port state change.

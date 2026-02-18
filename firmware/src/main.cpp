@@ -39,7 +39,7 @@ int main()
     // Initialize queue for edge event message handling
     queue_init(&edge_event_queue, sizeof(EdgeEvent), 32);
     // Initialize queues for multicore communication.
-    queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
+    queue_init(&pwm_task_setup_queue, sizeof(pwm_specs_core_msg_t), 8);
     queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);
     queue_init(&schedule_error_signal_queue, sizeof(uint8_t), 2);
 

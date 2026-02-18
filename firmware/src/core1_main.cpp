@@ -59,19 +59,19 @@ void run_task_loop()
     // Retrieve PWMTask specs from the shared queue.
     uint8_t cmd = 0;
     uint8_t abort_schedule = 0;
-    pwm_task_specs_t task_specs;
+    pwm_specs_core_msg_t msg;
     // Load and wait for schedule start cmds.
     while(true)
     {
         if(!queue_is_empty(&pwm_task_setup_queue))
         {
-            queue_remove_blocking(&pwm_task_setup_queue, &task_specs);
-            pwm_schedule.schedule_pwm_task(task_specs.offset_us,
-                                           task_specs.on_time_us,
-                                           task_specs.period_us,
-                                           (uint32_t(task_specs.port_mask) << PORT_BASE),
-                                           task_specs.cycles,
-                                           bool(task_specs.invert));
+            queue_remove_blocking(&pwm_task_setup_queue, &msg);
+            pwm_schedule.schedule_pwm_task(msg.specs.offset_us,
+                                           msg.specs.on_duration_us,
+                                           msg.specs.period_us(),
+                                           msg.pin_mask,
+                                           msg.specs.cycles,
+                                           bool(msg.specs.invert));
         }
         if (!queue_is_empty(&cmd_signal_queue))
             queue_try_remove(&cmd_signal_queue, &cmd);

@@ -15,7 +15,10 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.rising_edge_events, sizeof(app_regs.rising_edge_events), U8},
     {(uint8_t*)&app_regs.falling_edge_events, sizeof(app_regs.falling_edge_events), U8},
 
+    {(uint8_t*)&app_regs.pwm_start, sizeof(app_regs.pwm_start), U8}, // 32
+    {(uint8_t*)&app_regs.pwm_stop, sizeof(app_regs.pwm_stop), U8}, // 32
 };
+
 
 RegFnPair reg_handler_fns[reg_count]
 {
@@ -29,7 +32,10 @@ RegFnPair reg_handler_fns[reg_count]
     {read_rising_edge_events, write_rising_edge_events},
     {read_falling_edge_events, write_falling_edge_events},
 
+    {read_pwm_start, write_pwm_start},
+    {read_pwm_stop, write_pwm_stop},
 };
+
 
 void write_port_dir(msg_t& msg)
 {
@@ -44,6 +50,7 @@ void write_port_dir(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void read_port_state(uint8_t reg_address)
 {
     // Include the state of pins driven by PWMTasks.
@@ -51,6 +58,7 @@ void read_port_state(uint8_t reg_address)
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(READ, reg_address);
 }
+
 
 void write_port_state(msg_t& msg)
 {
@@ -66,6 +74,7 @@ void write_port_state(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void write_port_set(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
@@ -75,6 +84,7 @@ void write_port_set(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void write_port_clear(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
@@ -83,8 +93,10 @@ void write_port_clear(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void read_enable_rising_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
+
 
 void write_enable_rising_edge_events(msg_t& msg)
 {
@@ -98,14 +110,18 @@ void write_enable_rising_edge_events(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void read_rising_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
+
 
 void write_rising_edge_events(msg_t& msg)
 {HarpCore::write_to_read_only_reg_error(msg);}
 
+
 void read_enable_falling_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
+
 
 void write_enable_falling_edge_events(msg_t& msg)
 {
@@ -119,15 +135,57 @@ void write_enable_falling_edge_events(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+
 void read_falling_edge_events(uint8_t reg_address)
 {HarpCore::read_reg_generic(reg_address);}
+
 
 void write_falling_edge_events(msg_t& msg)
 {HarpCore::write_to_read_only_reg_error(msg);}
 
+
+void read_pwm_start(uint8_t reg_address)
+{
+    // TODO
+}
+
+
+void write_pwm_start(msg_t& msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    // TODO
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+
+void read_pwm_stop(uint8_t reg_address)
+{
+    // TODO
+}
+
+
+void write_pwm_stop(msg_t& msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    // TODO
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+void read_pwm_settings(uint8_t reg_address)
+{
+
+}
+
+void write_pwm_settings(msg_t& msg)
+{
+    // TODO: push to core1
+}
+
+
 void handle_edge_event_callback(void)
 {
-    gpio_put(LED1, !gpio_get(LED1));
     // FYI raw interrupt state for all 30 GPIOs is split across 4 registers
     // (INTR0, ..., INTR3).
     // Since Cuttlefish only has 8 consecutive GPIOS offset by a multiple of 8,
@@ -197,11 +255,15 @@ void reset_app()
     app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
 
     // For DEBUGGING
-    gpio_init(LED1);
-    gpio_set_dir(LED1, GPIO_OUT);
-    gpio_put(LED1, 1);
+    //gpio_init(LED1);
+    //gpio_set_dir(LED1, GPIO_OUT);
+    //gpio_put(LED1, 1);
 
-    // Drain the queue.
+    // TODO: apply Dummy settings to the pwm_settings_t Registers.
+
+    // Reset Core1 PWM features.
+
+    // Drain the EdgeEvent queue.
     EdgeEvent dummy_event;
     while (queue_try_remove(&edge_event_queue, &dummy_event)) {}
     // Detach any existing interrupt handlers.

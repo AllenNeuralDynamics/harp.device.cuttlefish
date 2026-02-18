@@ -23,7 +23,7 @@
 #endif
 
 // Setup for Harp App
-inline constexpr size_t reg_count = 8;
+inline constexpr size_t reg_count = 16;
 
 inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
 inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 7;
@@ -47,7 +47,9 @@ struct app_regs_t
     volatile uint8_t rising_edge_events;
     volatile uint8_t falling_edge_events;
 
-    volatile PWMSettings pwm_settings[NUM_GPIOS];
+    volatile uint8_t pwm_start;
+    volatile uint8_t pwm_stop;
+    volatile pwm_settings_t pwm_settings[NUM_GPIOS];
 };
 #pragma pack(pop)
 
@@ -77,15 +79,33 @@ void write_port_set(msg_t& msg);
 void write_port_clear(msg_t& msg);
 
 
-void read_enable_rising_edge_events(uint8_t msg_address);
+void read_enable_rising_edge_events(uint8_t reg_address);
 void write_enable_rising_edge_events(msg_t& msg);
-void read_enable_falling_edge_events(uint8_t msg_address);
+void read_enable_falling_edge_events(uint8_t reg_address);
 void write_enable_falling_edge_events(msg_t& msg);
 
-void read_rising_edge_events(uint8_t msg_address);
+void read_rising_edge_events(uint8_t reg_address);
 void write_rising_edge_events(msg_t& msg);
-void read_falling_edge_events(uint8_t msg_address);
+void read_falling_edge_events(uint8_t reg_address);
 void write_falling_edge_events(msg_t& msg);
+
+void read_pwm_start(uint8_t reg_address);
+void write_pwm_start(msg_t& msg);
+void read_pwm_stop(uint8_t reg_address);
+void write_pwm_stop(msg_t& msg);
+
+/**
+ * \brief App register handler function to read pwm settings from the given PWM
+ *  output (1 per IO)
+ * \note this handler function is shared across all `pwm_settings` registers.
+ */
+void read_pwm_settings(uint8_t reg_address);
+/**
+ * \brief App register handler function to write pwm settings to the given PWM
+ *  output (1 per IO).
+ * \note this handler function is shared across all `pwm_settings` registers.
+ */
+void write_pwm_settings(msg_t& msg);
 
 /**
  * \brief a single callback to handle all GPIO pin change events including
