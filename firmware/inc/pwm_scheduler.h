@@ -5,6 +5,7 @@
 #include <hardware/irq.h>
 #include <pwm_task.h>
 #include <etl/priority_queue.h>
+#include <etl/deque.h>
 #include <hardware/timer.h>
 #ifdef DEBUG
     #include <cstdio> // for printf
@@ -13,9 +14,23 @@
 #define NUM_ENTRIES (64)
 #define NUM_TTL_IOS (8)
 
+
 class PWMScheduler
 {
 public:
+
+/**
+ * \brief struct that contains the state of the GPIO port at a specified time.
+ * \details `PortEvent`s are queued into a FIFO as the scheduler computes them
+ *  and dequeued by ISR which also applies the port state at the specified time.
+ */
+    struct PortEvent
+    {
+        uint32_t mask;      /// port mask
+        uint32_t state;     /// port state
+        uint32_t time_us;   /// time (in [us]) when the state takes place.
+    };
+
     PWMScheduler();
     ~PWMScheduler();
 
@@ -71,6 +86,8 @@ private:
 public:
     static volatile int32_t alarm_num_;
 private:
+    // FIXME: considere pico multicore queue data structure instead.
+    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_; // FIXME: should be volatile
     static volatile uint32_t next_gpio_port_state_;
     static volatile uint32_t next_gpio_port_mask_;
     static volatile bool alarm_queued_;

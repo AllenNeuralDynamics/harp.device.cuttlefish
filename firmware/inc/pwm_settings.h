@@ -12,7 +12,7 @@ struct pwm_settings_t
     uint8_t invert;
 
     uint32_t period_us() const
-    {return offset_us + on_duration_us + off_duration_us;}
+    {return on_duration_us + off_duration_us;}
 };
 #pragma pack(pop)
 
