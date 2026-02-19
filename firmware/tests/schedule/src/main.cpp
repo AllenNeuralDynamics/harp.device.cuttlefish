@@ -3,15 +3,18 @@
 #include <pico/stdlib.h>
 #include <pwm_scheduler.h>
 #include <pwm_settings.h>
+#include "hardware/clocks.h"
+#include <hardware/clocks.h>
+
 
 
 __not_in_flash("scheduler") PWMScheduler scheduler;
 
 std::array<pwm_settings_t, 8> pwm_settings
-{{{0, 500, 500, 6, 0},     // offset, on time, off time, cycles, invert
-  {100, 500, 500, 6, 0},
-  {150, 500, 500, 6, 0},
-  {450, 500, 500, 0, 0},
+{{{0, 500, 500, 12, 0},     // offset, on time, off time, cycles, invert
+  {75, 500, 500, 12, 0},
+  {150, 500, 500, 12, 0},
+  {450, 500, 500, 12, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
@@ -53,6 +56,8 @@ std::array<pwm_settings_t, 8> pwm_settings
 
 int main()
 {
+    //set_sys_clock_khz(200000, true); // No overclocking for now.
+
     stdio_init_all();
     while (!stdio_usb_connected()){ sleep_ms(100);} // Wait for user to open com port.
     printf("Hello, from the CuTTLefish testbench!\r\n");
