@@ -8,9 +8,9 @@
 __not_in_flash("scheduler") PWMScheduler scheduler;
 
 std::array<pwm_settings_t, 8> pwm_settings
-{{{0, 500, 500, 0, 0},     // offset, on time, off time, cycles, invert
-  {100, 500, 500, 0, 0},
-  {150, 500, 500, 0, 0},
+{{{0, 500, 500, 6, 0},     // offset, on time, off time, cycles, invert
+  {100, 500, 500, 6, 0},
+  {150, 500, 500, 6, 0},
   {450, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},
   {0, 500, 500, 0, 0},

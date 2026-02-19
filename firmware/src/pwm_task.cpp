@@ -17,9 +17,9 @@ PWMTask::PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
                 gpio_set_outover(i, GPIO_OVERRIDE_INVERT);
         }
     }
-    gpio_put_masked(pin_mask_, 0);
     gpio_set_dir_masked(pin_mask_, pin_mask_); // configure as output.
-    reset(); // set starting state. Clear output to 0.
+    gpio_put_masked(pin_mask_, 0);
+    reset(true); // set starting state. skip output action.
 #if defined(DEBUG)
     printf("PWMTask Created!\r\n");
 #endif
