@@ -18,6 +18,16 @@ std::array<pwm_settings_t, 8> pwm_settings
   {0, 500, 500, 0, 0}
 }};
 
+//{{{0, 5000, 5000, 9, 0},     // offset, on time, off time, cycles, invert
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0},
+//  {0, 5000, 5000, 9, 0}
+//}};
+
 // Did not work. 50us between initial schedule time is too fast?
 //{{{0, 500, 500, 0, 0},     // offset, on time, off time, cycles, invert
 //  {50, 500, 500, 0, 0},
@@ -60,6 +70,7 @@ int main()
                                     bool(settings.invert));
         pin_mask <<= 1;
     }
+    sleep_ms(100);
 
     scheduler.start();
     while (true)

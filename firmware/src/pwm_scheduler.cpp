@@ -37,7 +37,10 @@ void PWMScheduler::reset()
 #endif
     cancel_alarm(); // Cancel any upcoming alarms.
     pq_.clear(); // Remove all tasks in the priority queue.
-    pwm_tasks_.clear();
+    pwm_tasks_.clear(); // Remove all scheduler tasks
+    port_event_queue_.clear(); // Remove all queued PortEvents
+    next_gpio_port_mask_ = 0;
+    next_gpio_port_state_ = 0;
 #if defined(DEBUG)
         printf("Done resetting PWMScheduler.\r\n");
 #endif
@@ -78,7 +81,15 @@ void PWMScheduler::start()
     uint32_t start_time_us = timer_hw->timerawl;
     // Apply initial pending GPIO change immediately so the schedule starts now.
     // Note: starting GPIO state was aggregated when we add each PWMTask.
-    gpio_put_masked(next_gpio_port_mask_, next_gpio_port_state_);
+
+    // FIXME: For Debugging
+    uint32_t led1_mask = 1u << 17;
+    gpio_init_mask(led1_mask);
+    gpio_set_dir_masked(led1_mask, led1_mask);
+
+    // FIXME: remove led1_mask
+    gpio_put_masked(next_gpio_port_mask_ | led1_mask,
+                    next_gpio_port_state_ | led1_mask);
 #if defined(DEBUG)
     printf("GPIO Put: 0x%08x (mask), 0x%08x (val)\r\n",
            next_gpio_port_mask_, next_gpio_port_state_);
@@ -94,14 +105,20 @@ void PWMScheduler::start()
 #if defined(DEBUG)
     printf("Recording schedule start at : %lu\r\n", start_time_us);
 #endif
+    update();
 }
 
-void PWMScheduler::update(bool first_update)
+void PWMScheduler::update()
 {
     // Prevent queuing additional PortEvents until the queue has space.
     // Bail early if there are no tasks in the first place.
     if (port_event_queue_.full() || (pq_.size() == 0))
         return;
+
+    // FIXME: remove this GPIO pin toggle
+    uint32_t led1 = 17;
+    gpio_put(led1, !gpio_get(led1));
+
 #if defined(DEBUG)
     uint32_t start_time_us = timer_hw->timerawl;
     printf("Updating schedule at : %lu\r\n", start_time_us);
@@ -130,9 +147,10 @@ void PWMScheduler::update(bool first_update)
         if (pq_.top().get().next_update_time_us_ != next_task_update_time_us)
             break;
     }
-    // Push into the queue
-    port_event_queue_.emplace_back(next_gpio_port_mask, next_gpio_port_state,
-                                   next_task_update_time_us);
+    // Push into the queue if the ISR has been armed; after it will re-arm itself
+    if (alarm_queued_)
+        port_event_queue_.emplace_front(next_gpio_port_mask, next_gpio_port_state,
+                                        next_task_update_time_us);
     uint32_t& alarm_time_us = next_task_update_time_us; // alias for clarity.
 #if defined(DEBUG)
     printf("Updating done at %lu. ISR set for %lu | Next update at : %lu\r\n",
@@ -190,15 +208,23 @@ void PWMScheduler::cancel_alarm()
 // Put the ISR in RAM so as to avoid (slow) flash access.
 void __not_in_flash_func(set_new_ttl_pin_state)(void)
 {
+/*
+    // FIXME: remove this GPIO pin toggle
+    uint32_t led1 = 17;
+    gpio_put(led1, !gpio_get(led1));
+*/
+
     // Apply the next GPIO state.
     gpio_put_masked(PWMScheduler::next_gpio_port_mask_,
                     PWMScheduler::next_gpio_port_state_);
-    //PWMScheduler::alarm_queued_ = false;
     // Clear the latched hardware interrupt.
     timer_hw->intr |= (1u << PWMScheduler::alarm_num_);
 
     if (PWMScheduler::port_event_queue_.empty())
-        return; // FIXME: main loop must arm alarm in this case..
+    {
+        PWMScheduler::alarm_queued_ = false;
+        return; // main loop must re-arm alarm and populate next port state
+    }
     // If the queue is non-empty, pop the next item and assign it to next_*
     // values. Re-arm alarm.
     PWMScheduler::PortEvent& next_port_event = PWMScheduler::port_event_queue_.back();

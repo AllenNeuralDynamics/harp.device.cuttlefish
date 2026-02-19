@@ -58,7 +58,7 @@ public:
 /**
  * \brief called periodically. Sets up next PWMTask to occur on a timer.
  */
-    void update(bool first_update = false);
+    void update();
 
     void cancel_alarm();
 
@@ -84,8 +84,7 @@ private:
 
 private:
     static volatile int32_t alarm_num_;
-    // FIXME: considere pico multicore queue data structure instead.
-    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_; // FIXME: volatile?
+    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_;
     static volatile uint32_t next_gpio_port_state_;
     static volatile uint32_t next_gpio_port_mask_;
     static volatile bool alarm_queued_;
