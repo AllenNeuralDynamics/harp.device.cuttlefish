@@ -61,24 +61,23 @@ void PWMTask::update(bool force, bool skip_output_action)
     {
         switch (state_)
         {
-            case DELAY:
-                next_state = HIGH;
             case HIGH:
                 next_state = LOW;
-                next_update_time_us_ += period_us_ - on_time_us_;
+                next_update_time_us_ += on_time_us_;
                 break;
             case LOW:
                 next_state = HIGH;
-                next_update_time_us_ += on_time_us_;
+                next_update_time_us_ += period_us_ - on_time_us_;
                 break;
             case DONE:
                 next_state = DONE;
+                break;
             default: // Shouldn't be accessible in this section.
                 next_state = DONE;
         }
     }
-    loops_ += 1;
-    cycles_ = loops_ >> 1; // loops/2.
+    if ((state_ == HIGH) && (next_state == LOW))
+        cycles_ += 1;
     state_ = next_state;
     // Update outputs.
     // Update the gpio state here.

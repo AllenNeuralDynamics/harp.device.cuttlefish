@@ -29,7 +29,6 @@ public:
         LOW = 0,
         HIGH = 1,
         DONE = 2,
-        DELAY = 3,
     };
 
 /**
@@ -83,7 +82,7 @@ public:
     {return state_ != DONE;}
 
     inline update_state_t starting_state()
-    {return (delay_us_ == 0)? HIGH : DELAY;}
+    {return (delay_us_ == 0)? HIGH : LOW;}
 
 private:
     friend class PWMScheduler;
