@@ -10,6 +10,12 @@ project(schedule)
 
 set(CMAKE_CXX_STANDARD 23)
 
+## Configure the entire program to be copied from flash to RAM at the start.
+## Since our binary size is small (<260KB), this is easier than marking every
+## data structure and function definition called in core1 to run from RAM.
+#set(PICO_COPY_TO_RAM 1)
+
+
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 

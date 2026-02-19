@@ -12,7 +12,7 @@ __not_in_flash("scheduler") PWMScheduler scheduler;
 
 std::array<pwm_settings_t, 8> pwm_settings
 {{{0, 500, 500, 12, 0},     // offset, on time, off time, cycles, invert
-  {75, 500, 500, 12, 0},
+  {75, 500, 500, 12, 0}, // offset can be as little as 10us if PICO_COPY_TO_RAM=1
   {150, 500, 500, 12, 0},
   {450, 500, 500, 12, 0},
   {0, 500, 500, 0, 0},
