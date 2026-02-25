@@ -19,7 +19,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Gets or sets the address of the Harp Message
         /// </summary>
         [Description("The address of the register to be used to configure the PWM task.")]
-        public int Address { get; set; } = (int) PwmTask.Address;
+        public int Address { get; set; } = (int) PwmSettings0.Address;
 
         /// <summary>
         /// Gets or sets the type of the Harp Message
@@ -50,7 +50,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// If the default value of zero is specified, the PWM will be infinite.
         /// </summary>
         [Description("The number of pulses to trigger on the specified PWM. If the default value of zero is specified, the PWM will be infinite.")]
-        public Ports Port { get; set; } = 0x0;
+        public Pins Pins { get; set; } = 0x0;
 
         /// <summary>
         /// Gets or sets the number of times the PWM protocol will be repeated.
@@ -105,11 +105,10 @@ namespace AllenNeuralDynamics.Cuttlefish
         {
             var payload = new HelperMethods.PwmTaskPayload()
             {
-                delay = Delay,
-                onTime = OnTime,
-                period = Period,
-                portMask = (byte)Port,
-                repeats = RepeatCount,
+                offset_us = Delay,
+                on_duration_us = OnTime,
+                off_duration_us = Period,
+                cycles = RepeatCount,
                 invert = Invert ? (byte)1 : (byte)0
             };
             var bytes = HelperMethods.StructToByteArray(payload);

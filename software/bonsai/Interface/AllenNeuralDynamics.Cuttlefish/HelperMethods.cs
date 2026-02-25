@@ -36,11 +36,10 @@ namespace AllenNeuralDynamics.Cuttlefish
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         internal struct PwmTaskPayload
         {
-            public uint delay;
-            public uint onTime;
-            public uint period;
-            public byte portMask;
-            public uint repeats;
+            public uint offset_us;
+            public uint on_duration_us;
+            public uint off_duration_us;
+            public uint cycles;
             public byte invert;
         }
 
