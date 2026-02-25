@@ -6,147 +6,86 @@ whoAmI: 1403
 firmwareVersion: "0.1"
 hardwareTargets: "0.0"
 registers:
-  PortDirection:
+  PortDirection: &IORegister
     address: 32
     type: U8
     access: Write
     maskType: Port
     description: "Set the direction of the pins. 0 = input; 1 = output"
   PortState:
+    <<: *IORegister
     address: 33
-    type: U8
-    access: Write
-    maskType: Port
     description: "Read or write the state of the pins."
   PortSet:
+    <<: *IORegister
     address: 34
-    type: U8
-    access: Write
-    maskType: Port
     description: "Set pins specified in the mask to logic HIGH by setting the corresponding bit."
   PortClear:
+    <<: *IORegister
     address: 35
-    type: U8
-    access: Write
-    maskType: Port
     description: "Set specified pins in the mask to logic LOW by setting the corresponding bit."
-
-
   EnableRisingEdgeEvents:
+    <<: *IORegister
     address: 36
-    type: U8
-    access: Write
-    maskType: Port
-    description: "Enable Events from the RisingEdgeEvents register for the
-                  specified pins in the mask when any of the the corresponding
-                  pins transitions from logic LOW to logic HIGH."
+    description: "Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH."
   RisingEdgeEvents:
+    <<: *IORegister
     address: 37
-    type: U8
     access: Event
-    maskType: Port
-    description: "Event Only. Returns a timestamped message with the Port state
-                  when any of the pins specified in the EnableRisingEdgeEvents
-                  register transitions from logic LOW to logic HIGH."
+    description: "Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH."
   EnableFallingEdgeEvents:
+    <<: *IORegister
     address: 38
-    type: U8
-    access: Write
-    maskType: Port
-    description: "Enable Events from the FallingEdgeEvents register for the
-                  specified pins in the mask when any of the the corresponding
-                  pins transitions from logic HIGH to logic LOW."
+    description: "Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW."
   FallingEdgeEvents:
+    <<: *IORegister
     address: 39
-    type: U8
     access: Event
-    maskType: Port
-    description: "Event Only. Returns a timestamped message with the Port state
-                  when any of the pins specified in the EnableRisingEdgeEvents
-                  register transitions from logic HIGH to logic LOW."
+    description: "Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW."
 
-
-  PWMStart:
+  PwmStart:
+    <<: *IORegister
     address: 40
-    type: U8
-    access: Write
-    maskType: Port
-    description: "Start the associated PWM channel for the pins specified in
-                  the mask."
-  PWMStop:
+    description: "Start the associated PWM channel for the pins specified in the mask."
+  PwmStop:
+    <<: *IORegister
     address: 41
-    type: U8
-    access: Write
-    maskType: Port
-    description: "Stop the associated PWM channel for the pins specified in
-                  the mask."
+    description: "Stop the associated PWM channel for the pins specified in the mask."
 
-
-  PWMSettings0:
+  PwmSettings0: &PwmSettingsRegister
     address: 42
     type: U8
     access: Write
     length: 17
-    description: "Struct to configure PWM0 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings1:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM1 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings2:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM2 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings3:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM3 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings4:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM4 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings5:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM5 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings6:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM6 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-  PWMSettings7:
-    address: 42
-    type: U8
-    access: Write
-    length: 17
-    description: "Struct to configure PWM7 settings:
-                  offset_us (U32), on_duration_us (U32), off_duration_us (U32),
-                  cycles (U32), invert (U8)"
-
+    description: "Struct to configure PWM0 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings1:
+    <<: *PwmSettingsRegister
+    address: 43
+    description: "Struct to configure PWM1 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings2:
+    <<: *PwmSettingsRegister
+    address: 44
+    description: "Struct to configure PWM2 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings3:
+    <<: *PwmSettingsRegister
+    address: 45
+    description: "Struct to configure PWM3 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings4:
+    <<: *PwmSettingsRegister
+    address: 46
+    description: "Struct to configure PWM4 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings5:
+    <<: *PwmSettingsRegister
+    address: 47
+    description: "Struct to configure PWM5 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings6:
+    <<: *PwmSettingsRegister
+    address: 48
+    description: "Struct to configure PWM6 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
+  PwmSettings7:
+    <<: *PwmSettingsRegister
+    address: 49
+    description: "Struct to configure PWM7 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
 
 bitMasks:
   Port:
