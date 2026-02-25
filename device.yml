@@ -6,21 +6,21 @@ whoAmI: 1403
 firmwareVersion: "0.1"
 hardwareTargets: "0.0"
 registers:
-  PortDirection: &IORegister
+  PinDirection: &IORegister
     address: 32
     type: U8
     access: Write
-    maskType: Port
+    maskType: Pins
     description: "Set the direction of the pins. 0 = input; 1 = output"
-  PortState:
+  PinState:
     <<: *IORegister
     address: 33
     description: "Read or write the state of the pins."
-  PortSet:
+  PinSet:
     <<: *IORegister
     address: 34
     description: "Set pins specified in the mask to logic HIGH by setting the corresponding bit."
-  PortClear:
+  PinClear:
     <<: *IORegister
     address: 35
     description: "Set specified pins in the mask to logic LOW by setting the corresponding bit."
@@ -88,7 +88,7 @@ registers:
     description: "Struct to configure PWM7 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"
 
 bitMasks:
-  Port:
+  Pins:
     description: "Available pins on the device"
     bits:
       None: 0x0
