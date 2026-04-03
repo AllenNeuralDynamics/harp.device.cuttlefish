@@ -8,7 +8,7 @@ include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
 project(cuttlefish)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
@@ -23,7 +23,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Configure the entire program to be copied from flash to RAM at the start.
 # Since our binary size is small (<260KB), this is easier than marking every
 # data structure and function definition called in core1 to run from RAM.
-set(PICO_COPY_TO_RAM 1)
+#set(PICO_COPY_TO_RAM 1)
 
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()

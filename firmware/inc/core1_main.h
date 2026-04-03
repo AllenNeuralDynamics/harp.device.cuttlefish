@@ -20,8 +20,18 @@
 uint64_t time_us_64_unsafe();
 #endif
 
-extern PWMScheduler pwm_schedule;
-//extern etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks;
+enum core1_state_t: uint32_t
+{
+    RESET,
+    READY,
+    RUNNING,
+};
+
+extern core1_state_t state;
+extern bool schedule_failed;
+extern uint8_t active_pwm_pins;
+
+extern PWMScheduler scheduler;
 
 void core1_main();
 

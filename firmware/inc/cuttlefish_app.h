@@ -6,7 +6,6 @@
 #include <harp_message.h>
 #include <harp_core.h>
 #include <harp_c_app.h>
-#include <harp_synchronizer.h>
 #include <etl/vector.h>
 //#include <pwm_scheduler.h>
 //#include <pwm_task.h>
@@ -22,16 +21,19 @@
     #include <cstdio> // for printf
 #endif
 
+using enum reg_type_t;
+
 // Setup for Harp App
-inline constexpr size_t reg_count = 16;
+extern const size_t APP_REG_COUNT;
 
 inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
 inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 7;
+inline constexpr uint8_t PWM_SETTINGS_0_APP_ADDRESS = 10;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
-extern RegSpecs app_reg_specs[reg_count];
-extern RegFnPair reg_handler_fns[reg_count];
+extern RegSpecs app_reg_specs[];
+extern RegFnPair reg_handler_fns[];
 extern HarpCApp& app;
 
 #pragma pack(push, 1)
@@ -43,13 +45,13 @@ struct app_regs_t
     volatile uint8_t port_clear;
 
     volatile uint8_t enable_rising_edge_events;
-    volatile uint8_t enable_falling_edge_events;
     volatile uint8_t rising_edge_events;
+    volatile uint8_t enable_falling_edge_events;
     volatile uint8_t falling_edge_events;
 
-    volatile uint8_t pwm_start;
-    volatile uint8_t pwm_stop;
-    volatile pwm_settings_t pwm_settings[NUM_GPIOS];
+    uint8_t pwm_start;
+    uint8_t pwm_stop;
+    pwm_settings_t pwm_settings[NUM_GPIOS];
 };
 #pragma pack(pop)
 
@@ -99,13 +101,13 @@ void write_pwm_stop(msg_t& msg);
  *  output (1 per IO)
  * \note this handler function is shared across all `pwm_settings` registers.
  */
-void read_pwm_settings(uint8_t reg_address);
+void read_any_pwm_settings(uint8_t reg_address);
 /**
  * \brief App register handler function to write pwm settings to the given PWM
  *  output (1 per IO).
  * \note this handler function is shared across all `pwm_settings` registers.
  */
-void write_pwm_settings(msg_t& msg);
+void write_any_pwm_settings(msg_t& msg);
 
 /**
  * \brief a single callback to handle all GPIO pin change events including

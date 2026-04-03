@@ -11,13 +11,32 @@
 #pragma pack(push, 1)
 struct pwm_specs_core_msg_t
 {
-    uint32_t pin_mask;
+    size_t pin; // Limit 1 pin per PWMTask.
     pwm_settings_t specs;
+
+    // Custom constructor that works off of references.
+    pwm_specs_core_msg_t(size_t& pin, pwm_settings_t& specs)
+    :pin(pin), specs(specs) {}
+
+    // Enable default constructor.
+    pwm_specs_core_msg_t() = default;
 };
 #pragma pack(pop)
 
-extern queue_t pwm_task_setup_queue;
-extern queue_t cmd_signal_queue;
-extern queue_t schedule_error_signal_queue;
+struct core1_state
+{
+    uint32_t pwm_state;
+    bool scheduler_error;
+    // TODO: some sort of schedule-failed signal.
+
+    bool schedule_is_running()
+    {return pwm_state > 0;}
+};
+
+extern queue_t pwm_msg_queue;
+
+//extern queue_t pwm_task_setup_queue;
+//extern queue_t cmd_signal_queue;
+//extern queue_t schedule_error_signal_queue;
 
 #endif // SCHEDULE_CTRL_QUEUES_H

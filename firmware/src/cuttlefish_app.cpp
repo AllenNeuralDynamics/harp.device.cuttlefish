@@ -3,7 +3,7 @@
 app_regs_t app_regs;
 
 // Define "specs" per-register
-RegSpecs app_reg_specs[reg_count]
+RegSpecs app_reg_specs[]
 {
     {(uint8_t*)&app_regs.port_dir, sizeof(app_regs.port_dir), U8}, // 32
     {(uint8_t*)&app_regs.port_state, sizeof(app_regs.port_state), U8},  // 33
@@ -15,12 +15,22 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.rising_edge_events, sizeof(app_regs.rising_edge_events), U8},
     {(uint8_t*)&app_regs.falling_edge_events, sizeof(app_regs.falling_edge_events), U8},
 
-    {(uint8_t*)&app_regs.pwm_start, sizeof(app_regs.pwm_start), U8}, // 32
-    {(uint8_t*)&app_regs.pwm_stop, sizeof(app_regs.pwm_stop), U8}, // 32
+    {(uint8_t*)&app_regs.pwm_start, sizeof(app_regs.pwm_start), U8},
+    {(uint8_t*)&app_regs.pwm_stop, sizeof(app_regs.pwm_stop), U8},
+
+    {(uint8_t*)&app_regs.pwm_settings[0], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[1], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[2], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[3], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[4], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[5], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[6], sizeof(pwm_settings_t), U8},
+    {(uint8_t*)&app_regs.pwm_settings[7], sizeof(pwm_settings_t), U8},
 };
 
+const size_t APP_REG_COUNT = sizeof(app_reg_specs);
 
-RegFnPair reg_handler_fns[reg_count]
+RegFnPair reg_handler_fns[]
 {
     {HarpCore::read_reg_generic, write_port_dir},           // 32
     {read_port_state, write_port_state},                    // 33
@@ -28,12 +38,21 @@ RegFnPair reg_handler_fns[reg_count]
     {HarpCore::read_reg_generic, write_port_clear},
 
     {read_enable_rising_edge_events, write_enable_rising_edge_events},
-    {read_enable_falling_edge_events, write_enable_falling_edge_events},
     {read_rising_edge_events, write_rising_edge_events},
+    {read_enable_falling_edge_events, write_enable_falling_edge_events},
     {read_falling_edge_events, write_falling_edge_events},
 
     {read_pwm_start, write_pwm_start},
     {read_pwm_stop, write_pwm_stop},
+
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings},
+    {read_any_pwm_settings, write_any_pwm_settings}
 };
 
 
@@ -154,6 +173,10 @@ void write_pwm_start(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     // TODO
+    // FIXME: we need to know the schedule state of core1.
+    // TODO: Error if we have never specified PWM Settings for the specified
+    //  pins yet.
+    // Send start cmd to core1.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -162,6 +185,7 @@ void write_pwm_start(msg_t& msg)
 void read_pwm_stop(uint8_t reg_address)
 {
     // TODO
+    // FIXME: we need to know the schedule state of core1.
 }
 
 
@@ -169,18 +193,43 @@ void write_pwm_stop(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     // TODO
+    // FIXME: we need to know the schedule state of core1.
+    // Send stop cmd to core1.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
-void read_pwm_settings(uint8_t reg_address)
-{
 
-}
+void read_any_pwm_settings(uint8_t reg_address)
+{HarpCore::read_reg_generic(reg_address);}
 
-void write_pwm_settings(msg_t& msg)
+
+void write_any_pwm_settings(msg_t& msg)
 {
-    // TODO: push to core1
+    HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t pwm_index = msg.header.address - PWM_SETTINGS_0_APP_ADDRESS;
+    // FIXME: we need to know the schedule state of core1.
+/*
+    if (last_core1_state.schedule_error)
+    {
+        if (!HarpCore::is_muted())
+            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+*/
+    // Push new pwm settings to core1.
+    pwm_settings_t& settings = app_regs.pwm_settings[pwm_index];
+    size_t pwm_pin = pwm_index + PORT_BASE;
+    pwm_specs_core_msg_t pwm_settings_msg(pwm_pin, settings);
+    if (!queue_try_add(&pwm_msg_queue, &pwm_settings_msg))
+    {
+        if (!HarpCore::is_muted())
+            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    // TODO: do we also need to configure the Buffer to convert the TTL to output?
 }
 
 
@@ -208,7 +257,7 @@ void handle_edge_event_callback(void)
     queue_try_add(&edge_event_queue, &event);
     // Clear the INTR[n] state since we dealt with all pin changes.
     // Clear by "writing a 1" to the set bits.
-    io_bank0_hw->intr[PORT_BASE >> 3] = 0xFFFFFFFF;
+    io_bank0_hw->intr[PORT_BASE >> 3] = 0xFFFFFFFF; // >> 3: floor-divide by 8
 }
 
 
@@ -238,6 +287,8 @@ void update_app_state()
             HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
+    // TODO: Update core1 state.
+    //queue_try_remove(&core1_state_queue, &core1_state);
 
 }
 
@@ -254,14 +305,8 @@ void reset_app()
     app_regs.port_dir = 0x00; // all inputs
     app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
 
-    // For DEBUGGING
-    //gpio_init(LED1);
-    //gpio_set_dir(LED1, GPIO_OUT);
-    //gpio_put(LED1, 1);
-
     // TODO: apply Dummy settings to the pwm_settings_t Registers.
-
-    // Reset Core1 PWM features.
+    // TODO: reset core1.
 
     // Drain the EdgeEvent queue.
     EdgeEvent dummy_event;

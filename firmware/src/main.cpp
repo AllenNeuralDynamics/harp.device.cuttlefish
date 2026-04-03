@@ -12,6 +12,7 @@
 
 queue_t edge_event_queue;
 
+queue_t pwm_msg_queue;
 queue_t pwm_task_setup_queue;
 queue_t cmd_signal_queue;
 queue_t schedule_error_signal_queue;
@@ -25,7 +26,7 @@ HarpCApp& app = HarpCApp::init(HARP_DEVICE_ID,
                                UNUSED_SERIAL_NUMBER, "Cuttlefish",
                                (uint8_t*)GIT_HASH,
                                &app_regs, app_reg_specs,
-                               reg_handler_fns, reg_count, update_app_state,
+                               reg_handler_fns, APP_REG_COUNT, update_app_state,
                                reset_app);
 
 // Core0 main.
@@ -47,9 +48,11 @@ int main()
 #warning "Initializing printf from UART will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);
 #endif
+/* // Punt this for later release.
     multicore_reset_core1();
     (void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
     multicore_launch_core1(core1_main);
+*/
     reset_app(); // Setup GPIO states. Get scheduler ready.
     // Loop forever.
     while(true)
