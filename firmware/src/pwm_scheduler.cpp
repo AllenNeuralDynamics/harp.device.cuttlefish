@@ -105,7 +105,10 @@ void PWMScheduler::start()
 #if defined(DEBUG)
     printf("Recording schedule start at : %lu\r\n", start_time_us);
 #endif
-    update();
+    // Precompute a few updates back-to-back to populate the port event queue.
+    #pragma unroll
+    for (size_t i = 0; i < NUM_TTL_IOS; ++i)
+    {update();}
 }
 
 void PWMScheduler::update()
