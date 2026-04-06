@@ -15,9 +15,6 @@ inline constexpr size_t DEBUG_UART_TX_PIN = 0;
 
 inline constexpr size_t HARP_SYNC_RX_PIN = 5;
 
-inline constexpr size_t HARP_VERSION_MAJOR = 1;
-inline constexpr size_t HARP_VERSION_MINOR = 0;
-
 inline constexpr size_t HW_VERSION_MAJOR = 1;
 inline constexpr size_t HW_VERSION_MINOR = 0;
 inline constexpr size_t HW_ASSEMBLY_VERSION = 0;

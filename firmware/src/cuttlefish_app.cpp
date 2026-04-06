@@ -3,57 +3,47 @@
 app_regs_t app_regs;
 
 // Define "specs" per-register
-RegSpecs app_reg_specs[]
+RegSpec app_reg_specs[]
 {
-    {(uint8_t*)&app_regs.port_dir, sizeof(app_regs.port_dir), U8}, // 32
-    {(uint8_t*)&app_regs.port_state, sizeof(app_regs.port_state), U8},  // 33
-    {(uint8_t*)&app_regs.port_set, sizeof(app_regs.port_set), U8},
-    {(uint8_t*)&app_regs.port_clear, sizeof(app_regs.port_clear), U8},
-
-    {(uint8_t*)&app_regs.enable_rising_edge_events, sizeof(app_regs.enable_rising_edge_events), U8},
-    {(uint8_t*)&app_regs.enable_falling_edge_events, sizeof(app_regs.enable_falling_edge_events), U8},
-    {(uint8_t*)&app_regs.rising_edge_events, sizeof(app_regs.rising_edge_events), U8},
-    {(uint8_t*)&app_regs.falling_edge_events, sizeof(app_regs.falling_edge_events), U8},
-
-    {(uint8_t*)&app_regs.pwm_start, sizeof(app_regs.pwm_start), U8},
-    {(uint8_t*)&app_regs.pwm_stop, sizeof(app_regs.pwm_stop), U8},
-
-    {(uint8_t*)&app_regs.pwm_settings[0], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[1], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[2], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[3], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[4], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[5], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[6], sizeof(pwm_settings_t), U8},
-    {(uint8_t*)&app_regs.pwm_settings[7], sizeof(pwm_settings_t), U8},
+    RegSpec::U8(&app_regs.port_dir,
+        HarpCore::read_reg_generic, write_port_dir),
+    RegSpec::U8(&app_regs.port_state,
+        read_port_state, write_port_state),
+    RegSpec::U8(&app_regs.port_set,
+        HarpCore::read_reg_generic, write_port_set),
+    RegSpec::U8(&app_regs.port_clear,
+        HarpCore::read_reg_generic, write_port_clear),
+    RegSpec::U8(&app_regs.enable_rising_edge_events,
+        read_enable_rising_edge_events, write_enable_rising_edge_events),
+    RegSpec::U8(&app_regs.rising_edge_events,
+        read_rising_edge_events, write_rising_edge_events),
+    RegSpec::U8(&app_regs.enable_falling_edge_events,
+        read_enable_falling_edge_events, write_enable_falling_edge_events),
+    RegSpec::U8(&app_regs.falling_edge_events,
+        read_falling_edge_events, write_falling_edge_events),
+    RegSpec::U8(&app_regs.pwm_start,
+        read_pwm_start, write_pwm_start),
+    RegSpec::U8(&app_regs.pwm_stop,
+        read_pwm_stop, write_pwm_stop),
+    RegSpec::U8Array(&app_regs.pwm_settings[0], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[1], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[2], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[3], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[4], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[5], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[6], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.pwm_settings[7], sizeof(pwm_settings_t),
+        read_any_pwm_settings, write_any_pwm_settings)
 };
 
 const size_t APP_REG_COUNT = sizeof(app_reg_specs);
-
-RegFnPair reg_handler_fns[]
-{
-    {HarpCore::read_reg_generic, write_port_dir},           // 32
-    {read_port_state, write_port_state},                    // 33
-    {HarpCore::read_reg_generic, write_port_set},
-    {HarpCore::read_reg_generic, write_port_clear},
-
-    {read_enable_rising_edge_events, write_enable_rising_edge_events},
-    {read_rising_edge_events, write_rising_edge_events},
-    {read_enable_falling_edge_events, write_enable_falling_edge_events},
-    {read_falling_edge_events, write_falling_edge_events},
-
-    {read_pwm_start, write_pwm_start},
-    {read_pwm_stop, write_pwm_stop},
-
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings},
-    {read_any_pwm_settings, write_any_pwm_settings}
-};
 
 
 void write_port_dir(msg_t& msg)

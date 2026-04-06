@@ -26,14 +26,15 @@ using enum reg_type_t;
 // Setup for Harp App
 extern const size_t APP_REG_COUNT;
 
-inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 5;
-inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS = APP_REG_START_ADDRESS + 7;
+inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 5;
+inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 7;
 inline constexpr uint8_t PWM_SETTINGS_0_APP_ADDRESS = 10;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
-extern RegSpecs app_reg_specs[];
-extern RegFnPair reg_handler_fns[];
+extern RegSpec app_reg_specs[];
 extern HarpCApp& app;
 
 #pragma pack(push, 1)
