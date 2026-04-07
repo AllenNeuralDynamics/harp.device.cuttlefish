@@ -7,16 +7,10 @@ from struct import pack, unpack
 import logging
 import os
 from time import sleep, perf_counter
+from app_registers import AppRegs
 
-PWM_TASK_REG = 34
-SW_TRIGGER_REG = 39
-SCHEDULE_CTRL_REG = 41
+logging.basicConfig(level=logging.DEBUG)
 
-#logger = logging.getLogger()
-#logger.setLevel(logging.DEBUG)
-#logger.addHandler(logging.StreamHandler())
-#logger.handlers[-1].setFormatter(
-#    logging.Formatter(fmt='%(asctime)s:%(name)s:%(levelname)s: %(message)s'))
 
 # Open the device and print the info on screen
 # Open serial connection and save communication to a file
@@ -32,20 +26,17 @@ settings = \
     0,          # offset_us
     5000,     # on_time_us
     10000,    # period_us
-    (1 << 0),   # port_mask. 0 is device pin0.
     0,          # cycles. (0 = repeat forever.)
     False       # invert.
 )
-data_fmt = "<LLLBLB"
-print("Disabling task.")
-device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)
+data_fmt = "<LLLLB"
 
 print("Configuring device with PWM task.")
-measurement = device.send(WriteU8ArrayMessage(PWM_TASK_REG,
+measurement = device.send(WriteU8ArrayMessage(AppRegs.PWMSettings0,
                                               data_fmt, settings).frame)
 print("Enabling task.")
-device.send(WriteU8HarpMessage(SW_TRIGGER_REG, int(True)).frame)
+device.send(WriteU8HarpMessage(AppRegs.PWMState, int(True)).frame)
 sleep(3)
 
 print("Disabling task.")
-device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)
+device.send(WriteU8HarpMessage(AppRegs.PWMState, 1).frame)

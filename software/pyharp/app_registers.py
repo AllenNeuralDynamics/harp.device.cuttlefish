@@ -9,18 +9,17 @@ class AppRegs(IntEnum):
     PortClear = 35
 
     EnableRisingEdgeEvents = 36
-    EnableFallingEdgeEvents = 37
-    RisingEdgeEvents = 38
+    RisingEdgeEvents = 37
+    EnableFallingEdgeEvents = 38
     FallingEdgeEvents = 39
 
-    PWMStart = 38
-    PWMStop = 39
+    PWMState = 40
 
-    PWMSettings0 = 40
-    PWMSettings1 = 41
-    PWMSettings2 = 42
-    PWMSettings3 = 43
-    PWMSettings4 = 44
-    PWMSettings5 = 45
-    PWMSettings6 = 46
-    PWMSettings7 = 47
+    PWMSettings0 = 41
+    PWMSettings1 = 42
+    PWMSettings2 = 43
+    PWMSettings3 = 44
+    PWMSettings4 = 45
+    PWMSettings5 = 46
+    PWMSettings6 = 47
+    PWMSettings7 = 48

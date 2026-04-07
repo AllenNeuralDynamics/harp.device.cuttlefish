@@ -7,8 +7,6 @@
 #include <harp_core.h>
 #include <harp_c_app.h>
 #include <etl/vector.h>
-//#include <pwm_scheduler.h>
-//#include <pwm_task.h>
 #include <pwm_settings.h>
 #include <edge_event_queue.h>
 #include <schedule_ctrl_queues.h>
@@ -30,7 +28,6 @@ inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS =
     HarpCore::APP_REG_START_ADDRESS + 5;
 inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS =
     HarpCore::APP_REG_START_ADDRESS + 7;
-inline constexpr uint8_t PWM_SETTINGS_0_APP_ADDRESS = 10;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -50,9 +47,9 @@ struct app_regs_t
     volatile uint8_t enable_falling_edge_events;
     volatile uint8_t falling_edge_events;
 
-    uint8_t pwm_start;
-    uint8_t pwm_stop;
+    uint8_t pwm_state;
     pwm_settings_t pwm_settings[NUM_GPIOS];
+    uint8_t pwm_ready;
 };
 #pragma pack(pop)
 
@@ -87,15 +84,10 @@ void write_enable_rising_edge_events(msg_t& msg);
 void read_enable_falling_edge_events(uint8_t reg_address);
 void write_enable_falling_edge_events(msg_t& msg);
 
-void read_rising_edge_events(uint8_t reg_address);
-void write_rising_edge_events(msg_t& msg);
-void read_falling_edge_events(uint8_t reg_address);
-void write_falling_edge_events(msg_t& msg);
+void read_reg_error(uint8_t reg_address);
+void write_reg_error(msg_t& msg);
 
-void read_pwm_start(uint8_t reg_address);
-void write_pwm_start(msg_t& msg);
-void read_pwm_stop(uint8_t reg_address);
-void write_pwm_stop(msg_t& msg);
+void write_pwm_state(msg_t& msg);
 
 /**
  * \brief App register handler function to read pwm settings from the given PWM

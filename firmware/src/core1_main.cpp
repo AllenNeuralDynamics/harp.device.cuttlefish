@@ -1,9 +1,7 @@
 #include <core1_main.h>
 
-core1_state_t state;
-bool schedule_failed;
-uint8_t active_pwm_pins;
-
+__not_in_flash("core1_state") core1_state_t state;
+__not_in_flash("schedule_failed") bool schedule_failed;
 __not_in_flash("scheduler")PWMScheduler scheduler;
 
 
@@ -18,65 +16,75 @@ void handle_missed_deadline()
 }
 
 
-//void populate_schedule()
-//{
-//    while (queue_try_remove(&pwm_msg_queue, &msg))
-//    {
-//        // TODO: If new, push to schedule.
-//        //  Otherwise, update settings according to what pin they apply to.
-//        if ((1u << msg.pin) & active_pwm_pins) // FIXME.
-//        {
-//            // Update existing settings.
-//        }
-//        else
-//        {
-//            active_pwm_pins |= (1u << msg.pin); // FIXME.
-//            //scheduler.schedule_pwm_task(msg.specs); // FIXME: constructor.
-//        }
-//    }
-//}
-
-
-void run_task_loop()
+void sync_schedule()
 {
-//    core1_state_t next_state;
-//    pwm_specs_core_msg_t msg;
-//
-//    // TODO: get inputs from core0 control queue.
-//
-//    // state-transition logic and calculate next-state.
-//    switch (state)
-//    {
-//        case RESET:
-//            active_pwm_pins = 0;
-//            schedule_failed = false;
-//            scheduler.reset(); // FIXME: doesn't reset cleanly yet.
-//            next_state = READY;
-//            break;
-//        case READY:
-//            populate_schedule();
-//            next_state = (GO)? RUNNING : READY;
-//            if (next_state == RUNNING)
-//                scheduler.start();
-//            break;
-//        case RUNNING:
+    pwm_specs_core_msg_t msg;
+    while (queue_try_remove(&pwm_msg_queue, &msg))
+    {
+        // TODO: If new, push to schedule.
+        //  Otherwise, update settings according to what pin they apply to.
+    }
+}
+
+
+void __not_in_flash_func(run_task_loop)()
+{
+    using enum pwm_ctrl_msg_t;
+
+    core1_state_t next_state;
+    pwm_specs_core_msg_t msg;
+
+    //Get input from core0 control queue.
+    pwm_ctrl_msg_t ctrl_msg;
+    bool new_ctrl_msg = queue_try_remove(&core1_ctrl_queue, &msg);
+
+    // state-transition logic and calculate next-state.
+    switch (state)
+    {
+        case RESET:
+            next_state = READY;
+            break;
+        case READY:
+            if (!new_ctrl_msg)
+                break;
+            next_state = (ctrl_msg == START)? RUNNING : READY;
+            break;
+        case RUNNING:
+            // TODO: also check if the schedule finished.
+            if (schedule_failed || ((new_ctrl_msg) && (ctrl_msg == STOP)))
+                next_state = RESET;
+            break;
+        default:
+            break;
+    }
+
+    // Handle output logic based on curr state or state transition.
+    switch (state)
+    {
+        case RESET:
+            schedule_failed = false;
+            scheduler.reset(); // FIXME: doesn't reset cleanly yet. should also stop.
+            break;
+        case READY:
+            if (next_state == RUNNING)
+                scheduler.start();
+            else
+                sync_schedule();
+            break;
+        case RUNNING:
             scheduler.update();
-//            if (schedule_failed)
-//                next_state = RESET;
-//            break;
-//        default:
-//            break;
-//    }
-//
-//    // Handle output logic.
-//
-//    // Update state.
-//    state = next_state;
+            if (next_state == RESET) // Tell core0 we finished.
+                queue_try_add(&core1_state_queue, &next_state);
+            break;
+    }
+
+    // Update state.
+    state = next_state;
 }
 
 
 // Core1 main.
-void core1_main()
+void __not_in_flash_func(core1_main)()
 {
     // Set DEBUG LED
     gpio_init(LED1);

@@ -4,6 +4,8 @@
 inline constexpr size_t NUM_GPIOS = 8;
 inline constexpr size_t PORT_BASE = 8;
 inline constexpr size_t PORT_DIR_BASE = 16;
+inline constexpr size_t PORT_MASK = 0x000000FF << PORT_BASE;
+inline constexpr size_t PORT_DIR_MASK = 0x000000FF << PORT_DIR_BASE;
 
 #define DEBUG_UART (uart0)
 #define SYNC_UART (uart1)

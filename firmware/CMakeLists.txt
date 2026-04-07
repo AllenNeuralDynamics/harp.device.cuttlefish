@@ -10,6 +10,9 @@ project(cuttlefish)
 
 set(CMAKE_CXX_STANDARD 23)
 
+add_definitions(-DUSBD_MANUFACTURER="Allen Institute")
+add_definitions(-DUSBD_PRODUCT="CuTTLefish")
+
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
