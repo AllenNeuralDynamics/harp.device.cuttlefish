@@ -40,18 +40,16 @@ int main()
     queue_init(&edge_event_queue, sizeof(EdgeEvent), 32);
     // Initialize queues for multicore communication.
     queue_init(&core1_ctrl_queue, sizeof(pwm_ctrl_msg_t), 8);
-    queue_init(&core1_state_queue, sizeof(uint32_t), 8);
+    queue_init(&core1_state_queue, sizeof(core1_state_t), 8);
+    queue_init(&pwm_msg_queue, sizeof(pwm_specs_core_msg_t), 32);
     queue_init(&schedule_error_queue, sizeof(uint8_t), 2);
-
 #if defined(DEBUG) || defined(PROFILE_CPU)
 #warning "Initializing printf from UART will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);
 #endif
-/* // Punt this for later release.
     multicore_reset_core1();
     (void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
     multicore_launch_core1(core1_main);
-*/
     reset_app(); // Setup GPIO states. Get scheduler ready.
     // Loop forever.
     while(true)

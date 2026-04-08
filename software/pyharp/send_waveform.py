@@ -9,7 +9,7 @@ import os
 from time import sleep, perf_counter
 from app_registers import AppRegs
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 
 # Open the device and print the info on screen
@@ -32,11 +32,18 @@ settings = \
 data_fmt = "<LLLLB"
 
 print("Configuring device with PWM task.")
-measurement = device.send(WriteU8ArrayMessage(AppRegs.PWMSettings0,
-                                              data_fmt, settings).frame)
+reply = device.send(WriteU8ArrayMessage(AppRegs.PWMSettings0,
+                                        data_fmt, settings).frame)
+print(reply)
+print()
+
 print("Enabling task.")
-device.send(WriteU8HarpMessage(AppRegs.PWMState, int(True)).frame)
+reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, int(True)).frame)
+print(reply)
+print()
 sleep(3)
 
 print("Disabling task.")
-device.send(WriteU8HarpMessage(AppRegs.PWMState, 1).frame)
+reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, 0).frame)
+print(reply)
+print()
