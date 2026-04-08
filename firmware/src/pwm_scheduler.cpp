@@ -82,14 +82,13 @@ void PWMScheduler::start()
     // Apply initial pending GPIO change immediately so the schedule starts now.
     // Note: starting GPIO state was aggregated when we add each PWMTask.
 
-    // FIXME: For Debugging
-    uint32_t led1_mask = 1u << 17;
-    gpio_init_mask(led1_mask);
-    gpio_set_dir_masked(led1_mask, led1_mask);
+    // For Debugging
+    //uint32_t led1_mask = 1u << 17;
+    //gpio_init_mask(led1_mask);
+    //gpio_set_dir_masked(led1_mask, led1_mask);
 
-    // FIXME: remove led1_mask
-    gpio_put_masked(next_gpio_port_mask_ | led1_mask,
-                    next_gpio_port_state_ | led1_mask);
+    gpio_put_masked(next_gpio_port_mask_,// | led1_mask,
+                    next_gpio_port_state_ );//| led1_mask);
 #if defined(DEBUG)
     printf("GPIO Put: 0x%08x (mask), 0x%08x (val)\r\n",
            next_gpio_port_mask_, next_gpio_port_state_);
@@ -118,9 +117,8 @@ void PWMScheduler::update()
     if (port_event_queue_.full() || (pq_.size() == 0))
         return;
 
-    // FIXME: remove this GPIO pin toggle
-    uint32_t led1 = 17;
-    gpio_put(led1, !gpio_get(led1));
+    //uint32_t led1 = 17;
+    //gpio_put(led1, !gpio_get(led1));
 
 #if defined(DEBUG)
     uint32_t start_time_us = timer_hw->timerawl;
@@ -212,7 +210,6 @@ void PWMScheduler::cancel_alarm()
 void __not_in_flash_func(set_new_ttl_pin_state)(void)
 {
 /*
-    // FIXME: remove this GPIO pin toggle
     uint32_t led1 = 17;
     gpio_put(led1, !gpio_get(led1));
 */

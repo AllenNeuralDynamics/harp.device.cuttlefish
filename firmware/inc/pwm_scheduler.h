@@ -48,6 +48,14 @@ public:
  */
     void start();
 
+
+/**
+ * \brief true if the scheduler is done executing the schedule and no longer
+ *  needs to be updated.
+ */
+    bool finished()
+    {return port_event_queue_.empty() && !alarm_queued_;}
+
     inline void clear()
     {reset();}
 

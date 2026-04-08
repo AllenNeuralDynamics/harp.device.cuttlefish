@@ -91,8 +91,8 @@ void __not_in_flash_func(run_task_loop)()
                 next_state = RUNNING;
             break;
         case RUNNING:
-            // TODO: also check if the schedule finished.
-            if (schedule_failed || ((new_ctrl_msg) && (ctrl_msg == STOP)))
+            if (schedule_failed || scheduler.finished() ||
+                ((new_ctrl_msg) && (ctrl_msg == STOP)))
                 next_state = RESET;
             break;
         default:
@@ -104,19 +104,20 @@ void __not_in_flash_func(run_task_loop)()
     {
         case RESET:
             schedule_failed = false;
-            scheduler.reset(); // FIXME: doesn't reset cleanly yet?
+            scheduler.reset();
             break;
         case READY:
             sync_schedule();
             if (next_state == RUNNING)
             {
-                // TODO: push core0 message: schedule started.
+                // TODO: tell core0 we started (timestamp).
+                //queue_try_add(&core1_state_queue, &next_state);
                 scheduler.start();
             }
             break;
         case RUNNING:
             scheduler.update();
-            if (next_state == RESET) // Tell core0 we finished.
+            if (next_state == RESET) // TODO: Tell core0 we finished (timestamp).
                 queue_try_add(&core1_state_queue, &next_state);
             break;
     }
