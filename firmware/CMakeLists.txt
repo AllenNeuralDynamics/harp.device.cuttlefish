@@ -32,7 +32,7 @@ add_definitions(-DUSBD_PRODUCT="CuTTLefish")
 pico_sdk_init()
 
 # Add Harp Core as separate library.
-add_subdirectory(lib/harp.core.rp2040/firmware)
+add_subdirectory(lib/core.pico/firmware)
 add_subdirectory(lib/etl build)
 
 add_library(pwm_scheduler

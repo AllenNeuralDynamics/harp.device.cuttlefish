@@ -16,9 +16,10 @@ void handle_missed_deadline()
 }
 
 
-///
 void sync_schedule()
 {
+    /// friend funtion to PWMScheduler and PWMTask.
+    /// Should only be called before running the schedule.
     pwm_specs_core_msg_t settings;
     while (queue_try_remove(&pwm_settings_queue, &settings))
     {
@@ -103,12 +104,15 @@ void __not_in_flash_func(run_task_loop)()
     {
         case RESET:
             schedule_failed = false;
-            scheduler.reset(); // FIXME: doesn't reset cleanly yet. should also stop.
+            scheduler.reset(); // FIXME: doesn't reset cleanly yet?
             break;
         case READY:
             sync_schedule();
             if (next_state == RUNNING)
+            {
+                // TODO: push core0 message: schedule started.
                 scheduler.start();
+            }
             break;
         case RUNNING:
             scheduler.update();
@@ -125,12 +129,6 @@ void __not_in_flash_func(run_task_loop)()
 // Core1 main.
 void __not_in_flash_func(core1_main)()
 {
-    // FIXME: for debugging
-    // Set DEBUG LED
-    gpio_init(LED1);
-    gpio_set_dir(LED1, 1); // output
-    gpio_put(LED1, 0); // Set off.
-
     state = RESET;
     while (true)
         run_task_loop();

@@ -10,17 +10,17 @@ RegSpec app_reg_specs[]
     RegSpec::U8(&app_regs.port_state,
         read_port_state, write_port_state),
     RegSpec::U8(&app_regs.port_set,
-        HarpCore::read_from_write_only_reg_error, write_port_set),
+        HarpCore::read_reg_error, write_port_set),
     RegSpec::U8(&app_regs.port_clear,
-        HarpCore::read_from_write_only_reg_error, write_port_clear),
+        HarpCore::read_reg_error, write_port_clear),
     RegSpec::U8(&app_regs.enable_rising_edge_events,
         read_enable_rising_edge_events, write_enable_rising_edge_events),
     RegSpec::U8(&app_regs.rising_edge_events,
-        read_reg_error, write_reg_error),
+        HarpCore::read_reg_error, HarpCore::write_reg_error),
     RegSpec::U8(&app_regs.enable_falling_edge_events,
         read_enable_falling_edge_events, write_enable_falling_edge_events),
     RegSpec::U8(&app_regs.falling_edge_events,
-        read_reg_error, write_reg_error),
+        HarpCore::read_reg_error, HarpCore::write_reg_error),
     RegSpec::U8(&app_regs.pwm_state,
         HarpCore::read_reg_generic, write_pwm_state),
     RegSpec::U8Array(&app_regs.pwm_settings[0], sizeof(pwm_settings_t),
@@ -42,13 +42,6 @@ RegSpec app_reg_specs[]
 };
 
 const size_t APP_REG_COUNT = sizeof(app_reg_specs);
-
-
-// TODO: put these in Harp Core.
-void read_reg_error(uint8_t reg_address)
-{HarpCore::read_from_write_only_reg_error(reg_address);}
-void write_reg_error(msg_t& msg)
-{HarpCore::write_to_read_only_reg_error(msg);}
 
 
 void write_port_dir(msg_t& msg)

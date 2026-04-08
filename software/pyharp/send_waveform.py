@@ -37,13 +37,13 @@ reply = device.send(WriteU8ArrayMessage(AppRegs.PWMSettings0,
 print(reply)
 print()
 
-print("Enabling task.")
+print("Enabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, int(True)).frame)
 print(reply)
 print()
 sleep(3)
 
-print("Disabling task.")
+print("Disabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, 0).frame)
 print(reply)
 print()

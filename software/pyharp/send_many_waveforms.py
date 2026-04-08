@@ -23,7 +23,7 @@ else: # assume Windows.
 # offset_us, on_time_us, period_us, port_mask, cycles, invert.
 pwm_task_settings = (
     (0, 500, 500,     0, False),
-    (0, 1000, 1500,   0, False),
+    (0, 1000, 1500,   100, False), # Finite sequence!
     (0, 350, 350,     0, False),
 #    (0, 5000, 5000,   0, False),
 #    (0, 10000, 10000, 0, False),
@@ -40,12 +40,14 @@ for index, settings in enumerate(pwm_task_settings):
     print(reply)
     print()
 
-print("Enabling many tasks.")
+sleep(1)
+
+print("Enabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, 1).frame)
 print(reply)
 print()
 sleep(3)
 
-print("Disabling all tasks.")
+print("Disabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, 0).frame)
 print(reply)
