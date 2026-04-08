@@ -53,6 +53,7 @@ public:
 
     friend void set_new_ttl_pin_state(void);
     friend void handle_missed_deadline();
+    friend void sync_schedule();
 
 
 /**

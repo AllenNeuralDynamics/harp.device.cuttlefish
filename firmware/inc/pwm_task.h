@@ -86,6 +86,7 @@ public:
 
 private:
     friend class PWMScheduler;
+    friend void sync_schedule();
 
     uint32_t delay_us_; /// pulse train delay (phase offset) in microseconds.
     uint32_t on_time_us_; /// pulse train duty cycle in microseconds
