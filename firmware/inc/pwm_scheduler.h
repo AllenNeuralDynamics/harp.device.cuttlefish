@@ -37,7 +37,7 @@ public:
     void schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
                            uint32_t t_period_us, uint32_t pin_mask,
                            uint32_t count, bool invert);
-    void schedule_pwm_task(PWMTask task);
+    void schedule_pwm_task(PWMTask& task);
 /**
  * \brief cancel any active alarms and clear the queue.
  */

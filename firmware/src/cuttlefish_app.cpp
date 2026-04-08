@@ -200,8 +200,8 @@ void write_any_pwm_settings(msg_t& msg)
     app_regs.pwm_ready |= 1u << pwm_index;
     // Push new pwm settings to core1.
     size_t pwm_pin = pwm_index + PORT_BASE;
-    pwm_specs_core_msg_t pwm_settings_msg(pwm_pin, pwm_settings);
-    if (!queue_try_add(&pwm_msg_queue, &pwm_settings_msg))
+    pwm_specs_core_msg_t pwm_msg(pwm_pin, pwm_settings);
+    if (!queue_try_add(&pwm_settings_queue, &pwm_msg))
     {
         if (!HarpCore::is_muted())
             HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
@@ -291,8 +291,8 @@ void reset_app()
     while (queue_try_remove(&core1_state_queue, &dummy_core1_state)) {}
     pwm_ctrl_msg_t dummy_ctrl_msg;
     while (queue_try_remove(&core1_ctrl_queue, &dummy_ctrl_msg)) {}
-    pwm_settings_t dummy_pwm_settings;
-    while (queue_try_remove(&pwm_msg_queue, &dummy_pwm_settings)) {}
+    pwm_specs_core_msg_t dummy_pwm_settings;
+    while (queue_try_remove(&pwm_settings_queue, &dummy_pwm_settings)) {}
 
     // init all pins used as GPIOs.
     gpio_init_mask(PORT_MASK | PORT_DIR_MASK);

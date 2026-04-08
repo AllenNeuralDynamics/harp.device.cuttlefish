@@ -46,7 +46,7 @@ void PWMScheduler::reset()
 #endif
 }
 
-void PWMScheduler::schedule_pwm_task(PWMTask task)
+void PWMScheduler::schedule_pwm_task(PWMTask& task)
 {
     schedule_pwm_task(task.delay_us_, task.on_time_us_, task.period_us_,
                       task.pin_mask_, task.count_, task.invert_);

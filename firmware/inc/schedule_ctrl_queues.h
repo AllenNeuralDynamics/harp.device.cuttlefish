@@ -39,7 +39,7 @@ struct core1_state
     {return pwm_state > 0;}
 };
 
-extern queue_t pwm_msg_queue;
+extern queue_t pwm_settings_queue;
 extern queue_t core1_ctrl_queue;
 extern queue_t core1_state_queue;
 extern queue_t schedule_error_queue;

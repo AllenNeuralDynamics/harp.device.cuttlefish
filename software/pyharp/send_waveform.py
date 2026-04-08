@@ -24,9 +24,9 @@ else: # assume Windows.
 settings = \
 (
     0,          # offset_us
-    5000,     # on_time_us
-    10000,    # period_us
-    0,          # cycles. (0 = repeat forever.)
+    50000,     # on_duration_us
+    50000,    # off_duration_us
+    10,          # cycles. (0 = repeat forever.)
     False       # invert.
 )
 data_fmt = "<LLLLB"

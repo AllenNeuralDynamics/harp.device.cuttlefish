@@ -18,11 +18,18 @@ void handle_missed_deadline()
 
 void sync_schedule()
 {
-    pwm_specs_core_msg_t msg;
-    while (queue_try_remove(&pwm_msg_queue, &msg))
+    pwm_specs_core_msg_t settings;
+    while (queue_try_remove(&pwm_settings_queue, &settings))
     {
         // TODO: If new, push to schedule.
         //  Otherwise, update settings according to what pin they apply to.
+        // FIXME: currently just pushing it blindly.
+        scheduler.schedule_pwm_task(settings.specs.offset_us,
+                                    settings.specs.on_duration_us,
+                                    settings.specs.period_us(),
+                                    (1u << settings.pin),
+                                    settings.specs.cycles,
+                                    bool(settings.specs.invert));
     }
 }
 
@@ -31,12 +38,12 @@ void __not_in_flash_func(run_task_loop)()
 {
     using enum pwm_ctrl_msg_t;
 
-    core1_state_t next_state;
+    core1_state_t next_state = state;
     pwm_specs_core_msg_t msg;
 
     //Get input from core0 control queue.
     pwm_ctrl_msg_t ctrl_msg;
-    bool new_ctrl_msg = queue_try_remove(&core1_ctrl_queue, &msg);
+    bool new_ctrl_msg = queue_try_remove(&core1_ctrl_queue, &ctrl_msg);
 
     // state-transition logic and calculate next-state.
     switch (state)
@@ -45,9 +52,8 @@ void __not_in_flash_func(run_task_loop)()
             next_state = READY;
             break;
         case READY:
-            if (!new_ctrl_msg)
-                break;
-            next_state = (ctrl_msg == START)? RUNNING : READY;
+            if (new_ctrl_msg && (ctrl_msg == START))
+                next_state = RUNNING;
             break;
         case RUNNING:
             // TODO: also check if the schedule finished.
@@ -66,10 +72,9 @@ void __not_in_flash_func(run_task_loop)()
             scheduler.reset(); // FIXME: doesn't reset cleanly yet. should also stop.
             break;
         case READY:
+            sync_schedule();
             if (next_state == RUNNING)
                 scheduler.start();
-            else
-                sync_schedule();
             break;
         case RUNNING:
             scheduler.update();
@@ -86,12 +91,12 @@ void __not_in_flash_func(run_task_loop)()
 // Core1 main.
 void __not_in_flash_func(core1_main)()
 {
+    // FIXME: for debugging
     // Set DEBUG LED
     gpio_init(LED1);
     gpio_set_dir(LED1, 1); // output
     gpio_put(LED1, 0); // Set off.
 
-    schedule_failed = false; // TODO: consider a struct for this.
     state = RESET;
     while (true)
         run_task_loop();
