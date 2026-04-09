@@ -6,7 +6,7 @@ from pyharp.messages import CommonRegisters as Regs
 from struct import pack, unpack
 import logging
 import os
-from time import sleep, perf_counter
+from time import perf_counter
 from app_registers import AppRegs
 
 #logging.basicConfig(level=logging.DEBUG)
@@ -41,8 +41,15 @@ print("Enabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, int(True)).frame)
 print(reply)
 print()
-sleep(3)
 
+# Receive EVENT indicating that 1000 pulse sequence has finished.
+start_time = perf_counter()
+while (perf_counter() - start_time) < 3:
+    for event_msg in device.get_events():
+        print(event_msg)
+        print()
+
+# Send STOP just in case (although sequence should've already ended).
 print("Disabling schedule.")
 reply = device.send(WriteU8HarpMessage(AppRegs.PWMState, 0).frame)
 print(reply)

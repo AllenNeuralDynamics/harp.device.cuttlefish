@@ -6,23 +6,23 @@ app_regs_t app_regs;
 RegSpec app_reg_specs[]
 {
     RegSpec::U8(&app_regs.port_dir,
-        HarpCore::read_reg_generic, write_port_dir),
+        Harp::read_reg_generic, write_port_dir),
     RegSpec::U8(&app_regs.port_state,
         read_port_state, write_port_state),
     RegSpec::U8(&app_regs.port_set,
-        HarpCore::read_reg_error, write_port_set),
+        Harp::read_reg_error, write_port_set),
     RegSpec::U8(&app_regs.port_clear,
-        HarpCore::read_reg_error, write_port_clear),
+        Harp::read_reg_error, write_port_clear),
     RegSpec::U8(&app_regs.enable_rising_edge_events,
         read_enable_rising_edge_events, write_enable_rising_edge_events),
     RegSpec::U8(&app_regs.rising_edge_events,
-        HarpCore::read_reg_error, HarpCore::write_reg_error),
+        Harp::read_reg_error, Harp::write_reg_error),
     RegSpec::U8(&app_regs.enable_falling_edge_events,
         read_enable_falling_edge_events, write_enable_falling_edge_events),
     RegSpec::U8(&app_regs.falling_edge_events,
-        HarpCore::read_reg_error, HarpCore::write_reg_error),
+        Harp::read_reg_error, Harp::write_reg_error),
     RegSpec::U8(&app_regs.pwm_state,
-        HarpCore::read_reg_generic, write_pwm_state),
+        Harp::read_reg_generic, write_pwm_state),
     RegSpec::U8Array(&app_regs.pwm_settings[0], sizeof(pwm_settings_t),
         read_any_pwm_settings, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[1], sizeof(pwm_settings_t),
@@ -46,15 +46,15 @@ const size_t APP_REG_COUNT = sizeof(app_reg_specs);
 
 void write_port_dir(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     // Set both Buffer ctrl pins and corresponding IO pins to match.
     // Omit setting direction of pins used by existing PWM Tasks.
     gpio_put_masked(PORT_DIR_MASK,
                     uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
     gpio_set_dir_masked(PORT_MASK,
                         uint32_t(app_regs.port_dir) << PORT_BASE);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
@@ -62,14 +62,14 @@ void read_port_state(uint8_t reg_address)
 {
     // Include the state of pins driven by PWMTasks.
     app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(READ, reg_address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(READ, reg_address);
 }
 
 
 void write_port_state(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     // write to output pins
     gpio_put_masked(uint32_t(app_regs.port_dir) << PORT_BASE,
                     uint32_t(app_regs.port_state) << PORT_BASE);
@@ -77,62 +77,62 @@ void write_port_state(msg_t& msg)
     // Add delay for change to take effect. (May be related to slew rate).
     asm volatile("nop \n nop \n nop");
     app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
 void write_port_set(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     gpio_put_masked(uint32_t(app_regs.port_set) << PORT_BASE,
                     uint32_t(app_regs.port_set) << PORT_BASE);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
 void write_port_clear(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     gpio_put_masked(uint32_t(app_regs.port_clear) << PORT_BASE, 0);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
 void read_enable_rising_edge_events(uint8_t reg_address)
-{HarpCore::read_reg_generic(reg_address);}
+{Harp::read_reg_generic(reg_address);}
 
 
 void write_enable_rising_edge_events(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
         bool enabled = ((app_regs.enable_rising_edge_events >> i) & 1u);
         gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_RISE, enabled);
     }
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
 
 void read_enable_falling_edge_events(uint8_t reg_address)
-{HarpCore::read_reg_generic(reg_address);}
+{Harp::read_reg_generic(reg_address);}
 
 
 void write_enable_falling_edge_events(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
         bool enabled = ((app_regs.enable_falling_edge_events >> i) & 1u);
         gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_FALL, enabled);
     }
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
@@ -140,39 +140,55 @@ void write_pwm_state(msg_t& msg)
 {
     using enum pwm_ctrl_msg_t;
     uint8_t old_state = app_regs.pwm_state;
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     uint8_t& new_state = app_regs.pwm_state;
     // Error if we are already running.
     if (((old_state > 0) && (new_state > 0)))
     {
-        if (!HarpCore::is_muted())
-            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
     // Ignore repeats of the same "clear" command and don't flag it as an error.
     if (((old_state == 0) && (new_state == 0)))
     {
-        if (!HarpCore::is_muted())
-            HarpCore::send_harp_reply(WRITE, msg.header.address);
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE, msg.header.address);
         return;
     }
     // Error if we have never specified any PWM Settings
     if (!app_regs.pwm_ready)
     {
-        if (!HarpCore::is_muted())
-            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
     // Send Core1 message to start the schedule.
     pwm_ctrl_msg_t ctrl_msg = (new_state > 0) ? START: STOP;
     queue_try_add(&core1_ctrl_queue, &ctrl_msg);
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    // Wait (but not that long) for Core1 to indicate when it started.
+    core1_next_state_msg_t state_change_msg;
+    uint32_t start_time_us = time_us_32_fast();
+    while (int(time_us_32_fast() - start_time_us) < INTERCORE_COM_TIMEOUT_US)
+    {
+        if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
+            continue;
+        if (state_change_msg.next_state == core1_state_t::RUNNING)
+        {
+            if (!Harp::is_muted())
+                Harp::send_harp_reply(WRITE, msg.header.address,
+                    Harp::system_to_harp_us_64(state_change_msg.timestamp_us));
+            return;
+        }
+    }
+    // Error if made it this far (timed out). Core1 unresponsive?
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
 }
 
 
 void read_any_pwm_settings(uint8_t reg_address)
-{HarpCore::read_reg_generic(reg_address);}
+{Harp::read_reg_generic(reg_address);}
 
 
 void write_any_pwm_settings(msg_t& msg)
@@ -180,13 +196,13 @@ void write_any_pwm_settings(msg_t& msg)
     // Error if core1 is busy.
     if (app_regs.pwm_state)
     {
-        if (!HarpCore::is_muted())
-            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
-    HarpCore::copy_msg_payload_to_register(msg);
+    Harp::copy_msg_payload_to_register(msg);
     // Backtrack both data and index in the corresponding array it belongs to.
-    const RegSpec& spec = HarpCore::reg_address_to_spec(msg.header.address);
+    const RegSpec& spec = Harp::reg_address_to_spec(msg.header.address);
     pwm_settings_t& pwm_settings = *((pwm_settings_t*)spec.base_ptr);
     size_t pwm_index = &pwm_settings - app_regs.pwm_settings; // subtract ptrs.
     // Record that this pwm pin is now armed.
@@ -196,16 +212,16 @@ void write_any_pwm_settings(msg_t& msg)
     pwm_specs_core_msg_t pwm_msg(pwm_pin, pwm_settings);
     if (!queue_try_add(&pwm_settings_queue, &pwm_msg))
     {
-        if (!HarpCore::is_muted())
-            HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
     // Set buffer ctrl pins to drive an output to passthrough PWM signal.
     uint32_t buffer_mask = 1u << (PORT_DIR_BASE + pwm_index);
     gpio_put_masked(buffer_mask, 0xFFFFFFFF);
     // Finish write transaction successfully.
-    if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(WRITE, msg.header.address);
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
 }
 
 
@@ -244,7 +260,7 @@ void update_app_state()
     EdgeEvent event;
     while (queue_try_remove(&edge_event_queue, &event))
     {
-        if (HarpCore::is_muted())
+        if (Harp::is_muted())
             continue;
         // Copy to EVENT-only register and filter for enabled pins.
         app_regs.rising_edge_events = uint8_t(event.rise_pins >> PORT_BASE) &
@@ -254,23 +270,28 @@ void update_app_state()
         // Push queued messages from rising or falling edge events register.
         if (app_regs.rising_edge_events)
         {
-            uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-            HarpCore::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
+            uint64_t harp_time_us = Harp::system_to_harp_us_64(event.timestamp_us);
+            Harp::send_harp_reply(EVENT, RISING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
         if (app_regs.falling_edge_events) // filter
         {
-            uint64_t harp_time_us = HarpCore::system_to_harp_us_64(event.timestamp_us);
-            HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
+            uint64_t harp_time_us = Harp::system_to_harp_us_64(event.timestamp_us);
+            Harp::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
     // TODO: Update local state if core1 finished.
     core1_next_state_msg_t state_change_msg;
     if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
         return;
-    if (state_change_msg.next_state == core1_state_t::RUNNING)
-        return;
-    app_regs.pwm_state = 0;
-    app_regs.pwm_ready = 0;
+    // Clear local pwm registers and send back a reply if the schedule finishes
+    // without being stopped via external Harp command.
+    if (state_change_msg.next_state == core1_state_t::RESET)
+    {
+        app_regs.pwm_state = 0;
+        app_regs.pwm_ready = 0;
+        Harp::send_harp_reply(EVENT, PWM_STATE_ADDRESS,
+                              state_change_msg.timestamp_us);
+    }
     // TODO reset buffer control pins?
 }
 

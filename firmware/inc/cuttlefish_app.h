@@ -14,20 +14,24 @@
 #include <pico/multicore.h>
 #include <hardware/irq.h>
 #include <hardware/gpio.h>
+#include <hardware/timer.h>
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
 #endif
 
 using enum reg_type_t;
+using Harp = HarpCore; // make an alias.
 
 // Setup for Harp App
 extern const size_t APP_REG_COUNT;
 
 inline constexpr uint8_t RISING_EDGE_EVENTS_ADDRESS =
-    HarpCore::APP_REG_START_ADDRESS + 5;
+    Harp::APP_REG_START_ADDRESS + 5;
 inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS =
-    HarpCore::APP_REG_START_ADDRESS + 7;
+    Harp::APP_REG_START_ADDRESS + 7;
+inline constexpr uint8_t PWM_STATE_ADDRESS =
+    Harp::APP_REG_START_ADDRESS + 8;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -54,6 +58,10 @@ struct app_regs_t
 #pragma pack(pop)
 
 extern app_regs_t app_regs;
+
+
+inline uint32_t time_us_32_fast()
+{return timer_hw->timerawl;}
 
 
 void reset_schedule();
