@@ -5,18 +5,10 @@
 #include <pwm_task.h>
 #include <pwm_scheduler.h>
 #include <schedule_ctrl_queues.h>
-#include <hardware/timer.h>
 #if defined(DEBUG) || defined(PROFILE_CPU)
     #include <stdio.h>
     #include <cstdio> // for printf
 #endif
-
-enum core1_state_t: uint32_t
-{
-    RESET,
-    READY,
-    RUNNING,
-};
 
 extern core1_state_t state;
 extern bool schedule_failed;

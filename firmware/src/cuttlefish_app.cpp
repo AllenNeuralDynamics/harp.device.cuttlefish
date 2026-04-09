@@ -263,11 +263,11 @@ void update_app_state()
             HarpCore::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
-    // TODO: update local state if core1 finished.
-    core1_state_t core1_state;
-    if (!queue_try_remove(&core1_state_queue, &core1_state))
-        return ;
-    if (core1_state == core1_state_t::RUNNING)
+    // TODO: Update local state if core1 finished.
+    core1_next_state_msg_t state_change_msg;
+    if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
+        return;
+    if (state_change_msg.next_state == core1_state_t::RUNNING)
         return;
     app_regs.pwm_state = 0;
     app_regs.pwm_ready = 0;
@@ -280,8 +280,8 @@ void reset_app()
     // TODO: reset core1 before resetting GPIO state.
 
     // Drain all inter-core communication queues.
-    core1_state_t  dummy_core1_state;
-    while (queue_try_remove(&core1_state_queue, &dummy_core1_state)) {}
+    core1_next_state_msg_t  dummy_next_state_msg;
+    while (queue_try_remove(&core1_next_state_queue, &dummy_next_state_msg)) {}
     pwm_ctrl_msg_t dummy_ctrl_msg;
     while (queue_try_remove(&core1_ctrl_queue, &dummy_ctrl_msg)) {}
     pwm_specs_core_msg_t dummy_pwm_settings;

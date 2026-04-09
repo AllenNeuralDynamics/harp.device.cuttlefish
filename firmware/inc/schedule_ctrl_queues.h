@@ -13,7 +13,19 @@ enum class pwm_ctrl_msg_t
     STOP
 };
 
-// Container to unpack pwm task specs from a received harp message.
+enum class core1_state_t: uint32_t
+{
+    RESET,
+    READY,
+    RUNNING
+};
+
+
+/**
+ * \brief Container to unpack pwm task specs from a received harp message.
+ * \details this container is packed because it will be received packed and
+ *  deserialized from an external device (connected PC).
+ */
 #pragma pack(push, 1)
 struct pwm_specs_core_msg_t
 {
@@ -29,19 +41,20 @@ struct pwm_specs_core_msg_t
 };
 #pragma pack(pop)
 
-struct core1_state
-{
-    uint32_t pwm_state;
-    bool scheduler_error;
-    // TODO: some sort of schedule-failed signal.
 
-    bool schedule_is_running()
-    {return pwm_state > 0;}
+/**
+ * \brief For core1 to communicate timstamped state changes to core0.
+ *  Necessary for core0 to dispatch Harp messages.
+ */
+struct core1_next_state_msg_t
+{
+    core1_state_t next_state;
+    uint64_t timestamp_us;
 };
 
 extern queue_t pwm_settings_queue;
 extern queue_t core1_ctrl_queue;
-extern queue_t core1_state_queue;
+extern queue_t core1_next_state_queue;
 extern queue_t schedule_error_queue;
 
 #endif // SCHEDULE_CTRL_QUEUES_H

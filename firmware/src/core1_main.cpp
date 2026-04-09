@@ -1,8 +1,16 @@
 #include <core1_main.h>
 
-__not_in_flash("core1_state") core1_state_t state;
+__not_in_flash("core1_next_state") core1_state_t state;
 __not_in_flash("schedule_failed") bool schedule_failed;
 __not_in_flash("scheduler")PWMScheduler scheduler;
+
+
+/// Do not call this func inside and outside an ISR context on either core.
+inline uint64_t time_us_64_unsafe()
+{
+    uint64_t time = timer_hw->timelr; // Locks time_lr/hr until we read TIMEHR.
+    return (uint64_t(timer_hw->timehr) << 32) | time;
+}
 
 
 // Override default behavior of this function defined weakly elsewhere.
@@ -71,7 +79,7 @@ void sync_schedule()
 
 void __not_in_flash_func(run_task_loop)()
 {
-    using enum pwm_ctrl_msg_t;
+    using enum core1_state_t;
 
     core1_state_t next_state = state;
     pwm_specs_core_msg_t msg;
@@ -87,12 +95,12 @@ void __not_in_flash_func(run_task_loop)()
             next_state = READY;
             break;
         case READY:
-            if (new_ctrl_msg && (ctrl_msg == START))
+            if (new_ctrl_msg && (ctrl_msg == pwm_ctrl_msg_t::START))
                 next_state = RUNNING;
             break;
         case RUNNING:
             if (schedule_failed || scheduler.finished() ||
-                ((new_ctrl_msg) && (ctrl_msg == STOP)))
+                ((new_ctrl_msg) && (ctrl_msg == pwm_ctrl_msg_t::STOP)))
                 next_state = RESET;
             break;
         default:
@@ -110,15 +118,20 @@ void __not_in_flash_func(run_task_loop)()
             sync_schedule();
             if (next_state == RUNNING)
             {
-                // TODO: tell core0 we started (timestamp).
-                //queue_try_add(&core1_state_queue, &next_state);
+                // Tell core0 we started.
+                core1_next_state_msg_t msg{next_state, time_us_64_unsafe()};
+                queue_try_add(&core1_next_state_queue, &next_state);
                 scheduler.start();
             }
             break;
         case RUNNING:
             scheduler.update();
-            if (next_state == RESET) // TODO: Tell core0 we finished (timestamp).
-                queue_try_add(&core1_state_queue, &next_state);
+            if (next_state == RESET)
+            {
+                // Tell core0 we stopped.
+                core1_next_state_msg_t msg{next_state, time_us_64_unsafe()};
+                queue_try_add(&core1_next_state_queue, &next_state);
+            }
             break;
     }
 
@@ -130,7 +143,7 @@ void __not_in_flash_func(run_task_loop)()
 // Core1 main.
 void __not_in_flash_func(core1_main)()
 {
-    state = RESET;
+    state = core1_state_t::RESET;
     while (true)
         run_task_loop();
 }

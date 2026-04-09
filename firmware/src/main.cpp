@@ -15,7 +15,7 @@ queue_t pwm_settings_queue;
 __not_in_flash("edge_event_queue") queue_t edge_event_queue;
 // Keep timing critical core-to-core communication data structures in RAM.
 __not_in_flash("core1_ctrl_queue") queue_t core1_ctrl_queue;
-__not_in_flash("core1_state_queue") queue_t core1_state_queue;
+__not_in_flash("core1_next_state_queue") queue_t core1_next_state_queue;
 __not_in_flash("schedule_error_queue") queue_t schedule_error_queue;
 
 // Create Core.
@@ -40,7 +40,7 @@ int main()
     queue_init(&edge_event_queue, sizeof(EdgeEvent), 32);
     // Initialize queues for multicore communication.
     queue_init(&core1_ctrl_queue, sizeof(pwm_ctrl_msg_t), 8);
-    queue_init(&core1_state_queue, sizeof(core1_state_t), 8);
+    queue_init(&core1_next_state_queue, sizeof(core1_next_state_msg_t), 8);
     queue_init(&pwm_settings_queue, sizeof(pwm_specs_core_msg_t), 32);
     queue_init(&schedule_error_queue, sizeof(uint8_t), 2);
 #if defined(DEBUG) || defined(PROFILE_CPU)
