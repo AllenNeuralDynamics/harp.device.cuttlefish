@@ -120,8 +120,8 @@ void __not_in_flash_func(run_task_loop)()
             {
                 // Tell core0 we started.
                 core1_next_state_msg_t msg{next_state, time_us_64_unsafe()};
+                scheduler.start(); // Do this next to maximize timestamp accuracy.
                 queue_try_add(&core1_next_state_queue, &next_state);
-                scheduler.start();
             }
             break;
         case RUNNING:
