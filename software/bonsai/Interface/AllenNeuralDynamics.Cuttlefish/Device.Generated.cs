@@ -45,16 +45,15 @@ namespace AllenNeuralDynamics.Cuttlefish
             { 37, typeof(RisingEdgeEvents) },
             { 38, typeof(EnableFallingEdgeEvents) },
             { 39, typeof(FallingEdgeEvents) },
-            { 40, typeof(PwmStart) },
-            { 41, typeof(PwmStop) },
-            { 42, typeof(PwmSettings0) },
-            { 43, typeof(PwmSettings1) },
-            { 44, typeof(PwmSettings2) },
-            { 45, typeof(PwmSettings3) },
-            { 46, typeof(PwmSettings4) },
-            { 47, typeof(PwmSettings5) },
-            { 48, typeof(PwmSettings6) },
-            { 49, typeof(PwmSettings7) }
+            { 40, typeof(PwmState) },
+            { 41, typeof(PwmSettings0) },
+            { 42, typeof(PwmSettings1) },
+            { 43, typeof(PwmSettings2) },
+            { 44, typeof(PwmSettings3) },
+            { 45, typeof(PwmSettings4) },
+            { 46, typeof(PwmSettings5) },
+            { 47, typeof(PwmSettings6) },
+            { 48, typeof(PwmSettings7) }
         };
 
         /// <summary>
@@ -118,6 +117,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// Represents an operator that writes the sequence of <see cref="Cuttlefish"/>" messages
     /// to the standard Harp storage format.
     /// </summary>
+    [DefaultProperty(nameof(Path))]
     [Description("Writes the sequence of Cuttlefish messages to the standard Harp storage format.")]
     public partial class DeviceDataWriter : Sink<HarpMessage>, INamedElement
     {
@@ -276,8 +276,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="RisingEdgeEvents"/>
     /// <seealso cref="EnableFallingEdgeEvents"/>
     /// <seealso cref="FallingEdgeEvents"/>
-    /// <seealso cref="PwmStart"/>
-    /// <seealso cref="PwmStop"/>
+    /// <seealso cref="PwmState"/>
     /// <seealso cref="PwmSettings0"/>
     /// <seealso cref="PwmSettings1"/>
     /// <seealso cref="PwmSettings2"/>
@@ -294,8 +293,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(RisingEdgeEvents))]
     [XmlInclude(typeof(EnableFallingEdgeEvents))]
     [XmlInclude(typeof(FallingEdgeEvents))]
-    [XmlInclude(typeof(PwmStart))]
-    [XmlInclude(typeof(PwmStop))]
+    [XmlInclude(typeof(PwmState))]
     [XmlInclude(typeof(PwmSettings0))]
     [XmlInclude(typeof(PwmSettings1))]
     [XmlInclude(typeof(PwmSettings2))]
@@ -333,8 +331,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="RisingEdgeEvents"/>
     /// <seealso cref="EnableFallingEdgeEvents"/>
     /// <seealso cref="FallingEdgeEvents"/>
-    /// <seealso cref="PwmStart"/>
-    /// <seealso cref="PwmStop"/>
+    /// <seealso cref="PwmState"/>
     /// <seealso cref="PwmSettings0"/>
     /// <seealso cref="PwmSettings1"/>
     /// <seealso cref="PwmSettings2"/>
@@ -351,8 +348,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(RisingEdgeEvents))]
     [XmlInclude(typeof(EnableFallingEdgeEvents))]
     [XmlInclude(typeof(FallingEdgeEvents))]
-    [XmlInclude(typeof(PwmStart))]
-    [XmlInclude(typeof(PwmStop))]
+    [XmlInclude(typeof(PwmState))]
     [XmlInclude(typeof(PwmSettings0))]
     [XmlInclude(typeof(PwmSettings1))]
     [XmlInclude(typeof(PwmSettings2))]
@@ -369,8 +365,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(TimestampedRisingEdgeEvents))]
     [XmlInclude(typeof(TimestampedEnableFallingEdgeEvents))]
     [XmlInclude(typeof(TimestampedFallingEdgeEvents))]
-    [XmlInclude(typeof(TimestampedPwmStart))]
-    [XmlInclude(typeof(TimestampedPwmStop))]
+    [XmlInclude(typeof(TimestampedPwmState))]
     [XmlInclude(typeof(TimestampedPwmSettings0))]
     [XmlInclude(typeof(TimestampedPwmSettings1))]
     [XmlInclude(typeof(TimestampedPwmSettings2))]
@@ -405,8 +400,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="RisingEdgeEvents"/>
     /// <seealso cref="EnableFallingEdgeEvents"/>
     /// <seealso cref="FallingEdgeEvents"/>
-    /// <seealso cref="PwmStart"/>
-    /// <seealso cref="PwmStop"/>
+    /// <seealso cref="PwmState"/>
     /// <seealso cref="PwmSettings0"/>
     /// <seealso cref="PwmSettings1"/>
     /// <seealso cref="PwmSettings2"/>
@@ -423,8 +417,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(RisingEdgeEvents))]
     [XmlInclude(typeof(EnableFallingEdgeEvents))]
     [XmlInclude(typeof(FallingEdgeEvents))]
-    [XmlInclude(typeof(PwmStart))]
-    [XmlInclude(typeof(PwmStop))]
+    [XmlInclude(typeof(PwmState))]
     [XmlInclude(typeof(PwmSettings0))]
     [XmlInclude(typeof(PwmSettings1))]
     [XmlInclude(typeof(PwmSettings2))]
@@ -1224,73 +1217,73 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that start the associated PWM channel for the pins specified in the mask.
+    /// Represents a register that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
     /// </summary>
-    [Description("Start the associated PWM channel for the pins specified in the mask.")]
-    public partial class PwmStart
+    [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class PwmState
     {
         /// <summary>
-        /// Represents the address of the <see cref="PwmStart"/> register. This field is constant.
+        /// Represents the address of the <see cref="PwmState"/> register. This field is constant.
         /// </summary>
         public const int Address = 40;
 
         /// <summary>
-        /// Represents the payload type of the <see cref="PwmStart"/> register. This field is constant.
+        /// Represents the payload type of the <see cref="PwmState"/> register. This field is constant.
         /// </summary>
         public const PayloadType RegisterType = PayloadType.U8;
 
         /// <summary>
-        /// Represents the length of the <see cref="PwmStart"/> register. This field is constant.
+        /// Represents the length of the <see cref="PwmState"/> register. This field is constant.
         /// </summary>
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmStart"/> register messages.
+        /// Returns the payload data for <see cref="PwmState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static Pins GetPayload(HarpMessage message)
+        public static EnableFlag GetPayload(HarpMessage message)
         {
-            return (Pins)message.GetPayloadByte();
+            return (EnableFlag)message.GetPayloadByte();
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmStart"/> register messages.
+        /// Returns the timestamped payload data for <see cref="PwmState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<Pins> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<EnableFlag> GetTimestampedPayload(HarpMessage message)
         {
             var payload = message.GetTimestampedPayloadByte();
-            return Timestamped.Create((Pins)payload.Value, payload.Seconds);
+            return Timestamped.Create((EnableFlag)payload.Value, payload.Seconds);
         }
 
         /// <summary>
-        /// Returns a Harp message for the <see cref="PwmStart"/> register.
+        /// Returns a Harp message for the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
         /// <param name="value">The value to be stored in the message payload.</param>
         /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="PwmStart"/> register
+        /// A <see cref="HarpMessage"/> object for the <see cref="PwmState"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, Pins value)
+        public static HarpMessage FromPayload(MessageType messageType, EnableFlag value)
         {
             return HarpMessage.FromByte(Address, messageType, (byte)value);
         }
 
         /// <summary>
-        /// Returns a timestamped Harp message for the <see cref="PwmStart"/>
+        /// Returns a timestamped Harp message for the <see cref="PwmState"/>
         /// register.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
         /// <param name="value">The value to be stored in the message payload.</param>
         /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="PwmStart"/> register
+        /// A <see cref="HarpMessage"/> object for the <see cref="PwmState"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, Pins value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, EnableFlag value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
         }
@@ -1298,122 +1291,25 @@ namespace AllenNeuralDynamics.Cuttlefish
 
     /// <summary>
     /// Provides methods for manipulating timestamped messages from the
-    /// PwmStart register.
+    /// PwmState register.
     /// </summary>
-    /// <seealso cref="PwmStart"/>
-    [Description("Filters and selects timestamped messages from the PwmStart register.")]
-    public partial class TimestampedPwmStart
+    /// <seealso cref="PwmState"/>
+    [Description("Filters and selects timestamped messages from the PwmState register.")]
+    public partial class TimestampedPwmState
     {
         /// <summary>
-        /// Represents the address of the <see cref="PwmStart"/> register. This field is constant.
+        /// Represents the address of the <see cref="PwmState"/> register. This field is constant.
         /// </summary>
-        public const int Address = PwmStart.Address;
+        public const int Address = PwmState.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmStart"/> register messages.
+        /// Returns timestamped payload data for <see cref="PwmState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<Pins> GetPayload(HarpMessage message)
+        public static Timestamped<EnableFlag> GetPayload(HarpMessage message)
         {
-            return PwmStart.GetTimestampedPayload(message);
-        }
-    }
-
-    /// <summary>
-    /// Represents a register that stop the associated PWM channel for the pins specified in the mask.
-    /// </summary>
-    [Description("Stop the associated PWM channel for the pins specified in the mask.")]
-    public partial class PwmStop
-    {
-        /// <summary>
-        /// Represents the address of the <see cref="PwmStop"/> register. This field is constant.
-        /// </summary>
-        public const int Address = 41;
-
-        /// <summary>
-        /// Represents the payload type of the <see cref="PwmStop"/> register. This field is constant.
-        /// </summary>
-        public const PayloadType RegisterType = PayloadType.U8;
-
-        /// <summary>
-        /// Represents the length of the <see cref="PwmStop"/> register. This field is constant.
-        /// </summary>
-        public const int RegisterLength = 1;
-
-        /// <summary>
-        /// Returns the payload data for <see cref="PwmStop"/> register messages.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the message payload.</returns>
-        public static Pins GetPayload(HarpMessage message)
-        {
-            return (Pins)message.GetPayloadByte();
-        }
-
-        /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmStop"/> register messages.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<Pins> GetTimestampedPayload(HarpMessage message)
-        {
-            var payload = message.GetTimestampedPayloadByte();
-            return Timestamped.Create((Pins)payload.Value, payload.Seconds);
-        }
-
-        /// <summary>
-        /// Returns a Harp message for the <see cref="PwmStop"/> register.
-        /// </summary>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="PwmStop"/> register
-        /// with the specified message type and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, Pins value)
-        {
-            return HarpMessage.FromByte(Address, messageType, (byte)value);
-        }
-
-        /// <summary>
-        /// Returns a timestamped Harp message for the <see cref="PwmStop"/>
-        /// register.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="PwmStop"/> register
-        /// with the specified message type, timestamp, and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, Pins value)
-        {
-            return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
-        }
-    }
-
-    /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmStop register.
-    /// </summary>
-    /// <seealso cref="PwmStop"/>
-    [Description("Filters and selects timestamped messages from the PwmStop register.")]
-    public partial class TimestampedPwmStop
-    {
-        /// <summary>
-        /// Represents the address of the <see cref="PwmStop"/> register. This field is constant.
-        /// </summary>
-        public const int Address = PwmStop.Address;
-
-        /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmStop"/> register messages.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<Pins> GetPayload(HarpMessage message)
-        {
-            return PwmStop.GetTimestampedPayload(message);
+            return PwmState.GetTimestampedPayload(message);
         }
     }
 
@@ -1426,7 +1322,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings0"/> register. This field is constant.
         /// </summary>
-        public const int Address = 42;
+        public const int Address = 41;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings0"/> register. This field is constant.
@@ -1522,7 +1418,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings1"/> register. This field is constant.
         /// </summary>
-        public const int Address = 43;
+        public const int Address = 42;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings1"/> register. This field is constant.
@@ -1618,7 +1514,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings2"/> register. This field is constant.
         /// </summary>
-        public const int Address = 44;
+        public const int Address = 43;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings2"/> register. This field is constant.
@@ -1714,7 +1610,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings3"/> register. This field is constant.
         /// </summary>
-        public const int Address = 45;
+        public const int Address = 44;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings3"/> register. This field is constant.
@@ -1810,7 +1706,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings4"/> register. This field is constant.
         /// </summary>
-        public const int Address = 46;
+        public const int Address = 45;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings4"/> register. This field is constant.
@@ -1906,7 +1802,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings5"/> register. This field is constant.
         /// </summary>
-        public const int Address = 47;
+        public const int Address = 46;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings5"/> register. This field is constant.
@@ -2002,7 +1898,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings6"/> register. This field is constant.
         /// </summary>
-        public const int Address = 48;
+        public const int Address = 47;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings6"/> register. This field is constant.
@@ -2098,7 +1994,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings7"/> register. This field is constant.
         /// </summary>
-        public const int Address = 49;
+        public const int Address = 48;
 
         /// <summary>
         /// Represents the payload type of the <see cref="PwmSettings7"/> register. This field is constant.
@@ -2197,8 +2093,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="CreateRisingEdgeEventsPayload"/>
     /// <seealso cref="CreateEnableFallingEdgeEventsPayload"/>
     /// <seealso cref="CreateFallingEdgeEventsPayload"/>
-    /// <seealso cref="CreatePwmStartPayload"/>
-    /// <seealso cref="CreatePwmStopPayload"/>
+    /// <seealso cref="CreatePwmStatePayload"/>
     /// <seealso cref="CreatePwmSettings0Payload"/>
     /// <seealso cref="CreatePwmSettings1Payload"/>
     /// <seealso cref="CreatePwmSettings2Payload"/>
@@ -2215,8 +2110,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreateRisingEdgeEventsPayload))]
     [XmlInclude(typeof(CreateEnableFallingEdgeEventsPayload))]
     [XmlInclude(typeof(CreateFallingEdgeEventsPayload))]
-    [XmlInclude(typeof(CreatePwmStartPayload))]
-    [XmlInclude(typeof(CreatePwmStopPayload))]
+    [XmlInclude(typeof(CreatePwmStatePayload))]
     [XmlInclude(typeof(CreatePwmSettings0Payload))]
     [XmlInclude(typeof(CreatePwmSettings1Payload))]
     [XmlInclude(typeof(CreatePwmSettings2Payload))]
@@ -2233,8 +2127,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreateTimestampedRisingEdgeEventsPayload))]
     [XmlInclude(typeof(CreateTimestampedEnableFallingEdgeEventsPayload))]
     [XmlInclude(typeof(CreateTimestampedFallingEdgeEventsPayload))]
-    [XmlInclude(typeof(CreateTimestampedPwmStartPayload))]
-    [XmlInclude(typeof(CreateTimestampedPwmStopPayload))]
+    [XmlInclude(typeof(CreateTimestampedPwmStatePayload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings0Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings1Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings2Payload))]
@@ -2691,109 +2584,55 @@ namespace AllenNeuralDynamics.Cuttlefish
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that start the associated PWM channel for the pins specified in the mask.
+    /// that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
     /// </summary>
-    [DisplayName("PwmStartPayload")]
-    [Description("Creates a message payload that start the associated PWM channel for the pins specified in the mask.")]
-    public partial class CreatePwmStartPayload
+    [DisplayName("PwmStatePayload")]
+    [Description("Creates a message payload that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class CreatePwmStatePayload
     {
         /// <summary>
-        /// Gets or sets the value that start the associated PWM channel for the pins specified in the mask.
+        /// Gets or sets the value that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
         /// </summary>
-        [Description("The value that start the associated PWM channel for the pins specified in the mask.")]
-        public Pins PwmStart { get; set; }
+        [Description("The value that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+        public EnableFlag PwmState { get; set; }
 
         /// <summary>
-        /// Creates a message payload for the PwmStart register.
+        /// Creates a message payload for the PwmState register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public Pins GetPayload()
+        public EnableFlag GetPayload()
         {
-            return PwmStart;
+            return PwmState;
         }
 
         /// <summary>
-        /// Creates a message that start the associated PWM channel for the pins specified in the mask.
+        /// Creates a message that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new message for the PwmStart register.</returns>
+        /// <returns>A new message for the PwmState register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return AllenNeuralDynamics.Cuttlefish.PwmStart.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmState.FromPayload(messageType, GetPayload());
         }
     }
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that start the associated PWM channel for the pins specified in the mask.
+    /// that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
     /// </summary>
-    [DisplayName("TimestampedPwmStartPayload")]
-    [Description("Creates a timestamped message payload that start the associated PWM channel for the pins specified in the mask.")]
-    public partial class CreateTimestampedPwmStartPayload : CreatePwmStartPayload
+    [DisplayName("TimestampedPwmStatePayload")]
+    [Description("Creates a timestamped message payload that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class CreateTimestampedPwmStatePayload : CreatePwmStatePayload
     {
         /// <summary>
-        /// Creates a timestamped message that start the associated PWM channel for the pins specified in the mask.
+        /// Creates a timestamped message that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new timestamped message for the PwmStart register.</returns>
+        /// <returns>A new timestamped message for the PwmState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return AllenNeuralDynamics.Cuttlefish.PwmStart.FromPayload(timestamp, messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that stop the associated PWM channel for the pins specified in the mask.
-    /// </summary>
-    [DisplayName("PwmStopPayload")]
-    [Description("Creates a message payload that stop the associated PWM channel for the pins specified in the mask.")]
-    public partial class CreatePwmStopPayload
-    {
-        /// <summary>
-        /// Gets or sets the value that stop the associated PWM channel for the pins specified in the mask.
-        /// </summary>
-        [Description("The value that stop the associated PWM channel for the pins specified in the mask.")]
-        public Pins PwmStop { get; set; }
-
-        /// <summary>
-        /// Creates a message payload for the PwmStop register.
-        /// </summary>
-        /// <returns>The created message payload value.</returns>
-        public Pins GetPayload()
-        {
-            return PwmStop;
-        }
-
-        /// <summary>
-        /// Creates a message that stop the associated PWM channel for the pins specified in the mask.
-        /// </summary>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new message for the PwmStop register.</returns>
-        public HarpMessage GetMessage(MessageType messageType)
-        {
-            return AllenNeuralDynamics.Cuttlefish.PwmStop.FromPayload(messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that stop the associated PWM channel for the pins specified in the mask.
-    /// </summary>
-    [DisplayName("TimestampedPwmStopPayload")]
-    [Description("Creates a timestamped message payload that stop the associated PWM channel for the pins specified in the mask.")]
-    public partial class CreateTimestampedPwmStopPayload : CreatePwmStopPayload
-    {
-        /// <summary>
-        /// Creates a timestamped message that stop the associated PWM channel for the pins specified in the mask.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new timestamped message for the PwmStop register.</returns>
-        public HarpMessage GetMessage(double timestamp, MessageType messageType)
-        {
-            return AllenNeuralDynamics.Cuttlefish.PwmStop.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmState.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3244,5 +3083,110 @@ namespace AllenNeuralDynamics.Cuttlefish
         Pin5 = 0x20,
         Pin6 = 0x40,
         Pin7 = 0x80
+    }
+
+    internal static partial class PayloadMarshal
+    {
+        internal static T[] GetSubArray<T>(T[] array, int offset, int count)
+        {
+            var result = new T[count];
+            Array.Copy(array, offset, result, 0, count);
+            return result;
+        }
+
+        internal static byte ReadByte(ArraySegment<byte> segment) => segment.Array[segment.Offset];
+
+        internal static sbyte ReadSByte(ArraySegment<byte> segment) => (sbyte)segment.Array[segment.Offset];
+
+        internal static ushort ReadUInt16(ArraySegment<byte> segment) => BitConverter.ToUInt16(segment.Array, segment.Offset);
+
+        internal static short ReadInt16(ArraySegment<byte> segment) => BitConverter.ToInt16(segment.Array, segment.Offset);
+
+        internal static uint ReadUInt32(ArraySegment<byte> segment) => BitConverter.ToUInt32(segment.Array, segment.Offset);
+
+        internal static int ReadInt32(ArraySegment<byte> segment) => BitConverter.ToInt32(segment.Array, segment.Offset);
+
+        internal static ulong ReadUInt64(ArraySegment<byte> segment) => BitConverter.ToUInt64(segment.Array, segment.Offset);
+
+        internal static long ReadInt64(ArraySegment<byte> segment) => BitConverter.ToInt64(segment.Array, segment.Offset);
+
+        internal static float ReadSingle(ArraySegment<byte> segment) => BitConverter.ToSingle(segment.Array, segment.Offset);
+
+        internal static string ReadUtf8String(ArraySegment<byte> segment)
+        {
+            var count = Array.IndexOf(segment.Array, (byte)0, segment.Offset, segment.Count) - segment.Offset;
+            return System.Text.Encoding.UTF8.GetString(segment.Array, segment.Offset, count < 0 ? segment.Count : count);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, byte value) => segment.Array[segment.Offset] = value;
+
+        internal static void Write(ArraySegment<byte> segment, sbyte value) => segment.Array[segment.Offset] = (byte)value;
+
+        internal static void Write(ArraySegment<byte> segment, ushort value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, short value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, uint value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+            segment.Array[segment.Offset + 2] = (byte)(value >> 16);
+            segment.Array[segment.Offset + 3] = (byte)(value >> 24);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, int value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+            segment.Array[segment.Offset + 2] = (byte)(value >> 16);
+            segment.Array[segment.Offset + 3] = (byte)(value >> 24);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, ulong value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+            segment.Array[segment.Offset + 2] = (byte)(value >> 16);
+            segment.Array[segment.Offset + 3] = (byte)(value >> 24);
+            segment.Array[segment.Offset + 4] = (byte)(value >> 32);
+            segment.Array[segment.Offset + 5] = (byte)(value >> 40);
+            segment.Array[segment.Offset + 6] = (byte)(value >> 48);
+            segment.Array[segment.Offset + 7] = (byte)(value >> 56);
+        }
+
+        internal static void Write(ArraySegment<byte> segment, long value)
+        {
+            segment.Array[segment.Offset] = (byte)value;
+            segment.Array[segment.Offset + 1] = (byte)(value >> 8);
+            segment.Array[segment.Offset + 2] = (byte)(value >> 16);
+            segment.Array[segment.Offset + 3] = (byte)(value >> 24);
+            segment.Array[segment.Offset + 4] = (byte)(value >> 32);
+            segment.Array[segment.Offset + 5] = (byte)(value >> 40);
+            segment.Array[segment.Offset + 6] = (byte)(value >> 48);
+            segment.Array[segment.Offset + 7] = (byte)(value >> 56);
+        }
+
+        internal static unsafe void Write(ArraySegment<byte> segment, float value) => Write(segment, *(int*)&value);
+
+        internal static unsafe void Write(ArraySegment<byte> segment, string value) =>
+            System.Text.Encoding.UTF8.GetBytes(value, 0, Math.Min(value.Length, segment.Count), segment.Array, segment.Offset);
+
+        internal static void Write<T>(ArraySegment<byte> segment, T[] values) where T : unmanaged
+        {
+            Buffer.BlockCopy(values, 0, segment.Array, segment.Offset, segment.Count);
+        }
+
+        internal static void Write<T>(ArraySegment<T> segment, T[] values)
+        {
+            Array.Copy(values, 0, segment.Array, segment.Offset, segment.Count);
+        }
     }
 }
