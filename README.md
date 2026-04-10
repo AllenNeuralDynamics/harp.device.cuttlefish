@@ -10,7 +10,7 @@ An 8-channel TTL input-or-output device with programmable square wave output
   * Duty Cycle
   * Offset
   * number of pulses (or infinite)
-* Input Capture Configure pins as inputs to detect
+* Input Capture. Configure pins as inputs to detect
   * rising edges (up to 500Hz)
   * falling edges (up to 500Hz)
   * both! (up to 500hz)
