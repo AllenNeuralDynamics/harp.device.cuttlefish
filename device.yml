@@ -53,9 +53,10 @@ registers:
                   when any of the pins specified in the EnableRisingEdgeEvents
                   register transitions from logic HIGH to logic LOW."
   PwmState:
-    <<: *IORegister
     address: 40
-    access: Write, Event
+    access: [Write, Event]
+    type: U8
+    maskType: EnableFlag
     description: "Write a nonzero value to this register to start the PWM
                   schedule. Write zero to stop the schedule. Receive an
                   event with payload=0 when the pwm schedule has finished."
