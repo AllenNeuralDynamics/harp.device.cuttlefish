@@ -44,9 +44,15 @@ public:
     void reset();
 
 /**
- * \brief start the schedule.
+ * \brief start or restart the schedule.
  */
     void start();
+
+
+/**
+ * \brief stop the schedule, but do not clear uploaded PWMTasks.
+ */
+    void stop();
 
 
 /**

@@ -99,9 +99,11 @@ void __not_in_flash_func(run_task_loop)()
                 next_state = RUNNING;
             break;
         case RUNNING:
-            if (schedule_failed || scheduler.finished() ||
-                ((new_ctrl_msg) && (ctrl_msg == pwm_ctrl_msg_t::STOP)))
+            if (schedule_failed)
                 next_state = RESET;
+            else if (scheduler.finished() ||
+                    ((new_ctrl_msg) && (ctrl_msg == pwm_ctrl_msg_t::STOP)))
+                next_state = READY;
             break;
         default:
             break;
@@ -126,9 +128,11 @@ void __not_in_flash_func(run_task_loop)()
             break;
         case RUNNING:
             scheduler.update();
-            if (next_state == RESET)
+            if (next_state == READY)
+                scheduler.stop(); // Must call stop to re-setup all tasks.
+            if ((next_state == RESET) || (next_state == READY))
             {
-                // Tell core0 we stopped.
+                // Tell core0 we stopped or got reset.
                 core1_next_state_msg_t msg{next_state, time_us_64_unsafe()};
                 queue_try_add(&core1_next_state_queue, &msg);
             }

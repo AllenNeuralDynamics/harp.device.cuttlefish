@@ -173,13 +173,19 @@ void write_pwm_state(msg_t& msg)
     {
         if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
             continue;
-        if (state_change_msg.next_state == core1_state_t::RUNNING)
-        {
-            if (!Harp::is_muted())
-                Harp::send_harp_reply(WRITE, msg.header.address,
-                    Harp::system_to_harp_us_64(state_change_msg.timestamp_us));
+        if (Harp::is_muted())
             return;
-        }
+        // Deduce outcome success / failure.
+        // Cmd stop & result stop (ready) ? --> success
+        // Cmd start & result running ? --> success
+        msg_type_t harp_reply_type = WRITE_ERROR;
+        if (new_state > 0 && state_change_msg.next_state == core1_state_t::RUNNING)
+            harp_reply_type = WRITE;
+        if (new_state == 0 && state_change_msg.next_state == core1_state_t::READY)
+            harp_reply_type = WRITE;
+        Harp::send_harp_reply(harp_reply_type, msg.header.address,
+            Harp::system_to_harp_us_64(state_change_msg.timestamp_us));
+        return;
     }
     // Error if made it this far (timed out). Core1 unresponsive?
     if (!Harp::is_muted())
@@ -279,7 +285,7 @@ void update_app_state()
             Harp::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
-    // TODO: Update local state if core1 finished.
+    // Update local state if core1 finished and send EVENT message.
     core1_next_state_msg_t state_change_msg;
     if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
         return;
@@ -287,12 +293,15 @@ void update_app_state()
     // without being stopped via external Harp command.
     if (state_change_msg.next_state == core1_state_t::RESET)
     {
-        app_regs.pwm_state = 0;
         app_regs.pwm_ready = 0;
+        app_regs.pwm_state = 0; // "finished"
+    }
+    else if (state_change_msg.next_state == core1_state_t::READY)
+    {
+        app_regs.pwm_state = 0; // "finished"
         Harp::send_harp_reply(EVENT, PWM_STATE_ADDRESS,
                               state_change_msg.timestamp_us);
     }
-    // TODO reset buffer control pins?
 }
 
 void reset_app()

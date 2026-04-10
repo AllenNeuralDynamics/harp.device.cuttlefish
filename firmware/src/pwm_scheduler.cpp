@@ -25,9 +25,7 @@ PWMScheduler::PWMScheduler()
 }
 
 PWMScheduler::~PWMScheduler()
-{
-    reset();
-}
+{reset();}
 
 void PWMScheduler::reset()
 {
@@ -61,13 +59,11 @@ void PWMScheduler::schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
                             invert);
     PWMTask& task = pwm_tasks_.back();
     // Aggreggate initial pin state vector.
-    // TODO: check this (inversion case, delayed start case).
     next_gpio_port_mask_ |= task.pin_mask_;
     if (task.starting_state() == PWMTask::update_state_t::HIGH)
         next_gpio_port_state_ |= task.pin_mask_;
-    pq_.push(pwm_tasks_.back()); // PWMTasks are *sorted* since comparison is
-                                 // based on an unspecified (and therefore
-                                 // relative) t=0 start time.
+    pq_.push(task); // PWMTasks are *sorted* since comparison is based on an
+                    // unspecified (and therefore relative) t=0 start time.
 #ifdef DEBUG
     printf("Pushed PWMTask: (%d, %d, %d, 0x%08x)\r\n", task.delay_us_,
            task.on_time_us_, task.period_us_, task.pin_mask_);
@@ -81,14 +77,8 @@ void PWMScheduler::start()
     uint32_t start_time_us = timer_hw->timerawl;
     // Apply initial pending GPIO change immediately so the schedule starts now.
     // Note: starting GPIO state was aggregated when we add each PWMTask.
-
-    // For Debugging
-    //uint32_t led1_mask = 1u << 17;
-    //gpio_init_mask(led1_mask);
-    //gpio_set_dir_masked(led1_mask, led1_mask);
-
-    gpio_put_masked(next_gpio_port_mask_,// | led1_mask,
-                    next_gpio_port_state_ );//| led1_mask);
+    gpio_put_masked(next_gpio_port_mask_,
+                    next_gpio_port_state_ );
 #if defined(DEBUG)
     printf("GPIO Put: 0x%08x (mask), 0x%08x (val)\r\n",
            next_gpio_port_mask_, next_gpio_port_state_);
@@ -116,10 +106,6 @@ void PWMScheduler::update()
     // Bail early if there are no tasks in the first place.
     if (port_event_queue_.full() || (pq_.size() == 0))
         return;
-
-    //uint32_t led1 = 17;
-    //gpio_put(led1, !gpio_get(led1));
-
 #if defined(DEBUG)
     uint32_t start_time_us = timer_hw->timerawl;
     printf("Updating schedule at : %lu\r\n", start_time_us);
@@ -179,26 +165,25 @@ void PWMScheduler::update()
     timer_hw->alarm[alarm_num_] = alarm_time_us; // write time (also arms alarm)
 }
 
-// FIXME: implement stop so that we can restart without reloading a schedule.
-/*
 void PWMScheduler::stop()
 {
-    cancel_alarm();
+    cancel_alarm(); // Cancel any upcoming alarms.
     pq_.clear(); // Remove all tasks in the priority queue.
-    // Set the starting state of all GPIO pins if we restart.
+    port_event_queue_.clear(); // Remove all queued PortEvents
     next_gpio_port_mask_ = 0;
+    next_gpio_port_state_ = 0;
+    // Reset all pwm tasks and reinsert them into the pq_ as if we were
+    // inserting them for the first time.
     for (auto& task: pwm_tasks_)
     {
-        pwm_task.stop(); // Kill GPIO output. // Clear task start time.
-        task.reset(); // Clear internal counters. Disable GPIO
+        task.stop(); // Kill GPIO output. // Clear task start time.
+        task.reset(true); // Clear internal counters. Do not drive GPIO.
         next_gpio_port_mask_ |= task.pin_mask_;
         if (task.starting_state() == PWMTask::update_state_t::HIGH)
             next_gpio_port_state_ |= task.pin_mask_;
-        pq_.push(pwm_tasks_.back()); // pushes task with unset "t=0" time.
+        pq_.push(task); // pushes task with unset "t=0" time.
     }
-    // TODO: drain port_event_queue_;
 }
-*/
 
 void PWMScheduler::cancel_alarm()
 {
@@ -209,11 +194,6 @@ void PWMScheduler::cancel_alarm()
 // Put the ISR in RAM so as to avoid (slow) flash access.
 void __not_in_flash_func(set_new_ttl_pin_state)(void)
 {
-/*
-    uint32_t led1 = 17;
-    gpio_put(led1, !gpio_get(led1));
-*/
-
     // Apply the next GPIO state.
     gpio_put_masked(PWMScheduler::next_gpio_port_mask_,
                     PWMScheduler::next_gpio_port_state_);
