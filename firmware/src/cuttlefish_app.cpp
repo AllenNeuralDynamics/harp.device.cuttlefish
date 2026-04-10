@@ -43,16 +43,18 @@ RegSpec app_reg_specs[]
 
 const size_t APP_REG_COUNT = sizeof(app_reg_specs);
 
+inline void set_io_port_dir(uint8_t port_dir)
+{
+    // Set both buffer ctrl pins and corresponding IO pins to match.
+    // Omit setting direction of pins used by existing PWM Tasks.
+    gpio_put_masked(PORT_DIR_MASK, uint32_t(port_dir) << PORT_DIR_BASE);
+    gpio_set_dir_masked(PORT_MASK, uint32_t(port_dir) << PORT_BASE);
+}
 
 void write_port_dir(msg_t& msg)
 {
     Harp::copy_msg_payload_to_register(msg);
-    // Set both Buffer ctrl pins and corresponding IO pins to match.
-    // Omit setting direction of pins used by existing PWM Tasks.
-    gpio_put_masked(PORT_DIR_MASK,
-                    uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
-    gpio_set_dir_masked(PORT_MASK,
-                        uint32_t(app_regs.port_dir) << PORT_BASE);
+    set_io_port_dir(app_regs.port_dir);
     if (!Harp::is_muted())
         Harp::send_harp_reply(WRITE, msg.header.address);
 }
@@ -213,6 +215,9 @@ void write_any_pwm_settings(msg_t& msg)
     size_t pwm_index = &pwm_settings - app_regs.pwm_settings; // subtract ptrs.
     // Record that this pwm pin is now armed.
     app_regs.pwm_ready |= 1u << pwm_index;
+    // Mark pin as OUTPUT in app registers and update buffer ctrl pin to match.
+    app_regs.port_dir |= 1u << pwm_index;
+    set_io_port_dir(app_regs.port_dir);
     // Push new pwm settings to core1.
     size_t pwm_pin = pwm_index + PORT_BASE;
     pwm_specs_core_msg_t pwm_msg(pwm_pin, pwm_settings);

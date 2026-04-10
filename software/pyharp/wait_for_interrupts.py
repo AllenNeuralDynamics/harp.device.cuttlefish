@@ -19,11 +19,26 @@ if os.name == 'posix': # check for Linux.
 else: # assume Windows.
     device = Device("COM95", "ibl.bin")
 
-print("Configuring TTL pin 0 as input.")
-device.send(WriteU8HarpMessage(AppRegs.PortDir, int(0x00)).frame)
+#print("Configuring all pins as inputs.")
+#device.send(WriteU8HarpMessage(AppRegs.PortDir, int(0x00)).frame)
 print("Configuring RisingEdge interrupts on pin 0.")
 device.send(WriteU8HarpMessage(AppRegs.EnableRisingEdgeEvents, int(0x01)).frame)
+print("Setting up a 3 pulse PWM task on pin 0")
+settings = (0, 500000, 500000, 3, False)
+data_fmt = "<LLLLB"
+device.send(WriteU8ArrayMessage(AppRegs.PWMSettings0, data_fmt, settings).frame)
+print("Starting pulse sequence.")
+print()
+device.send(WriteU8HarpMessage(AppRegs.PWMState, 1).frame)
 sleep(0.1)
-while (True):
-    for event_msg in device.get_events():
-        print(event_msg)
+try:
+    while (True):
+        for event_msg in device.get_events():
+            print(event_msg)
+            print()
+except KeyboardInterrupt:
+    pass
+finally:
+    print("Disabling all rising edge events")
+    device.send(WriteU8HarpMessage(AppRegs.EnableRisingEdgeEvents, int(0x00)).frame)
+
