@@ -45,6 +45,5 @@ namespace AllenNeuralDynamics.Cuttlefish
             public uint cycles;
             public byte invert;
         }
-
     }
 }

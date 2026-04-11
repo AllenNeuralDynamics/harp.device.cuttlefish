@@ -12,7 +12,7 @@
     <Description>Bonsai Library containing interfaces for data acquisition and control of AllenNeuralDynamics Cuttlefish device.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>AllenNeuralDynamics Cuttlefish Bonsai Rx</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageOutputPath></PackageOutputPath>
