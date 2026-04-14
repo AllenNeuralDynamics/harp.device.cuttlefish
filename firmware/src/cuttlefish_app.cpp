@@ -14,34 +14,34 @@ RegSpec app_reg_specs[]
     RegSpec::U8(&app_regs.port_clear,
         Harp::read_reg_error, write_port_clear),
     RegSpec::U8(&app_regs.enable_rising_edge_events,
-        read_enable_rising_edge_events, write_enable_rising_edge_events),
+        Harp::read_reg_generic, write_enable_rising_edge_events),
     RegSpec::U8(&app_regs.rising_edge_events,
         Harp::read_reg_error, Harp::write_reg_error),
     RegSpec::U8(&app_regs.enable_falling_edge_events,
-        read_enable_falling_edge_events, write_enable_falling_edge_events),
+        Harp::read_reg_generic, write_enable_falling_edge_events),
     RegSpec::U8(&app_regs.falling_edge_events,
         Harp::read_reg_error, Harp::write_reg_error),
     RegSpec::U8(&app_regs.pwm_state,
         Harp::read_reg_generic, write_pwm_state),
     RegSpec::U8Array(&app_regs.pwm_settings[0], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[1], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[2], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[3], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[4], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[5], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[6], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings),
+        Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[7], sizeof(pwm_settings_t),
-        read_any_pwm_settings, write_any_pwm_settings)
+        Harp::read_reg_generic, write_any_pwm_settings)
 };
 
-const size_t APP_REG_COUNT = sizeof(app_reg_specs);
+const size_t APP_REG_COUNT = sizeof(app_reg_specs) / sizeof(RegSpec);
 
 inline void set_io_port_dir(uint8_t port_dir)
 {
@@ -103,10 +103,6 @@ void write_port_clear(msg_t& msg)
 }
 
 
-void read_enable_rising_edge_events(uint8_t reg_address)
-{Harp::read_reg_generic(reg_address);}
-
-
 void write_enable_rising_edge_events(msg_t& msg)
 {
     Harp::copy_msg_payload_to_register(msg);
@@ -120,9 +116,6 @@ void write_enable_rising_edge_events(msg_t& msg)
 }
 
 
-
-void read_enable_falling_edge_events(uint8_t reg_address)
-{Harp::read_reg_generic(reg_address);}
 
 
 void write_enable_falling_edge_events(msg_t& msg)
@@ -193,10 +186,6 @@ void write_pwm_state(msg_t& msg)
     if (!Harp::is_muted())
         Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
 }
-
-
-void read_any_pwm_settings(uint8_t reg_address)
-{Harp::read_reg_generic(reg_address);}
 
 
 void write_any_pwm_settings(msg_t& msg)

@@ -87,9 +87,7 @@ void write_port_set(msg_t& msg);
 void write_port_clear(msg_t& msg);
 
 
-void read_enable_rising_edge_events(uint8_t reg_address);
 void write_enable_rising_edge_events(msg_t& msg);
-void read_enable_falling_edge_events(uint8_t reg_address);
 void write_enable_falling_edge_events(msg_t& msg);
 
 void read_reg_error(uint8_t reg_address);
@@ -97,12 +95,6 @@ void write_reg_error(msg_t& msg);
 
 void write_pwm_state(msg_t& msg);
 
-/**
- * \brief App register handler function to read pwm settings from the given PWM
- *  output (1 per IO)
- * \note this handler function is shared across all `pwm_settings` registers.
- */
-void read_any_pwm_settings(uint8_t reg_address);
 /**
  * \brief App register handler function to write pwm settings to the given PWM
  *  output (1 per IO).
