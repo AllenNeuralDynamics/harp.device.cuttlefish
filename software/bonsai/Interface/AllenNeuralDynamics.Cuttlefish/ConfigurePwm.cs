@@ -14,13 +14,6 @@ namespace AllenNeuralDynamics.Cuttlefish
     [Description("Generates a sequence of Harp messages to configure the PWM feature.")]
     public class ConfigurePwm : Source<HarpMessage>
     {
-
-        /// <summary>
-        /// Gets or sets the address of the Harp Message
-        /// </summary>
-        [Description("The address of the register to be used to configure the PWM task.")]
-        public int Address { get; set; } = (int) PwmSettings0.Address;
-
         /// <summary>
         /// Gets or sets the type of the Harp Message
         /// </summary>
@@ -40,22 +33,22 @@ namespace AllenNeuralDynamics.Cuttlefish
         public uint OnTime { get; set; } = 500000;
 
         /// <summary>
-        /// Gets or sets the period of the PWM pulse. Defined in microseconds.
+        /// Gets or sets the off-time of the PWM pulse. Defined in microseconds.
         /// </summary>
-        [Description("The period of the PWM pulse.")]
-        public uint Period { get; set; } = 1000000;
+        [Description("The off-time of the PWM pulse. Defined in microseconds.")]
+        public uint OffDuration { get; set; } = 1000000;
 
         /// <summary>
         /// Gets or sets the number of pulses to trigger on the specified PWM.
         /// If the default value of zero is specified, the PWM will be infinite.
         /// </summary>
-        [Description("The number of pulses to trigger on the specified PWM. If the default value of zero is specified, the PWM will be infinite.")]
-        public Pins Pins { get; set; } = 0x0;
+        [Description("The PWM output pin.")]
+        public PwmPin Pin { get; set; } = PwmPin.Pwm0;
 
         /// <summary>
         /// Gets or sets the number of times the PWM protocol will be repeated.
         /// </summary>
-        [Description("The number of time the PWM protocol will be repeated.")]
+        [Description("The number of times the PWM protocol will be repeated.")]
         public uint RepeatCount { get; set; } = 0;
 
         /// <summary>
@@ -75,7 +68,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </returns>
         public override IObservable<HarpMessage> Generate()
         {
-            return Observable.Return(BuildMessage(Address, MessageType, null));
+            return Observable.Return(BuildMessage(Pin, MessageType, null));
         }
 
         /// <summary>
@@ -95,30 +88,50 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </returns>
         public IObservable<HarpMessage> Generate<TSource>(IObservable<TSource> source)
         {
-            return source.Select(input => BuildMessage(Address, MessageType, null));
+            return source.Select(input => BuildMessage(Pin, MessageType, null));
         }
 
         /// <summary>
         /// Builds a message to configure the PWM task.
         /// </summary>
-        public HarpMessage BuildMessage(int address, MessageType messageType, double? timestamp = null)
+        public HarpMessage BuildMessage(PwmPin outputPin, MessageType messageType, double? timestamp = null)
         {
             var payload = new HelperMethods.PwmTaskPayload()
             {
                 offset_us = Delay,
                 on_duration_us = OnTime,
-                off_duration_us = Period,
+                off_duration_us = OffDuration,
                 cycles = RepeatCount,
                 invert = Invert ? (byte)1 : (byte)0
             };
             var bytes = HelperMethods.StructToByteArray(payload);
             if (timestamp.HasValue)
             {
-                return HarpMessage.FromPayload(address, timestamp.Value, messageType, PayloadType.U8, bytes);
+                return HarpMessage.FromPayload((int)outputPin + offset, timestamp.Value, messageType, PayloadType.U8, bytes);
             }
             else {
-                return HarpMessage.FromPayload(address, messageType, PayloadType.U8, bytes);
+                return HarpMessage.FromPayload((int)outputPin + offset, messageType, PayloadType.U8, bytes);
             }
         }
+
+            private static int offset = Device.RegisterMap.First(kv => kv.Value == typeof(PwmSettings0)).Key;
+            
+            /// <summary>
+            /// Specifies the PWM output pin.
+            /// </summary>
+            public enum PwmPin : uint
+            {
+                Pwm0 = Pins.Pin0,
+                Pwm1 = Pins.Pin1,
+                Pwm2 = Pins.Pin2,
+                Pwm3 = Pins.Pin3,
+
+                Pwm4 = Pins.Pin4,
+                Pwm5 = Pins.Pin5,
+                Pwm6 = Pins.Pin6,
+                Pwm7 = Pins.Pin7
+
+            }
+
     }
 }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Title>AllenNeuralDynamics.Cuttlefish</Title>
     <Authors></Authors>
-    <Copyright>Copyright © 2024 Allen Institute for Neural Dynamics</Copyright>
+    <Copyright>Copyright © 2026 Allen Institute for Neural Dynamics</Copyright>
     <PackageProjectUrl>https://github.com/AllenNeuralDynamics/bonsai.allen-neural-dynamics</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AllenNeuralDynamics/harp.device.cuttlefish</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
@@ -17,7 +17,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageOutputPath></PackageOutputPath>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
-    <VersionPrefix>0.3.0-rc0</VersionPrefix>
+    <VersionPrefix>0.3.0</VersionPrefix>
     <LangVersion>9.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>

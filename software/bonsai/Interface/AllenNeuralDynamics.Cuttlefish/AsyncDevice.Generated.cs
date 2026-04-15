@@ -49,14 +49,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PinDirection register.
+        /// Asynchronously reads the contents of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadPinDirectionAsync(CancellationToken cancellationToken = default)
         {
@@ -65,14 +65,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PinDirection register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedPinDirectionAsync(CancellationToken cancellationToken = default)
         {
@@ -81,9 +81,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PinDirection register.
+        /// Asynchronously writes a value to the <see cref="PinDirection"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -95,14 +95,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PinState register.
+        /// Asynchronously reads the contents of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadPinStateAsync(CancellationToken cancellationToken = default)
         {
@@ -111,14 +111,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PinState register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedPinStateAsync(CancellationToken cancellationToken = default)
         {
@@ -127,9 +127,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PinState register.
+        /// Asynchronously writes a value to the <see cref="PinState"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -141,14 +141,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PinSet register.
+        /// Asynchronously reads the contents of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadPinSetAsync(CancellationToken cancellationToken = default)
         {
@@ -157,14 +157,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PinSet register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedPinSetAsync(CancellationToken cancellationToken = default)
         {
@@ -173,9 +173,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PinSet register.
+        /// Asynchronously writes a value to the <see cref="PinSet"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -187,14 +187,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PinClear register.
+        /// Asynchronously reads the contents of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadPinClearAsync(CancellationToken cancellationToken = default)
         {
@@ -203,14 +203,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PinClear register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedPinClearAsync(CancellationToken cancellationToken = default)
         {
@@ -219,9 +219,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PinClear register.
+        /// Asynchronously writes a value to the <see cref="PinClear"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -233,14 +233,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the EnableRisingEdgeEvents register.
+        /// Asynchronously reads the contents of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -249,14 +249,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the EnableRisingEdgeEvents register.
+        /// Asynchronously reads the timestamped contents of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -265,9 +265,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the EnableRisingEdgeEvents register.
+        /// Asynchronously writes a value to the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -279,14 +279,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the RisingEdgeEvents register.
+        /// Asynchronously reads the contents of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -295,14 +295,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the RisingEdgeEvents register.
+        /// Asynchronously reads the timestamped contents of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -311,14 +311,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the EnableFallingEdgeEvents register.
+        /// Asynchronously reads the contents of the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -327,14 +327,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the EnableFallingEdgeEvents register.
+        /// Asynchronously reads the timestamped contents of the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -343,9 +343,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the EnableFallingEdgeEvents register.
+        /// Asynchronously writes a value to the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -357,14 +357,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the FallingEdgeEvents register.
+        /// Asynchronously reads the contents of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<Pins> ReadFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -373,14 +373,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the FallingEdgeEvents register.
+        /// Asynchronously reads the timestamped contents of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<Pins>> ReadTimestampedFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -389,106 +389,60 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmStart register.
+        /// Asynchronously reads the contents of the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Pins> ReadPwmStartAsync(CancellationToken cancellationToken = default)
+        public async Task<EnableFlag> ReadPwmStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmStart.Address), cancellationToken);
-            return PwmStart.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
+            return PwmState.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmStart register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Pins>> ReadTimestampedPwmStartAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<EnableFlag>> ReadTimestampedPwmStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmStart.Address), cancellationToken);
-            return PwmStart.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
+            return PwmState.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmStart register.
+        /// Asynchronously writes a value to the <see cref="PwmState"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmStartAsync(Pins value, CancellationToken cancellationToken = default)
+        public async Task WritePwmStateAsync(EnableFlag value, CancellationToken cancellationToken = default)
         {
-            var request = PwmStart.FromPayload(MessageType.Write, value);
+            var request = PwmState.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmStop register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
-        /// </returns>
-        public async Task<Pins> ReadPwmStopAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmStop.Address), cancellationToken);
-            return PwmStop.GetPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmStop register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
-        /// </returns>
-        public async Task<Timestamped<Pins>> ReadTimestampedPwmStopAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmStop.Address), cancellationToken);
-            return PwmStop.GetTimestampedPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously writes a value to the PwmStop register.
-        /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
-        /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
-        /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmStopAsync(Pins value, CancellationToken cancellationToken = default)
-        {
-            var request = PwmStop.FromPayload(MessageType.Write, value);
-            await CommandAsync(request, cancellationToken);
-        }
-
-        /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings0 register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings0Async(CancellationToken cancellationToken = default)
         {
@@ -497,14 +451,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings0 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings0Async(CancellationToken cancellationToken = default)
         {
@@ -513,9 +467,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings0 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings0"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -527,14 +481,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings1 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings1Async(CancellationToken cancellationToken = default)
         {
@@ -543,14 +497,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings1 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings1Async(CancellationToken cancellationToken = default)
         {
@@ -559,9 +513,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings1 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings1"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -573,14 +527,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings2 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings2Async(CancellationToken cancellationToken = default)
         {
@@ -589,14 +543,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings2 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings2Async(CancellationToken cancellationToken = default)
         {
@@ -605,9 +559,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings2 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings2"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -619,14 +573,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings3 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings3"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings3Async(CancellationToken cancellationToken = default)
         {
@@ -635,14 +589,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings3 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings3"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings3Async(CancellationToken cancellationToken = default)
         {
@@ -651,9 +605,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings3 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings3"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -665,14 +619,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings4 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings4"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings4Async(CancellationToken cancellationToken = default)
         {
@@ -681,14 +635,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings4 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings4"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings4Async(CancellationToken cancellationToken = default)
         {
@@ -697,9 +651,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings4 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings4"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -711,14 +665,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings5 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings5"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings5Async(CancellationToken cancellationToken = default)
         {
@@ -727,14 +681,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings5 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings5"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings5Async(CancellationToken cancellationToken = default)
         {
@@ -743,9 +697,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings5 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings5"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -757,14 +711,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings6 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings6"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings6Async(CancellationToken cancellationToken = default)
         {
@@ -773,14 +727,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings6 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings6"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings6Async(CancellationToken cancellationToken = default)
         {
@@ -789,9 +743,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings6 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings6"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
@@ -803,14 +757,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmSettings7 register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings7"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
         public async Task<byte[]> ReadPwmSettings7Async(CancellationToken cancellationToken = default)
         {
@@ -819,14 +773,14 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmSettings7 register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings7"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
         public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings7Async(CancellationToken cancellationToken = default)
         {
@@ -835,9 +789,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmSettings7 register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings7"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
