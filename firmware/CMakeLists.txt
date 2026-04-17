@@ -8,7 +8,10 @@ include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
 project(cuttlefish)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
+
+add_definitions(-DUSBD_MANUFACTURER="Allen Institute")
+add_definitions(-DUSBD_PRODUCT="CuTTLefish")
 
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
@@ -23,13 +26,13 @@ set(CMAKE_CXX_STANDARD 17)
 # Configure the entire program to be copied from flash to RAM at the start.
 # Since our binary size is small (<260KB), this is easier than marking every
 # data structure and function definition called in core1 to run from RAM.
-set(PICO_COPY_TO_RAM 1)
+#set(PICO_COPY_TO_RAM 1)
 
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add Harp Core as separate library.
-add_subdirectory(lib/harp.core.rp2040/firmware)
+add_subdirectory(lib/core.pico/firmware)
 add_subdirectory(lib/etl build)
 
 add_library(pwm_scheduler

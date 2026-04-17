@@ -19,13 +19,17 @@ if os.name == 'posix': # check for Linux.
 else: # assume Windows.
     device = Device("COM95", "ibl.bin")
 
-print("Configuring TTL pins 0, 1, 2, 3, 4, 5, 6, 7.")
-device.send(WriteU8HarpMessage(AppRegs.PortDir, int(0xFF)).frame)
-sleep(1)
+print("Configuring TTL pin 0, 1, and 2 as output.")
+device.send(WriteU8HarpMessage(AppRegs.PortDir, int(0x07)).frame)
+print("Configuring RISING interrupts on pins 0, 1, 2.")
+device.send(WriteU8HarpMessage(AppRegs.EnableRisingEdgeEvents, int(0x07)).frame)
+sleep(0.5)
 for i in range(3):
-    print("Writing: 0xFF", end = " ")
-    reply = device.send(WriteU8HarpMessage(AppRegs.PortState, int(0xFF)).frame)
+    print("Writing: 0x01", end = " ")
+    reply = device.send(WriteU8HarpMessage(AppRegs.PortState, int(0x01)).frame)
     print(f" Read back: {hex(reply.payload[0])}")
+    for event_msg in device.get_events():
+        print(event_msg)
     sleep(0.5)
     print("Writing: 0x00", end=" ")
     reply = device.send(WriteU8HarpMessage(AppRegs.PortState, int(0x00)).frame)

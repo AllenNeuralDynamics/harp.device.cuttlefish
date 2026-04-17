@@ -5,6 +5,7 @@
 #include <hardware/irq.h>
 #include <pwm_task.h>
 #include <etl/priority_queue.h>
+#include <etl/deque.h>
 #include <hardware/timer.h>
 #ifdef DEBUG
     #include <cstdio> // for printf
@@ -13,37 +14,66 @@
 #define NUM_ENTRIES (64)
 #define NUM_TTL_IOS (8)
 
+
 class PWMScheduler
 {
 public:
+
+/**
+ * \brief struct that contains the state of the GPIO port at a specified time.
+ * \details `PortEvent`s are queued into a FIFO as the scheduler computes them
+ *  and dequeued by ISR which also applies the port state at the specified time.
+ */
+    struct PortEvent
+    {
+        uint32_t mask;      /// port mask
+        uint32_t state;     /// port state
+        uint32_t time_us;   /// time (in [us]) when the state takes place.
+    };
+
     PWMScheduler();
     ~PWMScheduler();
 
     void schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
                            uint32_t t_period_us, uint32_t pin_mask,
                            uint32_t count, bool invert);
-    void schedule_pwm_task(PWMTask task);
+    void schedule_pwm_task(PWMTask& task);
 /**
  * \brief cancel any active alarms and clear the queue.
  */
     void reset();
 
 /**
- * \brief start the schedule.
+ * \brief start or restart the schedule.
  */
     void start();
+
+
+/**
+ * \brief stop the schedule, but do not clear uploaded PWMTasks.
+ */
+    void stop();
+
+
+/**
+ * \brief true if the scheduler is done executing the schedule and no longer
+ *  needs to be updated.
+ */
+    bool finished()
+    {return port_event_queue_.empty() && !alarm_queued_;}
 
     inline void clear()
     {reset();}
 
     friend void set_new_ttl_pin_state(void);
     friend void handle_missed_deadline();
+    friend void sync_schedule();
 
 
 /**
  * \brief called periodically. Sets up next PWMTask to occur on a timer.
  */
-    void update(bool first_update = false);
+    void update();
 
     void cancel_alarm();
 
@@ -67,10 +97,9 @@ private:
                         etl::vector<std::reference_wrapper<PWMTask>, NUM_ENTRIES>,
                         etl::greater<std::reference_wrapper<PWMTask>>> pq_;
 
-// FIXME: make this private again.
-public:
-    static volatile int32_t alarm_num_;
 private:
+    static volatile int32_t alarm_num_;
+    static etl::deque<PortEvent, NUM_TTL_IOS> port_event_queue_;
     static volatile uint32_t next_gpio_port_state_;
     static volatile uint32_t next_gpio_port_mask_;
     static volatile bool alarm_queued_;

@@ -4,8 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace AllenNeuralDynamics.Cuttlefish
 {
+    /// <summary>
+    /// Provides helper methods for PWM task payload conversion.
+    /// </summary>
     [Description("Class for helper methods.")]
-    public class HelperMethods
+    internal class HelperMethods
     {
         [Description("Converts a struct to its byte array representation.")]
         internal static unsafe byte[] StructToByteArray(PwmTaskPayload value)
@@ -36,13 +39,11 @@ namespace AllenNeuralDynamics.Cuttlefish
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         internal struct PwmTaskPayload
         {
-            public uint delay;
-            public uint onTime;
-            public uint period;
-            public byte portMask;
-            public uint repeats;
+            public uint offset_us;
+            public uint on_duration_us;
+            public uint off_duration_us;
+            public uint cycles;
             public byte invert;
         }
-
     }
 }

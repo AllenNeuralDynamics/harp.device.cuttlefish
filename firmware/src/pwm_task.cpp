@@ -18,7 +18,8 @@ PWMTask::PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
         }
     }
     gpio_set_dir_masked(pin_mask_, pin_mask_); // configure as output.
-    reset(); // set starting state. Clear output to 0.
+    gpio_put_masked(pin_mask_, 0);
+    reset(true); // set starting state. skip output action.
 #if defined(DEBUG)
     printf("PWMTask Created!\r\n");
 #endif
@@ -60,24 +61,23 @@ void PWMTask::update(bool force, bool skip_output_action)
     {
         switch (state_)
         {
-            case DELAY:
-                next_state = HIGH;
             case HIGH:
                 next_state = LOW;
-                next_update_time_us_ += period_us_ - on_time_us_;
+                next_update_time_us_ += on_time_us_;
                 break;
             case LOW:
                 next_state = HIGH;
-                next_update_time_us_ += on_time_us_;
+                next_update_time_us_ += period_us_ - on_time_us_;
                 break;
             case DONE:
                 next_state = DONE;
+                break;
             default: // Shouldn't be accessible in this section.
                 next_state = DONE;
         }
     }
-    loops_ += 1;
-    cycles_ = loops_ >> 1; // loops/2.
+    if ((state_ == HIGH) && (next_state == LOW))
+        cycles_ += 1;
     state_ = next_state;
     // Update outputs.
     // Update the gpio state here.

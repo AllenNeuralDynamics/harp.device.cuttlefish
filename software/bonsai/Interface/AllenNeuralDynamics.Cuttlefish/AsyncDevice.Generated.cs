@@ -14,15 +14,18 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <param name="portName">
         /// The name of the serial port used to communicate with the Harp device.
         /// </param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
         /// <returns>
         /// A task that represents the asynchronous initialization operation. The value of
         /// the <see cref="Task{TResult}.Result"/> parameter contains a new instance of
         /// the <see cref="AsyncDevice"/> class.
         /// </returns>
-        public static async Task<AsyncDevice> CreateAsync(string portName)
+        public static async Task<AsyncDevice> CreateAsync(string portName, CancellationToken cancellationToken = default)
         {
             var device = new AsyncDevice(portName);
-            var whoAmI = await device.ReadWhoAmIAsync();
+            var whoAmI = await device.ReadWhoAmIAsync(cancellationToken);
             if (whoAmI != Device.WhoAmI)
             {
                 var errorMessage = string.Format(
@@ -46,462 +49,756 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PortDirection register.
+        /// Asynchronously reads the contents of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadPortDirectionAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadPinDirectionAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PortDirection.Address), cancellationToken);
-            return PortDirection.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinDirection.Address), cancellationToken);
+            return PinDirection.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PortDirection register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedPortDirectionAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedPinDirectionAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PortDirection.Address), cancellationToken);
-            return PortDirection.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinDirection.Address), cancellationToken);
+            return PinDirection.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PortDirection register.
+        /// Asynchronously writes a value to the <see cref="PinDirection"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePortDirectionAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WritePinDirectionAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = PortDirection.FromPayload(MessageType.Write, value);
+            var request = PinDirection.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PortState register.
+        /// Asynchronously reads the contents of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadPortStateAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadPinStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PortState.Address), cancellationToken);
-            return PortState.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinState.Address), cancellationToken);
+            return PinState.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PortState register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedPortStateAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedPinStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PortState.Address), cancellationToken);
-            return PortState.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinState.Address), cancellationToken);
+            return PinState.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PortState register.
+        /// Asynchronously writes a value to the <see cref="PinState"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePortStateAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WritePinStateAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = PortState.FromPayload(MessageType.Write, value);
+            var request = PinState.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the PwmTask register.
+        /// Asynchronously reads the contents of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmTaskAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadPinSetAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmTask.Address), cancellationToken);
-            return PwmTask.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinSet.Address), cancellationToken);
+            return PinSet.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the PwmTask register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmTaskAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedPinSetAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(PwmTask.Address), cancellationToken);
-            return PwmTask.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinSet.Address), cancellationToken);
+            return PinSet.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the PwmTask register.
+        /// Asynchronously writes a value to the <see cref="PinSet"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmTaskAsync(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePinSetAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = PwmTask.FromPayload(MessageType.Write, value);
+            var request = PinSet.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the ArmExternalStartTrigger register.
+        /// Asynchronously reads the contents of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadArmExternalStartTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadPinClearAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ArmExternalStartTrigger.Address), cancellationToken);
-            return ArmExternalStartTrigger.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinClear.Address), cancellationToken);
+            return PinClear.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the ArmExternalStartTrigger register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedArmExternalStartTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedPinClearAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ArmExternalStartTrigger.Address), cancellationToken);
-            return ArmExternalStartTrigger.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PinClear.Address), cancellationToken);
+            return PinClear.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the ArmExternalStartTrigger register.
+        /// Asynchronously writes a value to the <see cref="PinClear"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteArmExternalStartTriggerAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WritePinClearAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = ArmExternalStartTrigger.FromPayload(MessageType.Write, value);
+            var request = PinClear.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the ExternalStartTriggerEdge register.
+        /// Asynchronously reads the contents of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadExternalStartTriggerEdgeAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ExternalStartTriggerEdge.Address), cancellationToken);
-            return ExternalStartTriggerEdge.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(EnableRisingEdgeEvents.Address), cancellationToken);
+            return EnableRisingEdgeEvents.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the ExternalStartTriggerEdge register.
+        /// Asynchronously reads the timestamped contents of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedExternalStartTriggerEdgeAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ExternalStartTriggerEdge.Address), cancellationToken);
-            return ExternalStartTriggerEdge.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(EnableRisingEdgeEvents.Address), cancellationToken);
+            return EnableRisingEdgeEvents.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the ExternalStartTriggerEdge register.
+        /// Asynchronously writes a value to the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteExternalStartTriggerEdgeAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WriteEnableRisingEdgeEventsAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = ExternalStartTriggerEdge.FromPayload(MessageType.Write, value);
+            var request = EnableRisingEdgeEvents.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the ArmExternalStopTrigger register.
+        /// Asynchronously reads the contents of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadArmExternalStopTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ArmExternalStopTrigger.Address), cancellationToken);
-            return ArmExternalStopTrigger.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(RisingEdgeEvents.Address), cancellationToken);
+            return RisingEdgeEvents.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the ArmExternalStopTrigger register.
+        /// Asynchronously reads the timestamped contents of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedArmExternalStopTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ArmExternalStopTrigger.Address), cancellationToken);
-            return ArmExternalStopTrigger.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(RisingEdgeEvents.Address), cancellationToken);
+            return RisingEdgeEvents.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the ArmExternalStopTrigger register.
+        /// Asynchronously reads the contents of the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<Pins> ReadEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(EnableFallingEdgeEvents.Address), cancellationToken);
+            return EnableFallingEdgeEvents.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="EnableFallingEdgeEvents"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<Pins>> ReadTimestampedEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(EnableFallingEdgeEvents.Address), cancellationToken);
+            return EnableFallingEdgeEvents.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="EnableFallingEdgeEvents"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteArmExternalStopTriggerAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WriteEnableFallingEdgeEventsAsync(Pins value, CancellationToken cancellationToken = default)
         {
-            var request = ArmExternalStopTrigger.FromPayload(MessageType.Write, value);
+            var request = EnableFallingEdgeEvents.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the ExternalStopTriggerEdge register.
+        /// Asynchronously reads the contents of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<Ports> ReadExternalStopTriggerEdgeAsync(CancellationToken cancellationToken = default)
+        public async Task<Pins> ReadFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ExternalStopTriggerEdge.Address), cancellationToken);
-            return ExternalStopTriggerEdge.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(FallingEdgeEvents.Address), cancellationToken);
+            return FallingEdgeEvents.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the ExternalStopTriggerEdge register.
+        /// Asynchronously reads the timestamped contents of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<Ports>> ReadTimestampedExternalStopTriggerEdgeAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<Pins>> ReadTimestampedFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(ExternalStopTriggerEdge.Address), cancellationToken);
-            return ExternalStopTriggerEdge.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(FallingEdgeEvents.Address), cancellationToken);
+            return FallingEdgeEvents.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the ExternalStopTriggerEdge register.
+        /// Asynchronously reads the contents of the <see cref="PwmState"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<EnableFlag> ReadPwmStateAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
+            return PwmState.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmState"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<EnableFlag>> ReadTimestampedPwmStateAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
+            return PwmState.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmState"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteExternalStopTriggerEdgeAsync(Ports value, CancellationToken cancellationToken = default)
+        public async Task WritePwmStateAsync(EnableFlag value, CancellationToken cancellationToken = default)
         {
-            var request = ExternalStopTriggerEdge.FromPayload(MessageType.Write, value);
+            var request = PwmState.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the SoftwareStartTrigger register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<byte> ReadSoftwareStartTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<byte[]> ReadPwmSettings0Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(SoftwareStartTrigger.Address), cancellationToken);
-            return SoftwareStartTrigger.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
+            return PwmSettings0.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the SoftwareStartTrigger register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte>> ReadTimestampedSoftwareStartTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings0Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(SoftwareStartTrigger.Address), cancellationToken);
-            return SoftwareStartTrigger.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
+            return PwmSettings0.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the SoftwareStartTrigger register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings0"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteSoftwareStartTriggerAsync(byte value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings0Async(byte[] value, CancellationToken cancellationToken = default)
         {
-            var request = SoftwareStartTrigger.FromPayload(MessageType.Write, value);
+            var request = PwmSettings0.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the SoftwareStopTrigger register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<byte> ReadSoftwareStopTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<byte[]> ReadPwmSettings1Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(SoftwareStopTrigger.Address), cancellationToken);
-            return SoftwareStopTrigger.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
+            return PwmSettings1.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the SoftwareStopTrigger register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte>> ReadTimestampedSoftwareStopTriggerAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings1Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(SoftwareStopTrigger.Address), cancellationToken);
-            return SoftwareStopTrigger.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
+            return PwmSettings1.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the SoftwareStopTrigger register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings1"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteSoftwareStopTriggerAsync(byte value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings1Async(byte[] value, CancellationToken cancellationToken = default)
         {
-            var request = SoftwareStopTrigger.FromPayload(MessageType.Write, value);
+            var request = PwmSettings1.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the TaskControl register.
+        /// Asynchronously reads the contents of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
         /// </returns>
-        public async Task<TaskControlPayload> ReadTaskControlAsync(CancellationToken cancellationToken = default)
+        public async Task<byte[]> ReadPwmSettings2Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(TaskControl.Address), cancellationToken);
-            return TaskControl.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
+            return PwmSettings2.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the TaskControl register.
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
-        /// property contains the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<TaskControlPayload>> ReadTimestampedTaskControlAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings2Async(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(TaskControl.Address), cancellationToken);
-            return TaskControl.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
+            return PwmSettings2.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the TaskControl register.
+        /// Asynchronously writes a value to the <see cref="PwmSettings2"/> register.
         /// </summary>
-        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="value">The value to write in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteTaskControlAsync(TaskControlPayload value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings2Async(byte[] value, CancellationToken cancellationToken = default)
         {
-            var request = TaskControl.FromPayload(MessageType.Write, value);
+            var request = PwmSettings2.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the <see cref="PwmSettings3"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<byte[]> ReadPwmSettings3Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
+            return PwmSettings3.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings3"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings3Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
+            return PwmSettings3.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmSettings3"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WritePwmSettings3Async(byte[] value, CancellationToken cancellationToken = default)
+        {
+            var request = PwmSettings3.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the <see cref="PwmSettings4"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<byte[]> ReadPwmSettings4Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
+            return PwmSettings4.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings4"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings4Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
+            return PwmSettings4.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmSettings4"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WritePwmSettings4Async(byte[] value, CancellationToken cancellationToken = default)
+        {
+            var request = PwmSettings4.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the <see cref="PwmSettings5"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<byte[]> ReadPwmSettings5Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
+            return PwmSettings5.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings5"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings5Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
+            return PwmSettings5.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmSettings5"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WritePwmSettings5Async(byte[] value, CancellationToken cancellationToken = default)
+        {
+            var request = PwmSettings5.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the <see cref="PwmSettings6"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<byte[]> ReadPwmSettings6Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
+            return PwmSettings6.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings6"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings6Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
+            return PwmSettings6.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmSettings6"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WritePwmSettings6Async(byte[] value, CancellationToken cancellationToken = default)
+        {
+            var request = PwmSettings6.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the <see cref="PwmSettings7"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the register payload.
+        /// </returns>
+        public async Task<byte[]> ReadPwmSettings7Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
+            return PwmSettings7.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings7"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The task result contains
+        /// the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings7Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
+            return PwmSettings7.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the <see cref="PwmSettings7"/> register.
+        /// </summary>
+        /// <param name="value">The value to write in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WritePwmSettings7Async(byte[] value, CancellationToken cancellationToken = default)
+        {
+            var request = PwmSettings7.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
     }

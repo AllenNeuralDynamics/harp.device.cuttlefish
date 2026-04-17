@@ -5,23 +5,15 @@
 #include <pwm_task.h>
 #include <pwm_scheduler.h>
 #include <schedule_ctrl_queues.h>
-#include <hardware/timer.h>
 #if defined(DEBUG) || defined(PROFILE_CPU)
     #include <stdio.h>
     #include <cstdio> // for printf
 #endif
 
-#if defined(PROFILE_CPU)
-#define SYST_CSR (*(volatile uint32_t*)(PPB_BASE + 0xe010))
-#define SYST_CVR (*(volatile uint32_t*)(PPB_BASE + 0xe018))
+extern core1_state_t state;
+extern bool schedule_failed;
 
-#define PRINT_LOOP_INTERVAL_US (16666) // ~60Hz
-
-uint64_t time_us_64_unsafe();
-#endif
-
-extern PWMScheduler pwm_schedule;
-//extern etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks;
+extern PWMScheduler scheduler;
 
 void core1_main();
 
