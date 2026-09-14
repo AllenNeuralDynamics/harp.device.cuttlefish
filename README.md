@@ -1,4 +1,7 @@
 An 8-channel TTL input-or-output device with programmable square wave output
+<p align="center">
+  <img width="550" src="./assets/pics/cuttlefish-no-alpha.png" />
+</p>
 
 ## Features
 * 8x TTL input or output, configurable.
@@ -38,5 +41,3 @@ Each IO pin is capable of producing a PWM output. Here are the settings availabl
 
 > [!NOTE]
 > Although multiple PWM channels can be set to different settings and produce outputs concurrently, all PWM outputs must be started at the same time.
-
-

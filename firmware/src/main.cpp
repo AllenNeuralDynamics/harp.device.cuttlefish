@@ -1,14 +1,14 @@
-#include <pico/stdlib.h>
+#include "config.h"
+#include "core1_main.h"
+#include "cuttlefish_app.h"
+#include "edge_event_queue.h"
+#include "hardware/structs/bus_ctrl.h"
+#include "harp_c_app.h"
+#include "harp_synchronizer.h"
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
+#include "schedule_ctrl_queues.h"
 #include <cstring>
-#include <config.h>
-#include <harp_c_app.h>
-#include <harp_synchronizer.h>
-#include <cuttlefish_app.h>
-#include <edge_event_queue.h>
-#include <schedule_ctrl_queues.h>
-#include <pico/multicore.h>
-#include <hardware/structs/bus_ctrl.h>
-#include <core1_main.h>
 
 queue_t pwm_settings_queue;
 // Keep timing critical core0 to ISR data structures in RAM.
@@ -18,22 +18,33 @@ __not_in_flash("core1_ctrl_queue") queue_t core1_ctrl_queue;
 __not_in_flash("core1_next_state_queue") queue_t core1_next_state_queue;
 __not_in_flash("schedule_error_queue") queue_t schedule_error_queue;
 
+const uint8_t interface_hash[20] = INTERFACE_HASH;
+
+void set_harp_core_led(bool led_state)
+{gpio_put(HARP_CORE_LED_PIN, led_state);}
+
+bool get_harp_core_led_state()
+{ return gpio_get(HARP_CORE_LED_PIN);}
+
 // Create Core.
-HarpCApp& app = HarpCApp::init(HARP_DEVICE_ID,
-                               HW_VERSION_MAJOR, HW_VERSION_MINOR,
-                               HW_ASSEMBLY_VERSION,
-                               FW_VERSION_MAJOR, FW_VERSION_MINOR,
-                               UNUSED_SERIAL_NUMBER, "Cuttlefish",
-                               (uint8_t*)GIT_HASH,
-                               app_reg_specs, APP_REG_COUNT, update_app_state,
-                               reset_app);
+HarpCApp& app = HarpCApp::init(HARP_DEVICE_ID, FW_VERSION, HW_VERSION,
+                               "CuTTLefish",
+                               (uint8_t*)GIT_HASH, interface_hash,
+                               app_reg_specs, APP_REG_COUNT,
+                               update_app_state, reset_app);
 
 // Core0 main.
 int main()
 {
+    // Setup OP_LED
+    gpio_init(HARP_CORE_LED_PIN);
+    gpio_set_dir(HARP_CORE_LED_PIN, GPIO_OUT);
+    gpio_put(HARP_CORE_LED_PIN, 0);
     // Init Synchronizer.
     HarpSynchronizer::init(SYNC_UART, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&HarpSynchronizer::instance());
+    // Attach OP_LED
+    app.set_op_led_fns(set_harp_core_led, get_harp_core_led_state);
     // Configure core1 to have high priority on the bus.
     bus_ctrl_hw->priority = 0x00000010;
     // Initialize queue for edge event message handling
