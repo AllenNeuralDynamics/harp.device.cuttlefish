@@ -68,6 +68,35 @@ registers:
     description: "Struct to configure PWM0 settings:
                   offset_us (U32), on_duration_us (U32), off_duration_us (U32),
                   cycles (U32), invert (U8)"
+    payloadSpec:
+      offset_us:
+        offset: 0
+        length: 4
+        interfaceType: uint
+        defaultValue: 0
+        description: rising edge offset in microseconds
+      on_duration_us:
+        offset: 4
+        length: 4
+        interfaceType: uint
+        description: time in microseconds that the waveform is HIGH
+      off_duration_us:
+        offset: 8
+        length: 4
+        interfaceType: uint
+        description: time in microseconds that the waveform is LOW
+      cycles:
+        offset: 12
+        length: 4
+        interfaceType: uint
+        description: number of pulse iterations or 0 for infinite
+      invert:
+        offset: 16
+        length: 1
+        defaultValue: 0
+        interfaceType: bool
+        description: whether to invert the pulse.
+
   PwmSettings1:
     <<: *PwmSettingsRegister
     address: 42
