@@ -1,8 +1,20 @@
 cmake_minimum_required(VERSION 3.13)
 find_package(Git REQUIRED)
+# Generate Git Hash
 execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD OUTPUT_VARIABLE COMMIT_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
 message(STATUS "Computed Git Hash: ${COMMIT_ID}")
-add_definitions(-DGIT_HASH="${COMMIT_ID}") # Usable in source code.
+add_definitions(-DGIT_HASH="${COMMIT_ID}")
+# Generate device.yml interface hash
+file(SHA1 "../../device.yml" INTERFACE_HASH_STR)
+set(BYTE_ARRAY "")
+string(LENGTH "${INTERFACE_HASH_STR}" HEX_LEN)
+math(EXPR LOOP_MAX "${HEX_LEN} - 1")
+foreach(I RANGE 0 ${LOOP_MAX} 2)
+    string(SUBSTRING "${INTERFACE_HASH_STR}" ${I} 2 HEX_BYTE)
+    list(APPEND BYTE_ARRAY "0x${HEX_BYTE}")
+endforeach()
+string(JOIN ", " INTERFACE_HASH ${BYTE_ARRAY})
+message(STATUS "Device Interface SHA-1 Hash: ${INTERFACE_HASH_STR}")
 
 include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
@@ -32,8 +44,8 @@ add_definitions(-DUSBD_PRODUCT="CuTTLefish")
 pico_sdk_init()
 
 # Add Harp Core as separate library.
-add_subdirectory(lib/core.pico/firmware)
-add_subdirectory(lib/etl build)
+add_subdirectory(lib/core.pico/firmware lib_build/pico-core)
+add_subdirectory(lib/etl lib_build/etl)
 
 add_library(pwm_scheduler
     src/pwm_scheduler.cpp
@@ -52,6 +64,10 @@ add_executable(${PROJECT_NAME}
     src/cuttlefish_app.cpp
 )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    "INTERFACE_HASH={${INTERFACE_HASH}}"
+)
+
 # Specify where to look for header files if they're not all in the same place.
 #target_include_directories(${PROJECT_NAME} PUBLIC inc)
 # Specify where to look for header files if they're all in one place.
@@ -62,7 +78,7 @@ include_directories(inc)
 # Link libraries to the targets that need them.
 target_link_libraries(pwm_scheduler PUBLIC pico_stdlib etl::etl)
 target_link_libraries(pwm_task PUBLIC hardware_gpio pico_stdlib)
-target_link_libraries(core1_main PRIVATE etl::etl)
+target_link_libraries(core1_main PRIVATE etl::etl harp_core)
 target_link_libraries(core1_main PUBLIC pico_stdlib pwm_scheduler pwm_task)
 target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib core1_main
                       pico_multicore harp_core harp_sync harp_c_app)
