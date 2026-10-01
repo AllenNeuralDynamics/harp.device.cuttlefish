@@ -8,10 +8,13 @@ import numpy as np
 from harp.protocol import (
     AnonymousPayload,
     BitMask,
+    BoolConverter,
+    Field,
     GroupMask,
+    IdentityConverter,
     PayloadType,
     RegisterBase,
-    RegisterU8Array,
+    StructPayload,
 )
 from harp.device.core import (
     EnableFlag,
@@ -32,6 +35,14 @@ __all__ = [
     "EnableFallingEdgeEventsPayload",
     "FallingEdgeEventsPayload",
     "PwmStatePayload",
+    "PwmSettings0Payload",
+    "PwmSettings1Payload",
+    "PwmSettings2Payload",
+    "PwmSettings3Payload",
+    "PwmSettings4Payload",
+    "PwmSettings5Payload",
+    "PwmSettings6Payload",
+    "PwmSettings7Payload",
     "PinDirection",
     "PinState",
     "PinSet",
@@ -123,6 +134,158 @@ class PwmStatePayload(AnonymousPayload[np.uint8]):
     __value__: EnableFlag = GroupMask(enum=EnableFlag, mask=0xFF)
 
 
+class PwmSettings0Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings0 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings1Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings1 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings2Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings2 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings3Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings3 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings4Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings4 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings5Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings5 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings6Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings6 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
+class PwmSettings7Payload(StructPayload[np.uint8], length=17):
+    """Represents the payload of the PwmSettings7 register."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+
 class PinDirection(RegisterBase[Pins]):
     """Set the direction of the pins. 0 = input; 1 = output"""
 
@@ -195,60 +358,68 @@ class PwmState(RegisterBase[EnableFlag]):
     payload_class = PwmStatePayload
 
 
-class PwmSettings0(RegisterU8Array):
-    """Struct to configure PWM0 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings0(RegisterBase[PwmSettings0Payload]):
+    """Configure the settings of the PWM output on pin 0."""
 
     address: ClassVar[int] = 41
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings0Payload
 
 
-class PwmSettings1(RegisterU8Array):
-    """Struct to configure PWM1 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings1(RegisterBase[PwmSettings1Payload]):
+    """Configure the settings of the PWM output on pin 1."""
 
     address: ClassVar[int] = 42
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings1Payload
 
 
-class PwmSettings2(RegisterU8Array):
-    """Struct to configure PWM2 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings2(RegisterBase[PwmSettings2Payload]):
+    """Configure the settings of the PWM output on pin 2."""
 
     address: ClassVar[int] = 43
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings2Payload
 
 
-class PwmSettings3(RegisterU8Array):
-    """Struct to configure PWM3 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings3(RegisterBase[PwmSettings3Payload]):
+    """Configure the settings of the PWM output on pin 3."""
 
     address: ClassVar[int] = 44
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings3Payload
 
 
-class PwmSettings4(RegisterU8Array):
-    """Struct to configure PWM4 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings4(RegisterBase[PwmSettings4Payload]):
+    """Configure the settings of the PWM output on pin 4."""
 
     address: ClassVar[int] = 45
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings4Payload
 
 
-class PwmSettings5(RegisterU8Array):
-    """Struct to configure PWM5 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings5(RegisterBase[PwmSettings5Payload]):
+    """Configure the settings of the PWM output on pin 5."""
 
     address: ClassVar[int] = 46
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings5Payload
 
 
-class PwmSettings6(RegisterU8Array):
-    """Struct to configure PWM6 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings6(RegisterBase[PwmSettings6Payload]):
+    """Configure the settings of the PWM output on pin 6."""
 
     address: ClassVar[int] = 47
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings6Payload
 
 
-class PwmSettings7(RegisterU8Array):
-    """Struct to configure PWM7 settings: offset_us (U32), on_duration_us (U32), off_duration_us (U32), cycles (U32), invert (U8)"""
+class PwmSettings7(RegisterBase[PwmSettings7Payload]):
+    """Configure the settings of the PWM output on pin 7."""
 
     address: ClassVar[int] = 48
-    length: int = 17
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PwmSettings7Payload
 
 
 REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
