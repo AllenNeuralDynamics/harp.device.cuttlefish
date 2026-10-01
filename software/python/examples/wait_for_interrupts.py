@@ -8,13 +8,14 @@ from harp.device import cuttlefish
 from harp.protocol import HarpMessage
 from harp.serial import open_device
 
-
 DEFAULT_PORT = "/dev/ttyACM0"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--port", default=DEFAULT_PORT, help="Serial port of the device.")
+    parser.add_argument(
+        "--port", default=DEFAULT_PORT, help="Serial port of the device."
+    )
     return parser.parse_args()
 
 
@@ -38,8 +39,10 @@ def main() -> None:
         dev.write(cuttlefish.PwmSettings0, settings)
         print("Starting pulse sequence.")
         print()
-        with dev.subscribe(cuttlefish.RisingEdgeEvents, on_event), \
-                dev.subscribe(cuttlefish.PwmState, on_event):
+        with (
+            dev.subscribe(cuttlefish.RisingEdgeEvents, on_event),
+            dev.subscribe(cuttlefish.PwmState, on_event),
+        ):
             dev.write(cuttlefish.PwmState, True)
             sleep(0.1)
             try:

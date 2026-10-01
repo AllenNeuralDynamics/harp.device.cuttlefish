@@ -8,13 +8,14 @@ from harp.device import cuttlefish
 from harp.protocol import MessageType
 from harp.serial import open_device
 
-
 DEFAULT_PORT = "/dev/ttyACM0"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--port", default=DEFAULT_PORT, help="Serial port of the device.")
+    parser.add_argument(
+        "--port", default=DEFAULT_PORT, help="Serial port of the device."
+    )
     return parser.parse_args()
 
 
@@ -28,7 +29,13 @@ def main() -> None:
         )
 
         # Confirm with a logic analyzer that the pwm settings differ between runs.
-        for offset_us, on_duration_us, off_duration_us, cycles, invert in settings_sequence:
+        for (
+            offset_us,
+            on_duration_us,
+            off_duration_us,
+            cycles,
+            invert,
+        ) in settings_sequence:
             settings = cuttlefish.PwmSettings0Payload(
                 offset_us=offset_us,
                 on_duration_us=on_duration_us,

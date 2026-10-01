@@ -23,7 +23,9 @@ DEFAULT_PORT = "/dev/ttyACM0"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--port", default=DEFAULT_PORT, help="Serial port of the device.")
+    parser.add_argument(
+        "--port", default=DEFAULT_PORT, help="Serial port of the device."
+    )
     return parser.parse_args()
 
 
