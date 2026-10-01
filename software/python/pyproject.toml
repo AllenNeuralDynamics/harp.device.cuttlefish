@@ -1,0 +1,42 @@
+[project]
+name = "harp-cuttlefish"
+dynamic = ["version"]
+description = "Interface for data acquisition and control of Harp Cuttlefish devices."
+authors = [{ name = "Allen Institute for Neural Dynamics" }]
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering",
+    "Topic :: System :: Hardware :: Hardware Drivers",
+]
+dependencies = [
+    "harp-protocol",
+    "harp-device",
+    "numpy>=1.24",
+]
+
+[project.urls]
+Repository = "https://github.com/AllenNeuralDynamics/harp.device.cuttlefish/"
+"Bug Tracker" = "https://github.com/AllenNeuralDynamics/harp.device.cuttlefish/issues"
+
+[build-system]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+root = "../.."
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["harp*"]
+
+[dependency-groups]
+dev = [
+    "harp>=0.5.0",
+    "pytest>=8",
+]
