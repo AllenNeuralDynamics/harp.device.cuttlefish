@@ -9,7 +9,7 @@ using Bonsai.Harp;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Harp.Cuttlefish
+namespace AllenNeuralDynamics.Cuttlefish
 {
     /// <inheritdoc/>
     public partial class Device

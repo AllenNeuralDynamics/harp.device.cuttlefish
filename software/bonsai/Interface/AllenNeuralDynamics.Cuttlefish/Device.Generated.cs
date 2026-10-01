@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Xml.Serialization;
 
-namespace Harp.Cuttlefish
+namespace AllenNeuralDynamics.Cuttlefish
 {
     /// <summary>
     /// Generates events and processes commands for the Cuttlefish device connected
@@ -2381,7 +2381,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PinDirection register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PinDirection.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinDirection.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2401,7 +2401,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PinDirection register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PinDirection.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinDirection.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2435,7 +2435,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PinState register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PinState.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinState.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2455,7 +2455,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PinState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PinState.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinState.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2489,7 +2489,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PinSet register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PinSet.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinSet.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2509,7 +2509,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PinSet register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PinSet.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinSet.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2543,7 +2543,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PinClear register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PinClear.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinClear.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2563,7 +2563,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PinClear register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PinClear.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PinClear.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2597,7 +2597,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the EnableRisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.EnableRisingEdgeEvents.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.EnableRisingEdgeEvents.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2617,7 +2617,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the EnableRisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.EnableRisingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.EnableRisingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2651,7 +2651,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the RisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.RisingEdgeEvents.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.RisingEdgeEvents.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2671,7 +2671,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the RisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.RisingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.RisingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2705,7 +2705,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the EnableFallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.EnableFallingEdgeEvents.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.EnableFallingEdgeEvents.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2725,7 +2725,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the EnableFallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.EnableFallingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.EnableFallingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2759,7 +2759,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the FallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.FallingEdgeEvents.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.FallingEdgeEvents.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2779,7 +2779,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the FallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.FallingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.FallingEdgeEvents.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2813,7 +2813,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmState register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmState.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmState.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2833,7 +2833,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmState.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmState.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2897,7 +2897,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings0 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings0.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings0.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -2917,7 +2917,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings0 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings0.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings0.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2981,7 +2981,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings1 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings1.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings1.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3001,7 +3001,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings1 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings1.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings1.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3065,7 +3065,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings2 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings2.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings2.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3085,7 +3085,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings2 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings2.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings2.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3149,7 +3149,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings3 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings3.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings3.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3169,7 +3169,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings3 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings3.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings3.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3233,7 +3233,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings4 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings4.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings4.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3253,7 +3253,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings4 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings4.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings4.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3317,7 +3317,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings5 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings5.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings5.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3337,7 +3337,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings5 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings5.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings5.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3401,7 +3401,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings6 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings6.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings6.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3421,7 +3421,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings6 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings6.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings6.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -3485,7 +3485,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new message for the PwmSettings7 register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings7.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings7.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -3505,7 +3505,7 @@ namespace Harp.Cuttlefish
         /// <returns>A new timestamped message for the PwmSettings7 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return Harp.Cuttlefish.PwmSettings7.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.Cuttlefish.PwmSettings7.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
