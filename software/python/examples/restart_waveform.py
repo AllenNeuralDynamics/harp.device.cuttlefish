@@ -1,14 +1,9 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["harp"]
-# ///
 """Run a finite PWM sequence twice, printing the completion event each time."""
 
 import argparse
 from time import perf_counter, sleep
 
-import device
+from harp.device import cuttlefish
 from harp.protocol import HarpMessage
 from harp.serial import open_device
 
@@ -28,8 +23,8 @@ def on_pwm_state_event(msg: HarpMessage) -> None:
 
 def main() -> None:
     args = parse_args()
-    with open_device(device, port=args.port) as dev:
-        settings = device.PwmSettings0Payload(
+    with open_device(cuttlefish, port=args.port) as dev:
+        settings = cuttlefish.PwmSettings0Payload(
             offset_us=0,
             on_duration_us=500,
             off_duration_us=500,
@@ -38,14 +33,14 @@ def main() -> None:
         )
 
         print("Configuring device with PWM task.")
-        reply = dev.write(device.PwmSettings0, settings)
+        reply = dev.write(cuttlefish.PwmSettings0, settings)
         print(reply)
         print()
 
-        with dev.subscribe(device.PwmState, on_pwm_state_event):
+        with dev.subscribe(cuttlefish.PwmState, on_pwm_state_event):
             for _ in range(2):
                 print("Enabling schedule.")
-                reply = dev.write(device.PwmState, True)
+                reply = dev.write(cuttlefish.PwmState, True)
                 print(reply)
                 print()
                 # Wait to receive the EVENT indicating the 1000 pulse sequence has finished.
@@ -55,7 +50,7 @@ def main() -> None:
 
         # Send STOP just in case (although the sequence should've already ended).
         print("Disabling schedule.")
-        reply = dev.write(device.PwmState, False)
+        reply = dev.write(cuttlefish.PwmState, False)
         print(reply)
         print()
 

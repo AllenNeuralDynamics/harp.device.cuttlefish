@@ -1,15 +1,10 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["harp"]
-# ///
 """Enable rising-edge events on pin 0, run a 3-pulse PWM task, and print events
 until interrupted."""
 
 import argparse
 from time import sleep
 
-import device
+from harp.device import cuttlefish
 from harp.protocol import HarpMessage
 from harp.serial import open_device
 
@@ -29,23 +24,23 @@ def on_event(msg: HarpMessage) -> None:
 
 def main() -> None:
     args = parse_args()
-    with open_device(device, port=args.port) as dev:
+    with open_device(cuttlefish, port=args.port) as dev:
         print("Configuring RisingEdge interrupts on pin 0.")
-        dev.write(device.EnableRisingEdgeEvents, device.Pins(0x01))
+        dev.write(cuttlefish.EnableRisingEdgeEvents, cuttlefish.Pins(0x01))
         print("Setting up a 3 pulse PWM task on pin 0.")
-        settings = device.PwmSettings0Payload(
+        settings = cuttlefish.PwmSettings0Payload(
             offset_us=0,
             on_duration_us=500_000,
             off_duration_us=500_000,
             cycles=3,
             invert=False,
         )
-        dev.write(device.PwmSettings0, settings)
+        dev.write(cuttlefish.PwmSettings0, settings)
         print("Starting pulse sequence.")
         print()
-        with dev.subscribe(device.RisingEdgeEvents, on_event), \
-                dev.subscribe(device.PwmState, on_event):
-            dev.write(device.PwmState, True)
+        with dev.subscribe(cuttlefish.RisingEdgeEvents, on_event), \
+                dev.subscribe(cuttlefish.PwmState, on_event):
+            dev.write(cuttlefish.PwmState, True)
             sleep(0.1)
             try:
                 while True:
@@ -54,7 +49,7 @@ def main() -> None:
                 pass
             finally:
                 print("Disabling all rising edge events.")
-                dev.write(device.EnableRisingEdgeEvents, device.Pins(0x00))
+                dev.write(cuttlefish.EnableRisingEdgeEvents, cuttlefish.Pins(0x00))
 
 
 if __name__ == "__main__":

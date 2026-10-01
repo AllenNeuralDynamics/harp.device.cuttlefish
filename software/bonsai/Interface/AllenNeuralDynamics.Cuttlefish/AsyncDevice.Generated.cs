@@ -451,7 +451,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings0Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings0Payload> ReadPwmSettings0Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
             return PwmSettings0.GetPayload(reply);
@@ -467,7 +467,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings0Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings0Payload>> ReadTimestampedPwmSettings0Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
             return PwmSettings0.GetTimestampedPayload(reply);
@@ -481,7 +481,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings0Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings0Async(PwmSettings0Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings0.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -497,7 +497,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings1Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings1Payload> ReadPwmSettings1Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
             return PwmSettings1.GetPayload(reply);
@@ -513,7 +513,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings1Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings1Payload>> ReadTimestampedPwmSettings1Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
             return PwmSettings1.GetTimestampedPayload(reply);
@@ -527,7 +527,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings1Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings1Async(PwmSettings1Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings1.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -543,7 +543,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings2Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings2Payload> ReadPwmSettings2Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
             return PwmSettings2.GetPayload(reply);
@@ -559,7 +559,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings2Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings2Payload>> ReadTimestampedPwmSettings2Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
             return PwmSettings2.GetTimestampedPayload(reply);
@@ -573,7 +573,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings2Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings2Async(PwmSettings2Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings2.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -589,7 +589,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings3Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings3Payload> ReadPwmSettings3Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
             return PwmSettings3.GetPayload(reply);
@@ -605,7 +605,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings3Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings3Payload>> ReadTimestampedPwmSettings3Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
             return PwmSettings3.GetTimestampedPayload(reply);
@@ -619,7 +619,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings3Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings3Async(PwmSettings3Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings3.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -635,7 +635,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings4Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings4Payload> ReadPwmSettings4Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
             return PwmSettings4.GetPayload(reply);
@@ -651,7 +651,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings4Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings4Payload>> ReadTimestampedPwmSettings4Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
             return PwmSettings4.GetTimestampedPayload(reply);
@@ -665,7 +665,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings4Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings4Async(PwmSettings4Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings4.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -681,7 +681,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings5Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings5Payload> ReadPwmSettings5Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
             return PwmSettings5.GetPayload(reply);
@@ -697,7 +697,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings5Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings5Payload>> ReadTimestampedPwmSettings5Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
             return PwmSettings5.GetTimestampedPayload(reply);
@@ -711,7 +711,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings5Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings5Async(PwmSettings5Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings5.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -727,7 +727,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings6Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings6Payload> ReadPwmSettings6Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
             return PwmSettings6.GetPayload(reply);
@@ -743,7 +743,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings6Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings6Payload>> ReadTimestampedPwmSettings6Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
             return PwmSettings6.GetTimestampedPayload(reply);
@@ -757,7 +757,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings6Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings6Async(PwmSettings6Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings6.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
@@ -773,7 +773,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the register payload.
         /// </returns>
-        public async Task<byte[]> ReadPwmSettings7Async(CancellationToken cancellationToken = default)
+        public async Task<PwmSettings7Payload> ReadPwmSettings7Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
             return PwmSettings7.GetPayload(reply);
@@ -789,7 +789,7 @@ namespace Harp.Cuttlefish
         /// A task that represents the asynchronous read operation. The task result contains
         /// the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte[]>> ReadTimestampedPwmSettings7Async(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<PwmSettings7Payload>> ReadTimestampedPwmSettings7Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
             return PwmSettings7.GetTimestampedPayload(reply);
@@ -803,7 +803,7 @@ namespace Harp.Cuttlefish
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WritePwmSettings7Async(byte[] value, CancellationToken cancellationToken = default)
+        public async Task WritePwmSettings7Async(PwmSettings7Payload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings7.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);

@@ -5,22 +5,17 @@ step of the sine stops the schedule, loads a new duty cycle, and starts it again
 """
 
 from math import pi, sin
-from pathlib import Path
 from time import sleep
 
 from harp import serial
+from harp.device import cuttlefish
 from harp.device.core import EnableFlag
-from harp.device.schema import create_device_module
 
 PORT = "COM95"  # Adjust to the serial port of your board.
 PWM_PERIOD_US = 1000  # 1 kHz carrier.
 STEPS_PER_SINE = 50  # Duty cycle values per sine period.
 STEP_S = 0.04  # Time spent at each duty cycle value (sine period = 2 s).
 N_SINES = 5
-
-# Build the device interface straight from the schema in this repository.
-DEVICE_YML = Path(__file__).resolve().parents[3] / "device.yml"
-cuttlefish = create_device_module(DEVICE_YML.read_text())
 
 
 def duty_to_settings(duty: float):

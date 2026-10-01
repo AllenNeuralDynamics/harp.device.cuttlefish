@@ -9,7 +9,9 @@ PORT = "COM95"  # Adjust to the serial port of your board.
 N_BLINKS = 10
 PERIOD_S = 0.5
 
+# Leaving the `with` block disconnects from the board.
 with serial.open_device(cuttlefish, port=PORT) as device:
+    # Configure IO0 as an output
     device.write(cuttlefish.PinDirection, cuttlefish.Pins.PIN0)
 
     for _ in range(N_BLINKS):
@@ -17,4 +19,3 @@ with serial.open_device(cuttlefish, port=PORT) as device:
         sleep(PERIOD_S)
         device.write(cuttlefish.PinClear, cuttlefish.Pins.PIN0)  # IO0 low
         sleep(PERIOD_S)
-

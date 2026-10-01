@@ -1,14 +1,9 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["harp"]
-# ///
 """Configure three PWM tasks in sequence and run the schedule for a few seconds."""
 
 import argparse
 from time import sleep
 
-import device
+from harp.device import cuttlefish
 from harp.serial import open_device
 
 
@@ -23,13 +18,13 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    with open_device(device, port=args.port) as dev:
+    with open_device(cuttlefish, port=args.port) as dev:
         # (register, payload class, offset_us, on_duration_us, off_duration_us,
         #  cycles (0 = loop forever), invert)
         pwm_tasks = (
-            (device.PwmSettings0, device.PwmSettings0Payload, 0, 500, 500, 0, False),
-            (device.PwmSettings1, device.PwmSettings1Payload, 0, 1000, 1500, 100, False),  # Finite sequence!
-            (device.PwmSettings2, device.PwmSettings2Payload, 0, 350, 350, 0, False),
+            (cuttlefish.PwmSettings0, cuttlefish.PwmSettings0Payload, 0, 500, 500, 0, False),
+            (cuttlefish.PwmSettings1, cuttlefish.PwmSettings1Payload, 0, 1000, 1500, 100, False),  # Finite sequence!
+            (cuttlefish.PwmSettings2, cuttlefish.PwmSettings2Payload, 0, 350, 350, 0, False),
         )
 
         print("Configuring device with PWM task.")
@@ -48,13 +43,13 @@ def main() -> None:
         sleep(1)
 
         print("Enabling schedule.")
-        reply = dev.write(device.PwmState, True)
+        reply = dev.write(cuttlefish.PwmState, True)
         print(reply)
         print()
         sleep(3)
 
         print("Disabling schedule.")
-        reply = dev.write(device.PwmState, False)
+        reply = dev.write(cuttlefish.PwmState, False)
         print(reply)
 
 
