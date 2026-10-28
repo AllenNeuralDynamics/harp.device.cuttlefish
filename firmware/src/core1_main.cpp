@@ -1,4 +1,4 @@
-#include <core1_main.h>
+#include "core1_main.h"
 
 __not_in_flash("core1_next_state") core1_state_t state;
 __not_in_flash("schedule_failed") bool schedule_failed;
@@ -16,9 +16,9 @@ inline uint64_t time_us_64_unsafe()
 // Override default behavior of this function defined weakly elsewhere.
 void handle_missed_deadline()
 {
-    gpio_init(LED1);
-    gpio_set_dir(LED1, 1); // output
-    gpio_put(LED1, 1); // turn on auxilary LED.
+    gpio_init(LED0);
+    gpio_set_dir(LED0, 1); // output
+    gpio_put(LED0, 1); // turn on auxilary LED.
     schedule_failed = true;
     // TODO: push an error message back to core0.
 }

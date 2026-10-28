@@ -1,24 +1,24 @@
 #ifndef CUTTLEFISH_APP_H
 #define CUTTLEFISH_APP_H
-#include <pico/stdlib.h>
-#include <cstring>
-#include <config.h>
-#include <harp_message.h>
-#include <harp_core.h>
-#include <harp_c_app.h>
-#include <etl/vector.h>
-#include <pwm_settings.h>
-#include <edge_event_queue.h>
-#include <schedule_ctrl_queues.h>
-#include <core1_main.h>
-#include <pico/multicore.h>
-#include <hardware/irq.h>
-#include <hardware/gpio.h>
-#include <hardware/timer.h>
+#include "pico/stdlib.h"
+#include "config.h"
+#include "harp_message.h"
+#include "harp_core.h"
+#include "harp_c_app.h"
+#include "etl/vector.h"
+#include "pwm_settings.h"
+#include "edge_event_queue.h"
+#include "schedule_ctrl_queues.h"
+#include "core1_main.h"
+#include "pico/multicore.h"
+#include "hardware/irq.h"
+#include "hardware/gpio.h"
+#include "hardware/timer.h"
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
 #endif
+#include <cstring>
 
 using enum reg_type_t;
 using Harp = HarpCore; // make an alias.
