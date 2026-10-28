@@ -30,6 +30,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 root = "../.."
+tag_regex = "^fw(?P<version>\\d+\\.\\d+\\.\\d+)-harp\\d+\\.\\d+$"
 
 [tool.setuptools.packages.find]
 where = ["src"]
