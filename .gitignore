@@ -19,3 +19,34 @@ desktop.ini
 *.egg-info
 # Python generated
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Python distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+wheels/
+pip-wheel-metadata/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.ipynb_checkpoints/
+
+# Python test / coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
