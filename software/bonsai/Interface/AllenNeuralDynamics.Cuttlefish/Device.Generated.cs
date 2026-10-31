@@ -1343,9 +1343,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings0Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings0Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1354,7 +1354,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings0Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1371,7 +1371,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings0Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1381,7 +1381,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings0Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1396,7 +1396,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings0"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings0Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -1412,7 +1412,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings0"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings0Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -1436,7 +1436,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings0Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings0.GetTimestampedPayload(message);
         }
@@ -1463,9 +1463,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings1Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings1Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1474,7 +1474,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings1Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1491,7 +1491,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings1Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1501,7 +1501,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings1Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1516,7 +1516,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings1"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings1Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -1532,7 +1532,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings1"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings1Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -1556,7 +1556,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings1Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings1.GetTimestampedPayload(message);
         }
@@ -1583,9 +1583,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings2Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings2Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1594,7 +1594,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings2Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1611,7 +1611,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings2Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1621,7 +1621,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings2Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1636,7 +1636,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings2"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings2Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -1652,7 +1652,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings2"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings2Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -1676,7 +1676,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings2Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings2.GetTimestampedPayload(message);
         }
@@ -1703,9 +1703,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings3Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings3Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1714,7 +1714,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings3Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1731,7 +1731,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings3Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1741,7 +1741,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings3Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1756,7 +1756,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings3"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings3Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -1772,7 +1772,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings3"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings3Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -1796,7 +1796,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings3Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings3.GetTimestampedPayload(message);
         }
@@ -1823,9 +1823,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings4Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings4Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1834,7 +1834,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings4Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1851,7 +1851,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings4Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1861,7 +1861,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings4Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1876,7 +1876,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings4"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings4Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -1892,7 +1892,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings4"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings4Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -1916,7 +1916,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings4Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings4.GetTimestampedPayload(message);
         }
@@ -1943,9 +1943,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings5Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings5Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -1954,7 +1954,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings5Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -1971,7 +1971,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings5Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -1981,7 +1981,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings5Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -1996,7 +1996,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings5"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings5Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -2012,7 +2012,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings5"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings5Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -2036,7 +2036,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings5Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings5.GetTimestampedPayload(message);
         }
@@ -2063,9 +2063,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings6Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings6Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -2074,7 +2074,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings6Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -2091,7 +2091,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings6Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -2101,7 +2101,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings6Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -2116,7 +2116,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings6"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings6Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -2132,7 +2132,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings6"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings6Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -2156,7 +2156,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings6Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings6.GetTimestampedPayload(message);
         }
@@ -2183,9 +2183,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         public const int RegisterLength = 17;
 
-        static PwmSettings7Payload ParsePayload(byte[] payload)
+        static PwmSettingsPayload ParsePayload(byte[] payload)
         {
-            PwmSettings7Payload result;
+            PwmSettingsPayload result;
             result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
             result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
             result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
@@ -2194,7 +2194,7 @@ namespace AllenNeuralDynamics.Cuttlefish
             return result;
         }
 
-        static byte[] FormatPayload(PwmSettings7Payload value)
+        static byte[] FormatPayload(PwmSettingsPayload value)
         {
             byte[] result;
             result = new byte[17];
@@ -2211,7 +2211,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static PwmSettings7Payload GetPayload(HarpMessage message)
+        public static PwmSettingsPayload GetPayload(HarpMessage message)
         {
             return ParsePayload(message.GetPayloadArray<byte>());
         }
@@ -2221,7 +2221,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings7Payload> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
         {
             var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
             return Timestamped.Create(ParsePayload(payload), timestamp);
@@ -2236,7 +2236,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings7"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, PwmSettings7Payload value)
+        public static HarpMessage FromPayload(MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
         }
@@ -2252,7 +2252,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings7"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettings7Payload value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PwmSettingsPayload value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
         }
@@ -2276,7 +2276,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<PwmSettings7Payload> GetPayload(HarpMessage message)
+        public static Timestamped<PwmSettingsPayload> GetPayload(HarpMessage message)
         {
             return PwmSettings7.GetTimestampedPayload(message);
         }
@@ -2879,9 +2879,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings0 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings0Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings0Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -2963,9 +2963,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings1 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings1Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings1Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3047,9 +3047,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings2 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings2Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings2Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3131,9 +3131,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings3 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings3Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings3Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3215,9 +3215,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings4 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings4Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings4Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3299,9 +3299,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings5 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings5Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings5Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3383,9 +3383,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings6 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings6Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings6Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3467,9 +3467,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Creates a message payload for the PwmSettings7 register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public PwmSettings7Payload GetPayload()
+        public PwmSettingsPayload GetPayload()
         {
-            PwmSettings7Payload value;
+            PwmSettingsPayload value;
             value.OffsetUs = OffsetUs;
             value.OnDurationUs = OnDurationUs;
             value.OffDurationUs = OffDurationUs;
@@ -3510,19 +3510,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents the payload of the PwmSettings0 register.
+    /// Represents the payload of the PwmSettings register.
     /// </summary>
-    public struct PwmSettings0Payload
+    public struct PwmSettingsPayload
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings0Payload"/> structure.
+        /// Initializes a new instance of the <see cref="PwmSettingsPayload"/> structure.
         /// </summary>
         /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
         /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
         /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
         /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
         /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings0Payload(
+        public PwmSettingsPayload(
             uint offsetUs,
             uint onDurationUs,
             uint offDurationUs,
@@ -3563,519 +3563,15 @@ namespace AllenNeuralDynamics.Cuttlefish
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings0 register.
+        /// the PwmSettings register.
         /// </summary>
         /// <returns>
         /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings0 register.
+        /// PwmSettings register.
         /// </returns>
         public override string ToString()
         {
-            return "PwmSettings0Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings1 register.
-    /// </summary>
-    public struct PwmSettings1Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings1Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings1Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings1 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings1 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings1Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings2 register.
-    /// </summary>
-    public struct PwmSettings2Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings2Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings2Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings2 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings2 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings2Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings3 register.
-    /// </summary>
-    public struct PwmSettings3Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings3Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings3Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings3 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings3 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings3Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings4 register.
-    /// </summary>
-    public struct PwmSettings4Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings4Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings4Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings4 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings4 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings4Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings5 register.
-    /// </summary>
-    public struct PwmSettings5Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings5Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings5Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings5 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings5 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings5Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings6 register.
-    /// </summary>
-    public struct PwmSettings6Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings6Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings6Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings6 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings6 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings6Payload { " +
-                "OffsetUs = " + OffsetUs + ", " +
-                "OnDurationUs = " + OnDurationUs + ", " +
-                "OffDurationUs = " + OffDurationUs + ", " +
-                "Cycles = " + Cycles + ", " +
-                "Invert = " + Invert + " " +
-            "}";
-        }
-    }
-
-    /// <summary>
-    /// Represents the payload of the PwmSettings7 register.
-    /// </summary>
-    public struct PwmSettings7Payload
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PwmSettings7Payload"/> structure.
-        /// </summary>
-        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
-        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
-        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
-        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
-        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
-        public PwmSettings7Payload(
-            uint offsetUs,
-            uint onDurationUs,
-            uint offDurationUs,
-            uint cycles,
-            bool invert)
-        {
-            OffsetUs = offsetUs;
-            OnDurationUs = onDurationUs;
-            OffDurationUs = offDurationUs;
-            Cycles = cycles;
-            Invert = invert;
-        }
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
-        /// </summary>
-        public uint OffsetUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains HIGH in one period.
-        /// </summary>
-        public uint OnDurationUs;
-
-        /// <summary>
-        /// How long (in microseconds) the output remains LOW in one period.
-        /// </summary>
-        public uint OffDurationUs;
-
-        /// <summary>
-        /// How many pulses to produce, or zero to pulse until disabled.
-        /// </summary>
-        public uint Cycles;
-
-        /// <summary>
-        /// Whether the output is inverted (on-time refers to the output being LOW instead).
-        /// </summary>
-        public bool Invert;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings7 register.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings7 register.
-        /// </returns>
-        public override string ToString()
-        {
-            return "PwmSettings7Payload { " +
+            return "PwmSettingsPayload { " +
                 "OffsetUs = " + OffsetUs + ", " +
                 "OnDurationUs = " + OnDurationUs + ", " +
                 "OffDurationUs = " + OffDurationUs + ", " +
