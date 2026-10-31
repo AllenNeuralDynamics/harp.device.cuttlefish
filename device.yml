@@ -66,6 +66,7 @@ registers:
     access: Write
     length: 17
     description: "Configure the settings of the PWM output on pin 0."
+    interfaceType: PwmSettingsPayload
     payloadSpec:
       OffsetUs:
         offset: 0
