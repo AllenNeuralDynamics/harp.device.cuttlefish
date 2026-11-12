@@ -50,11 +50,13 @@ void sync_schedule()
                 continue;
             }
             // Update existing task specs.
-            task.delay_us_ = settings.specs.offset_us;
-            task.on_time_us_ = settings.specs.on_duration_us;
-            task.period_us_ = settings.specs.period_us();
-            task.count_ = settings.specs.cycles;
-            task.invert_ = bool(settings.specs.invert);
+            // Reapply specs and GPIO setup, including pin inversion.
+            task.apply_settings(settings.specs.offset_us,
+                                settings.specs.on_duration_us,
+                                settings.specs.period_us(),
+                                1u << settings.pin,
+                                settings.specs.cycles,
+                                bool(settings.specs.invert));
             updated_existing_task = true;
             break;
         }

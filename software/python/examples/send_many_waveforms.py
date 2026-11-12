@@ -25,7 +25,7 @@ def main() -> None:
         pwm_tasks = (
             (
                 cuttlefish.PwmSettings0,
-                cuttlefish.PwmSettings0Payload,
+                cuttlefish.PwmSettingsPayload,
                 0,
                 500,
                 500,
@@ -34,7 +34,7 @@ def main() -> None:
             ),
             (
                 cuttlefish.PwmSettings1,
-                cuttlefish.PwmSettings1Payload,
+                cuttlefish.PwmSettingsPayload,
                 0,
                 1000,
                 1500,
@@ -43,7 +43,7 @@ def main() -> None:
             ),  # Finite sequence!
             (
                 cuttlefish.PwmSettings2,
-                cuttlefish.PwmSettings2Payload,
+                cuttlefish.PwmSettingsPayload,
                 0,
                 350,
                 350,

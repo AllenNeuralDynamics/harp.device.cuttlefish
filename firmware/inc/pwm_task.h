@@ -19,6 +19,14 @@ public:
     ~PWMTask();
 
 /**
+ * \brief (re)apply all settings, including GPIO setup and pin inversion.
+ *  Used by the constructor and when updating an existing task.
+ */
+    void apply_settings(uint32_t t_delay_us, uint32_t t_on_us,
+                        uint32_t t_period_us, uint32_t pin_mask,
+                        uint32_t count = 0, bool invert = false);
+
+/**
  * \brief comparison operator for scheduling.
  */
     friend bool operator<(const PWMTask& lhs, const PWMTask& rhs)
