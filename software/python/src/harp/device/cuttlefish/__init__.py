@@ -14,6 +14,7 @@ from harp.protocol import (
     IdentityConverter,
     PayloadType,
     RegisterBase,
+    RegisterU8,
     StructPayload,
 )
 from harp.device.core import (
@@ -53,6 +54,7 @@ __all__ = [
     "PwmSettings5",
     "PwmSettings6",
     "PwmSettings7",
+    "ScheduleStatus",
     "REGISTER_MAP",
 ]
 
@@ -282,6 +284,12 @@ class PwmSettings7(RegisterBase[PwmSettingsPayload]):
     payload_class = PwmSettingsPayload
 
 
+class ScheduleStatus(RegisterU8):
+    """Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted."""
+
+    address: ClassVar[int] = 49
+
+
 REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     **_CORE_REGISTER_MAP,
     32: PinDirection,
@@ -301,4 +309,5 @@ REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     46: PwmSettings5,
     47: PwmSettings6,
     48: PwmSettings7,
+    49: ScheduleStatus,
 }

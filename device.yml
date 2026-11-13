@@ -125,6 +125,13 @@ registers:
     <<: *PwmSettingsRegister
     address: 48
     description: "Configure the settings of the PWM output on pin 7."
+  ScheduleStatus:
+    address: 49
+    access: Event
+    type: U8
+    description: "Event Only. Emitted when the PWM schedule encounters an
+                  error while running. A value of 1 indicates a missed
+                  deadline, after which the schedule is aborted."
 
 bitMasks:
   Pins:

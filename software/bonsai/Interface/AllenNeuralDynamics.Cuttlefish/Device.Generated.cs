@@ -60,7 +60,8 @@ namespace AllenNeuralDynamics.Cuttlefish
             { 45, typeof(PwmSettings4) },
             { 46, typeof(PwmSettings5) },
             { 47, typeof(PwmSettings6) },
-            { 48, typeof(PwmSettings7) }
+            { 48, typeof(PwmSettings7) },
+            { 49, typeof(ScheduleStatus) }
         };
 
         /// <summary>
@@ -294,6 +295,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -311,6 +313,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [Description("Filters register-specific messages reported by the Cuttlefish device.")]
     public class FilterRegister : FilterRegisterBuilder, INamedElement
     {
@@ -349,6 +352,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -366,6 +370,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [XmlInclude(typeof(TimestampedPinDirection))]
     [XmlInclude(typeof(TimestampedPinState))]
     [XmlInclude(typeof(TimestampedPinSet))]
@@ -383,6 +388,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(TimestampedPwmSettings5))]
     [XmlInclude(typeof(TimestampedPwmSettings6))]
     [XmlInclude(typeof(TimestampedPwmSettings7))]
+    [XmlInclude(typeof(TimestampedScheduleStatus))]
     [Description("Filters and selects specific messages reported by the Cuttlefish device.")]
     public partial class Parse : ParseBuilder, INamedElement
     {
@@ -418,6 +424,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -435,6 +442,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [Description("Formats a sequence of values as specific Cuttlefish register messages.")]
     public partial class Format : FormatBuilder, INamedElement
     {
@@ -2283,6 +2291,102 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
+    /// Represents a register that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+    /// </summary>
+    [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class ScheduleStatus
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 49;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 1;
+
+        /// <summary>
+        /// Returns the payload data for <see cref="ScheduleStatus"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static byte GetPayload(HarpMessage message)
+        {
+            return message.GetPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload data for <see cref="ScheduleStatus"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetTimestampedPayload(HarpMessage message)
+        {
+            return message.GetTimestampedPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="ScheduleStatus"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="ScheduleStatus"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, messageType, value);
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="ScheduleStatus"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="ScheduleStatus"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, value);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating timestamped messages from the
+    /// ScheduleStatus register.
+    /// </summary>
+    /// <seealso cref="ScheduleStatus"/>
+    [Description("Filters and selects timestamped messages from the ScheduleStatus register.")]
+    public partial class TimestampedScheduleStatus
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int Address = ScheduleStatus.Address;
+
+        /// <summary>
+        /// Returns timestamped payload data for <see cref="ScheduleStatus"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetPayload(HarpMessage message)
+        {
+            return ScheduleStatus.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
     /// Represents an operator which creates standard message payloads for the
     /// Cuttlefish device.
     /// </summary>
@@ -2303,6 +2407,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="CreatePwmSettings5Payload"/>
     /// <seealso cref="CreatePwmSettings6Payload"/>
     /// <seealso cref="CreatePwmSettings7Payload"/>
+    /// <seealso cref="CreateScheduleStatusPayload"/>
     [XmlInclude(typeof(CreatePinDirectionPayload))]
     [XmlInclude(typeof(CreatePinStatePayload))]
     [XmlInclude(typeof(CreatePinSetPayload))]
@@ -2320,6 +2425,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreatePwmSettings5Payload))]
     [XmlInclude(typeof(CreatePwmSettings6Payload))]
     [XmlInclude(typeof(CreatePwmSettings7Payload))]
+    [XmlInclude(typeof(CreateScheduleStatusPayload))]
     [XmlInclude(typeof(CreateTimestampedPinDirectionPayload))]
     [XmlInclude(typeof(CreateTimestampedPinStatePayload))]
     [XmlInclude(typeof(CreateTimestampedPinSetPayload))]
@@ -2337,6 +2443,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreateTimestampedPwmSettings5Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings6Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings7Payload))]
+    [XmlInclude(typeof(CreateTimestampedScheduleStatusPayload))]
     [Description("Creates standard message payloads for the Cuttlefish device.")]
     public partial class CreateMessage : CreateMessageBuilder, INamedElement
     {
@@ -3506,6 +3613,60 @@ namespace AllenNeuralDynamics.Cuttlefish
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
             return AllenNeuralDynamics.Cuttlefish.PwmSettings7.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a message payload
+    /// that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+    /// </summary>
+    [DisplayName("ScheduleStatusPayload")]
+    [Description("Creates a message payload that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class CreateScheduleStatusPayload
+    {
+        /// <summary>
+        /// Gets or sets the value that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+        /// </summary>
+        [Description("The value that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+        public byte ScheduleStatus { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the ScheduleStatus register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public byte GetPayload()
+        {
+            return ScheduleStatus;
+        }
+
+        /// <summary>
+        /// Creates a message that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the ScheduleStatus register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.ScheduleStatus.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a timestamped message payload
+    /// that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+    /// </summary>
+    [DisplayName("TimestampedScheduleStatusPayload")]
+    [Description("Creates a timestamped message payload that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class CreateTimestampedScheduleStatusPayload : CreateScheduleStatusPayload
+    {
+        /// <summary>
+        /// Creates a timestamped message that event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the ScheduleStatus register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.ScheduleStatus.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 

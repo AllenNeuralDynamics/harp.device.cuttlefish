@@ -26,10 +26,10 @@ def main() -> None:
             (
                 cuttlefish.PwmSettings0,
                 cuttlefish.PwmSettingsPayload,
-                0,
                 500,
                 500,
-                0,
+                500,
+                3,
                 False,
             ),
             (
@@ -38,7 +38,7 @@ def main() -> None:
                 0,
                 1000,
                 1500,
-                100,
+                3,
                 False,
             ),  # Finite sequence!
             (
@@ -47,7 +47,7 @@ def main() -> None:
                 0,
                 350,
                 350,
-                0,
+                3,
                 False,
             ),
         )

@@ -52,6 +52,21 @@ struct core1_next_state_msg_t
     uint64_t timestamp_us;
 };
 
+enum class schedule_error_t: uint8_t
+{
+    NONE = 0,
+    MISSED_DEADLINE = 1
+};
+
+/**
+ * \brief For core1 to report timestamped schedule errors to core0.
+ */
+struct schedule_error_msg_t
+{
+    schedule_error_t error;
+    uint64_t timestamp_us;
+};
+
 extern queue_t pwm_settings_queue;
 extern queue_t core1_ctrl_queue;
 extern queue_t core1_next_state_queue;

@@ -38,7 +38,9 @@ RegSpec app_reg_specs[]
     RegSpec::U8Array(&app_regs.pwm_settings[6], sizeof(pwm_settings_t),
         Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[7], sizeof(pwm_settings_t),
-        Harp::read_reg_generic, write_any_pwm_settings)
+        Harp::read_reg_generic, write_any_pwm_settings),
+    RegSpec::U8(&app_regs.schedule_status,
+        Harp::read_reg_error, Harp::write_reg_error)
 };
 
 const size_t APP_REG_COUNT = sizeof(app_reg_specs) / sizeof(RegSpec);
@@ -279,6 +281,16 @@ void update_app_state()
             Harp::send_harp_reply(EVENT, FALLING_EDGE_EVENTS_ADDRESS, harp_time_us);
         }
     }
+    // Report schedule errors from core1 as EVENT messages.
+    schedule_error_msg_t error_msg;
+    while (queue_try_remove(&schedule_error_queue, &error_msg))
+    {
+        app_regs.schedule_status = uint8_t(error_msg.error);
+        if (Harp::is_muted())
+            continue;
+        Harp::send_harp_reply(EVENT, SCHEDULE_STATUS_ADDRESS,
+                              Harp::system_to_harp_us_64(error_msg.timestamp_us));
+    }
     // Update local state if core1 finished and send EVENT message.
     core1_next_state_msg_t state_change_msg;
     if (!queue_try_remove(&core1_next_state_queue, &state_change_msg))
@@ -306,6 +318,8 @@ void reset_app()
     // Drain all inter-core communication queues.
     core1_next_state_msg_t  dummy_next_state_msg;
     while (queue_try_remove(&core1_next_state_queue, &dummy_next_state_msg)) {}
+    schedule_error_msg_t dummy_error_msg;
+    while (queue_try_remove(&schedule_error_queue, &dummy_error_msg)) {}
     pwm_ctrl_msg_t dummy_ctrl_msg;
     while (queue_try_remove(&core1_ctrl_queue, &dummy_ctrl_msg)) {}
     pwm_specs_core_msg_t dummy_pwm_settings;
@@ -323,6 +337,7 @@ void reset_app()
     app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
     app_regs.pwm_state = 0;
     app_regs.pwm_ready = 0;
+    app_regs.schedule_status = 0;
     for (size_t i = 0; i < NUM_GPIOS; ++i)
         app_regs.pwm_settings[i] = pwm_settings_t();
 

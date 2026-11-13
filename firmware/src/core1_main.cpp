@@ -16,11 +16,10 @@ inline uint64_t time_us_64_unsafe()
 // Override default behavior of this function defined weakly elsewhere.
 void handle_missed_deadline()
 {
-    gpio_init(LED0);
-    gpio_set_dir(LED0, 1); // output
-    gpio_put(LED0, 1); // turn on auxilary LED.
     schedule_failed = true;
-    // TODO: push an error message back to core0.
+    schedule_error_msg_t msg{schedule_error_t::MISSED_DEADLINE,
+                             time_us_64_unsafe()};
+    queue_try_add(&schedule_error_queue, &msg);
 }
 
 
