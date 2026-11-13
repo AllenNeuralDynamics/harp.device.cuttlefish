@@ -28,10 +28,18 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+def on_rising_edge_event(msg: HarpMessage):
+    print(msg)
+
 
 def main() -> None:
     args = parse_args()
     with open_device(cuttlefish, port=args.port) as dev:
+
+        # Subscribe to rising edge of the camera trigger pin.
+        dev.subscribe(cuttlefish.RisingEdgeEvents, on_rising_edge_event)
+        dev.write(cuttlefish.EnableRisingEdgeEvents, cuttlefish.Pins(0x01))
+
         camera_period_us = ceil(1/150*1e6)
         laser_period_us = camera_period_us * len(LASER_SETTINGS_REGISTERS)
         print(f"Configuring Camera Trigger Settings")
