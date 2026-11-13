@@ -14,6 +14,7 @@ from harp.protocol import (
     IdentityConverter,
     PayloadType,
     RegisterBase,
+    RegisterU8,
     StructPayload,
 )
 from harp.device.core import (
@@ -53,6 +54,7 @@ __all__ = [
     "PwmSettings5",
     "PwmSettings6",
     "PwmSettings7",
+    "ScheduleStatus",
     "REGISTER_MAP",
 ]
 
@@ -74,61 +76,61 @@ class Pins(enum.IntFlag):
 
 
 class PinDirectionPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the PinDirection register."""
+    """Represents the PinDirection payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class PinStatePayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the PinState register."""
+    """Represents the PinState payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class PinSetPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the PinSet register."""
+    """Represents the PinSet payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class PinClearPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the PinClear register."""
+    """Represents the PinClear payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class EnableRisingEdgeEventsPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the EnableRisingEdgeEvents register."""
+    """Represents the EnableRisingEdgeEvents payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class RisingEdgeEventsPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the RisingEdgeEvents register."""
+    """Represents the RisingEdgeEvents payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class EnableFallingEdgeEventsPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the EnableFallingEdgeEvents register."""
+    """Represents the EnableFallingEdgeEvents payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class FallingEdgeEventsPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the FallingEdgeEvents register."""
+    """Represents the FallingEdgeEvents payload."""
 
     __value__: Pins = BitMask(enum=Pins)
 
 
 class PwmStatePayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the PwmState register."""
+    """Represents the PwmState payload."""
 
     __value__: EnableFlag = GroupMask(enum=EnableFlag, mask=0xFF)
 
 
 class PwmSettingsPayload(StructPayload[np.uint8], length=17):
-    """Represents the payload of the PwmSettings register."""
+    """Represents the PwmSettings payload."""
 
     offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
     """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
@@ -179,7 +181,7 @@ class PinClear(RegisterBase[Pins]):
 
 
 class EnableRisingEdgeEvents(RegisterBase[Pins]):
-    """Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH."""
+    """Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH."""
 
     address: ClassVar[int] = 36
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -195,7 +197,7 @@ class RisingEdgeEvents(RegisterBase[Pins]):
 
 
 class EnableFallingEdgeEvents(RegisterBase[Pins]):
-    """Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW."""
+    """Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW."""
 
     address: ClassVar[int] = 38
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -203,7 +205,7 @@ class EnableFallingEdgeEvents(RegisterBase[Pins]):
 
 
 class FallingEdgeEvents(RegisterBase[Pins]):
-    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW."""
+    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW."""
 
     address: ClassVar[int] = 39
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -282,6 +284,12 @@ class PwmSettings7(RegisterBase[PwmSettingsPayload]):
     payload_class = PwmSettingsPayload
 
 
+class ScheduleStatus(RegisterU8):
+    """Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted."""
+
+    address: ClassVar[int] = 49
+
+
 REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     **_CORE_REGISTER_MAP,
     32: PinDirection,
@@ -301,4 +309,5 @@ REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     46: PwmSettings5,
     47: PwmSettings6,
     48: PwmSettings7,
+    49: ScheduleStatus,
 }

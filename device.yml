@@ -20,7 +20,7 @@ registers:
     <<: *IORegister
     address: 34
     description: "Set pins specified in the mask to logic HIGH by setting the
-                 corresponding bit."
+                  corresponding bit."
   PinClear:
     <<: *IORegister
     address: 35
@@ -30,7 +30,7 @@ registers:
     <<: *IORegister
     address: 36
     description: "Enable Events from the RisingEdgeEvents register for the
-                  specified pins in the mask when any of the the corresponding
+                  specified pins in the mask when any of the corresponding
                   pins transitions from logic LOW to logic HIGH."
   RisingEdgeEvents:
     <<: *IORegister
@@ -43,14 +43,14 @@ registers:
     <<: *IORegister
     address: 38
     description: "Enable Events from the FallingEdgeEvents register for the
-                  specified pins in the mask when any of the the corresponding
+                  specified pins in the mask when any of the corresponding
                   pins transitions from logic HIGH to logic LOW."
   FallingEdgeEvents:
     <<: *IORegister
     address: 39
     access: Event
     description: "Event Only. Returns a timestamped message with the Port state
-                  when any of the pins specified in the EnableRisingEdgeEvents
+                  when any of the pins specified in the EnableFallingEdgeEvents
                   register transitions from logic HIGH to logic LOW."
   PwmState:
     address: 40
@@ -125,6 +125,13 @@ registers:
     <<: *PwmSettingsRegister
     address: 48
     description: "Configure the settings of the PWM output on pin 7."
+  ScheduleStatus:
+    address: 49
+    access: Event
+    type: U8
+    description: "Event Only. Emitted when the PWM schedule encounters an
+                  error while running. A value of 1 indicates a missed
+                  deadline, after which the schedule is aborted."
 
 bitMasks:
   Pins:

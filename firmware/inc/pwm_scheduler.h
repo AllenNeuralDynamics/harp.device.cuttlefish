@@ -34,9 +34,18 @@ public:
     PWMScheduler();
     ~PWMScheduler();
 
-    void schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
-                           uint32_t t_period_us, uint32_t pin_mask,
-                           uint32_t count, bool invert);
+/**
+ * \brief create and schedule a PWMTask.
+ * \warning only meant to be called before starting the schedule.
+ */
+    void create_and_schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
+                                      uint32_t t_period_us, uint32_t pin_mask,
+                                      uint32_t count, bool invert);
+
+/**
+ * \brief schedule an existing PWMTask.
+ * \warning only meant to be called before starting the schedule.
+ */
     void schedule_pwm_task(PWMTask& task);
 /**
  * \brief cancel any active alarms and clear the queue.

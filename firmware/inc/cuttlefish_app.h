@@ -32,6 +32,8 @@ inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS =
     Harp::APP_REG_START_ADDRESS + 7;
 inline constexpr uint8_t PWM_STATE_ADDRESS =
     Harp::APP_REG_START_ADDRESS + 8;
+inline constexpr uint8_t SCHEDULE_STATUS_ADDRESS =
+    Harp::APP_REG_START_ADDRESS + 17;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -54,6 +56,7 @@ struct app_regs_t
     uint8_t pwm_state;
     pwm_settings_t pwm_settings[NUM_GPIOS];
     uint8_t pwm_ready;
+    uint8_t schedule_status; // EVENT-only. See schedule_error_t.
 };
 #pragma pack(pop)
 

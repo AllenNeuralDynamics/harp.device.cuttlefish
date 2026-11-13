@@ -17,16 +17,16 @@ using System.Xml.Serialization;
 namespace AllenNeuralDynamics.Cuttlefish
 {
     /// <summary>
-    /// Generates events and processes commands for the Cuttlefish device connected
-    /// at the specified serial port.
+    /// Represents an operator that sends requests to the Cuttlefish device and returns its replies and
+    /// events.
     /// </summary>
     [Combinator(MethodName = nameof(Generate))]
     [WorkflowElementCategory(ElementCategory.Source)]
-    [Description("Generates events and processes commands for the Cuttlefish device.")]
+    [Description("Sends requests to the Cuttlefish device and returns its replies and events.")]
     public partial class Device : Bonsai.Harp.Device, INamedElement
     {
         /// <summary>
-        /// Represents the unique identity class of the <see cref="Cuttlefish"/> device.
+        /// Represents the identity class of the <see cref="Cuttlefish"/> device.
         /// This field is constant.
         /// </summary>
         public const int WhoAmI = 1403;
@@ -60,11 +60,12 @@ namespace AllenNeuralDynamics.Cuttlefish
             { 45, typeof(PwmSettings4) },
             { 46, typeof(PwmSettings5) },
             { 47, typeof(PwmSettings6) },
-            { 48, typeof(PwmSettings7) }
+            { 48, typeof(PwmSettings7) },
+            { 49, typeof(ScheduleStatus) }
         };
 
         /// <summary>
-        /// Gets the contents of the metadata file describing the <see cref="Cuttlefish"/>
+        /// Represents the contents of the metadata file describing the <see cref="Cuttlefish"/>
         /// device registers.
         /// </summary>
         public static readonly string Metadata = GetDeviceMetadata();
@@ -78,6 +79,37 @@ namespace AllenNeuralDynamics.Cuttlefish
             using var streamReader = new System.IO.StreamReader(metadataStream);
             return streamReader.ReadToEnd();
         }
+
+        internal static AttributeCollection GetRegisterAttributes(Type builderType, object register, string format)
+        {
+            var attributes = TypeDescriptor.GetAttributes(builderType);
+            if (register == null) return attributes;
+
+            var registerType = register switch
+            {
+                ITimestampedRegister timestamped => timestamped.RegisterType,
+                IRegisterPayload payload => payload.RegisterType,
+                _ => register.GetType()
+            };
+            var description = string.Format(format, Bonsai.Expressions.ExpressionBuilder.GetElementDisplayName(registerType));
+            if (TypeDescriptor.GetAttributes(register)[typeof(DescriptionAttribute)] is DescriptionAttribute registerDescription &&
+                !string.IsNullOrEmpty(registerDescription.Description))
+            {
+                description = $"{description} {registerDescription.Description}";
+            }
+
+            return AttributeCollection.FromExisting(attributes, new DescriptionAttribute(description));
+        }
+    }
+
+    internal interface ITimestampedRegister
+    {
+        Type RegisterType { get; }
+    }
+
+    internal interface IRegisterPayload
+    {
+        Type RegisterType { get; }
     }
 
     /// <summary>
@@ -102,7 +134,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that groups the sequence of <see cref="Cuttlefish"/>" messages by register type.
+    /// Represents an operator that groups the sequence of <see cref="Cuttlefish"/> messages by register type.
     /// </summary>
     [Description("Groups the sequence of Cuttlefish messages by register type.")]
     public partial class GroupByRegister : Combinator<HarpMessage, IGroupedObservable<Type, HarpMessage>>
@@ -123,7 +155,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that writes the sequence of <see cref="Cuttlefish"/>" messages
+    /// Represents an operator that writes the sequence of <see cref="Cuttlefish"/> messages
     /// to the standard Harp storage format.
     /// </summary>
     [DefaultProperty(nameof(Path))]
@@ -137,9 +169,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         string INamedElement.Name => nameof(Cuttlefish) + "DataWriter";
 
         /// <summary>
-        /// Gets or sets the relative or absolute path on which to save the message data.
+        /// Gets or sets the relative or absolute path of the directory in which to save the message data.
         /// </summary>
-        [Description("The relative or absolute path of the directory on which to save the message data.")]
+        [Description("The relative or absolute path of the directory in which to save the message data.")]
         [Editor("Bonsai.Design.SaveFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
         public string Path
         {
@@ -148,11 +180,12 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether element writing should be buffered. If <see langword="true"/>,
-        /// the write commands will be queued in memory as fast as possible and will be processed
-        /// by the writer in a different thread. Otherwise, writing will be done in the same
-        /// thread in which notifications arrive.
+        /// Gets or sets a value indicating whether writing should be buffered.
         /// </summary>
+        /// <remarks>
+        /// <see langword="true"/> to queue writes in memory and process them on a separate thread;
+        /// otherwise, messages are written on the thread that receives them.
+        /// </remarks>
         [Description("Indicates whether writing should be buffered.")]
         public bool Buffered
         {
@@ -163,6 +196,10 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Gets or sets a value indicating whether to overwrite the output file if it already exists.
         /// </summary>
+        /// <remarks>
+        /// <see langword="true"/> to overwrite the output files if they already exist;
+        /// otherwise, an exception is thrown.
+        /// </remarks>
         [Description("Indicates whether to overwrite the output file if it already exists.")]
         public bool Overwrite
         {
@@ -212,15 +249,15 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Writes each Harp message in the sequence to the specified binary file, and the
+        /// Writes each Harp message in the sequence to the binary file of its register, and the
         /// contents of the device metadata file to a separate text file.
         /// </summary>
-        /// <param name="source">The sequence of messages to write to the file.</param>
+        /// <param name="source">The sequence of messages to write.</param>
         /// <returns>
         /// An observable sequence that is identical to the <paramref name="source"/>
-        /// sequence but where there is an additional side effect of writing the
-        /// messages to a raw binary file, and the contents of the device metadata file
-        /// to a separate text file.
+        /// sequence but where there is an additional side effect of writing each
+        /// message to the binary file of its register, and the contents of the device
+        /// metadata file to a separate text file.
         /// </returns>
         public override IObservable<HarpMessage> Process(IObservable<HarpMessage> source)
         {
@@ -294,6 +331,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -311,8 +349,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [Description("Filters register-specific messages reported by the Cuttlefish device.")]
-    public class FilterRegister : FilterRegisterBuilder, INamedElement
+    public class FilterRegister : FilterRegisterBuilder, INamedElement, ICustomTypeDescriptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterRegister"/> class.
@@ -322,14 +361,14 @@ namespace AllenNeuralDynamics.Cuttlefish
             Register = new PinDirection();
         }
 
-        string INamedElement.Name
-        {
-            get => $"{nameof(Cuttlefish)}.{GetElementDisplayName(Register)}";
-        }
+        string INamedElement.Name => GetElementDisplayName(Register);
+
+        AttributeCollection ICustomTypeDescriptor.GetAttributes() => Device.GetRegisterAttributes(
+            GetType(), Register, "Filters Cuttlefish {0} register messages.");
     }
 
     /// <summary>
-    /// Represents an operator which filters and selects specific messages
+    /// Represents an operator that filters and selects specific messages
     /// reported by the Cuttlefish device.
     /// </summary>
     /// <seealso cref="PinDirection"/>
@@ -349,6 +388,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -366,6 +406,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [XmlInclude(typeof(TimestampedPinDirection))]
     [XmlInclude(typeof(TimestampedPinState))]
     [XmlInclude(typeof(TimestampedPinSet))]
@@ -383,8 +424,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(TimestampedPwmSettings5))]
     [XmlInclude(typeof(TimestampedPwmSettings6))]
     [XmlInclude(typeof(TimestampedPwmSettings7))]
+    [XmlInclude(typeof(TimestampedScheduleStatus))]
     [Description("Filters and selects specific messages reported by the Cuttlefish device.")]
-    public partial class Parse : ParseBuilder, INamedElement
+    public partial class Parse : ParseBuilder, INamedElement, ICustomTypeDescriptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Parse"/> class.
@@ -394,11 +436,16 @@ namespace AllenNeuralDynamics.Cuttlefish
             Register = new PinDirection();
         }
 
-        string INamedElement.Name => $"{nameof(Cuttlefish)}.{GetElementDisplayName(Register)}";
+        string INamedElement.Name => GetElementDisplayName(Register);
+
+        AttributeCollection ICustomTypeDescriptor.GetAttributes() => Device.GetRegisterAttributes(GetType(), Register,
+            Register is ITimestampedRegister
+                ? "Returns the timestamped payload of Cuttlefish {0} register messages."
+                : "Returns the payload of Cuttlefish {0} register messages.");
     }
 
     /// <summary>
-    /// Represents an operator which formats a sequence of values as specific
+    /// Represents an operator that formats a sequence of values as specific
     /// Cuttlefish register messages.
     /// </summary>
     /// <seealso cref="PinDirection"/>
@@ -418,6 +465,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
     [XmlInclude(typeof(PinSet))]
@@ -435,8 +483,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(ScheduleStatus))]
     [Description("Formats a sequence of values as specific Cuttlefish register messages.")]
-    public partial class Format : FormatBuilder, INamedElement
+    public partial class Format : FormatBuilder, INamedElement, ICustomTypeDescriptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Format"/> class.
@@ -446,13 +495,17 @@ namespace AllenNeuralDynamics.Cuttlefish
             Register = new PinDirection();
         }
 
-        string INamedElement.Name => $"{nameof(Cuttlefish)}.{GetElementDisplayName(Register)}";
+        string INamedElement.Name => GetElementDisplayName(Register);
+
+        AttributeCollection ICustomTypeDescriptor.GetAttributes() => Device.GetRegisterAttributes(
+            GetType(), Register, "Formats values as Cuttlefish {0} register messages.");
     }
 
     /// <summary>
-    /// Represents a register that set the direction of the pins. 0 = input; 1 = output.
+    /// Provides methods for manipulating PinDirection register messages. Set the direction of the pins.
+    /// 0 = input; 1 = output.
     /// </summary>
-    [Description("Set the direction of the pins. 0 = input; 1 = output")]
+    [Description("Set the direction of the pins. 0 = input; 1 = output.")]
     public partial class PinDirection
     {
         /// <summary>
@@ -471,7 +524,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PinDirection"/> register messages.
+        /// Returns the payload of the specified <see cref="PinDirection"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -481,7 +534,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PinDirection"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinDirection"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -495,7 +548,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinDirection"/> register
         /// with the specified message type and payload.
@@ -509,9 +562,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PinDirection"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinDirection"/> register
         /// with the specified message type, timestamp, and payload.
@@ -523,20 +576,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PinDirection register.
+    /// Provides methods that return the timestamped payload of PinDirection register messages. Set the
+    /// direction of the pins. 0 = input; 1 = output.
     /// </summary>
     /// <seealso cref="PinDirection"/>
-    [Description("Filters and selects timestamped messages from the PinDirection register.")]
-    public partial class TimestampedPinDirection
+    [Description("Set the direction of the pins. 0 = input; 1 = output.")]
+    public partial class TimestampedPinDirection : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinDirection);
+
         /// <summary>
         /// Represents the address of the <see cref="PinDirection"/> register. This field is constant.
         /// </summary>
         public const int Address = PinDirection.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PinDirection"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinDirection"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -547,7 +602,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that read or write the state of the pins.
+    /// Provides methods for manipulating PinState register messages. Read or write the state of the
+    /// pins.
     /// </summary>
     [Description("Read or write the state of the pins.")]
     public partial class PinState
@@ -568,7 +624,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PinState"/> register messages.
+        /// Returns the payload of the specified <see cref="PinState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -578,7 +634,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PinState"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -592,7 +648,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinState"/> register
         /// with the specified message type and payload.
@@ -606,9 +662,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PinState"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinState"/> register
         /// with the specified message type, timestamp, and payload.
@@ -620,20 +676,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PinState register.
+    /// Provides methods that return the timestamped payload of PinState register messages. Read or
+    /// write the state of the pins.
     /// </summary>
     /// <seealso cref="PinState"/>
-    [Description("Filters and selects timestamped messages from the PinState register.")]
-    public partial class TimestampedPinState
+    [Description("Read or write the state of the pins.")]
+    public partial class TimestampedPinState : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinState);
+
         /// <summary>
         /// Represents the address of the <see cref="PinState"/> register. This field is constant.
         /// </summary>
         public const int Address = PinState.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PinState"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -644,7 +702,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+    /// Provides methods for manipulating PinSet register messages. Set pins specified in the mask to
+    /// logic HIGH by setting the corresponding bit.
     /// </summary>
     [Description("Set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
     public partial class PinSet
@@ -665,7 +724,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PinSet"/> register messages.
+        /// Returns the payload of the specified <see cref="PinSet"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -675,7 +734,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PinSet"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinSet"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -689,7 +748,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinSet"/> register
         /// with the specified message type and payload.
@@ -703,9 +762,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PinSet"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinSet"/> register
         /// with the specified message type, timestamp, and payload.
@@ -717,20 +776,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PinSet register.
+    /// Provides methods that return the timestamped payload of PinSet register messages. Set pins
+    /// specified in the mask to logic HIGH by setting the corresponding bit.
     /// </summary>
     /// <seealso cref="PinSet"/>
-    [Description("Filters and selects timestamped messages from the PinSet register.")]
-    public partial class TimestampedPinSet
+    [Description("Set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
+    public partial class TimestampedPinSet : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinSet);
+
         /// <summary>
         /// Represents the address of the <see cref="PinSet"/> register. This field is constant.
         /// </summary>
         public const int Address = PinSet.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PinSet"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinSet"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -741,7 +802,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that set specified pins in the mask to logic LOW by setting the corresponding bit.
+    /// Provides methods for manipulating PinClear register messages. Set specified pins in the mask to
+    /// logic LOW by setting the corresponding bit.
     /// </summary>
     [Description("Set specified pins in the mask to logic LOW by setting the corresponding bit.")]
     public partial class PinClear
@@ -762,7 +824,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PinClear"/> register messages.
+        /// Returns the payload of the specified <see cref="PinClear"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -772,7 +834,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PinClear"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinClear"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -786,7 +848,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinClear"/> register
         /// with the specified message type and payload.
@@ -800,9 +862,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PinClear"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PinClear"/> register
         /// with the specified message type, timestamp, and payload.
@@ -814,20 +876,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PinClear register.
+    /// Provides methods that return the timestamped payload of PinClear register messages. Set
+    /// specified pins in the mask to logic LOW by setting the corresponding bit.
     /// </summary>
     /// <seealso cref="PinClear"/>
-    [Description("Filters and selects timestamped messages from the PinClear register.")]
-    public partial class TimestampedPinClear
+    [Description("Set specified pins in the mask to logic LOW by setting the corresponding bit.")]
+    public partial class TimestampedPinClear : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinClear);
+
         /// <summary>
         /// Represents the address of the <see cref="PinClear"/> register. This field is constant.
         /// </summary>
         public const int Address = PinClear.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PinClear"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PinClear"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -838,9 +902,11 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+    /// Provides methods for manipulating EnableRisingEdgeEvents register messages. Enable Events from
+    /// the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding
+    /// pins transitions from logic LOW to logic HIGH.
     /// </summary>
-    [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.")]
+    [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH.")]
     public partial class EnableRisingEdgeEvents
     {
         /// <summary>
@@ -859,7 +925,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="EnableRisingEdgeEvents"/> register messages.
+        /// Returns the payload of the specified <see cref="EnableRisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -869,7 +935,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="EnableRisingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="EnableRisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -883,7 +949,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="EnableRisingEdgeEvents"/> register
         /// with the specified message type and payload.
@@ -897,9 +963,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="EnableRisingEdgeEvents"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="EnableRisingEdgeEvents"/> register
         /// with the specified message type, timestamp, and payload.
@@ -911,20 +977,23 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// EnableRisingEdgeEvents register.
+    /// Provides methods that return the timestamped payload of EnableRisingEdgeEvents register
+    /// messages. Enable Events from the RisingEdgeEvents register for the specified pins in the mask
+    /// when any of the corresponding pins transitions from logic LOW to logic HIGH.
     /// </summary>
     /// <seealso cref="EnableRisingEdgeEvents"/>
-    [Description("Filters and selects timestamped messages from the EnableRisingEdgeEvents register.")]
-    public partial class TimestampedEnableRisingEdgeEvents
+    [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH.")]
+    public partial class TimestampedEnableRisingEdgeEvents : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(EnableRisingEdgeEvents);
+
         /// <summary>
         /// Represents the address of the <see cref="EnableRisingEdgeEvents"/> register. This field is constant.
         /// </summary>
         public const int Address = EnableRisingEdgeEvents.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="EnableRisingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="EnableRisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -935,7 +1004,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// Provides methods for manipulating RisingEdgeEvents register messages. Event Only. Returns a
+    /// timestamped message with the Port state when any of the pins specified in the
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
     /// </summary>
     [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
     public partial class RisingEdgeEvents
@@ -956,7 +1027,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="RisingEdgeEvents"/> register messages.
+        /// Returns the payload of the specified <see cref="RisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -966,7 +1037,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="RisingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="RisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -980,7 +1051,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="RisingEdgeEvents"/> register
         /// with the specified message type and payload.
@@ -994,9 +1065,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="RisingEdgeEvents"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="RisingEdgeEvents"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1008,20 +1079,23 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// RisingEdgeEvents register.
+    /// Provides methods that return the timestamped payload of RisingEdgeEvents register messages.
+    /// Event Only. Returns a timestamped message with the Port state when any of the pins specified in
+    /// the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
     /// </summary>
     /// <seealso cref="RisingEdgeEvents"/>
-    [Description("Filters and selects timestamped messages from the RisingEdgeEvents register.")]
-    public partial class TimestampedRisingEdgeEvents
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    public partial class TimestampedRisingEdgeEvents : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(RisingEdgeEvents);
+
         /// <summary>
         /// Represents the address of the <see cref="RisingEdgeEvents"/> register. This field is constant.
         /// </summary>
         public const int Address = RisingEdgeEvents.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="RisingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="RisingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1032,9 +1106,11 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+    /// Provides methods for manipulating EnableFallingEdgeEvents register messages. Enable Events from
+    /// the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding
+    /// pins transitions from logic HIGH to logic LOW.
     /// </summary>
-    [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.")]
+    [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW.")]
     public partial class EnableFallingEdgeEvents
     {
         /// <summary>
@@ -1053,7 +1129,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="EnableFallingEdgeEvents"/> register messages.
+        /// Returns the payload of the specified <see cref="EnableFallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1063,7 +1139,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="EnableFallingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="EnableFallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1077,7 +1153,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="EnableFallingEdgeEvents"/> register
         /// with the specified message type and payload.
@@ -1091,9 +1167,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="EnableFallingEdgeEvents"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="EnableFallingEdgeEvents"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1105,20 +1181,23 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// EnableFallingEdgeEvents register.
+    /// Provides methods that return the timestamped payload of EnableFallingEdgeEvents register
+    /// messages. Enable Events from the FallingEdgeEvents register for the specified pins in the mask
+    /// when any of the corresponding pins transitions from logic HIGH to logic LOW.
     /// </summary>
     /// <seealso cref="EnableFallingEdgeEvents"/>
-    [Description("Filters and selects timestamped messages from the EnableFallingEdgeEvents register.")]
-    public partial class TimestampedEnableFallingEdgeEvents
+    [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW.")]
+    public partial class TimestampedEnableFallingEdgeEvents : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(EnableFallingEdgeEvents);
+
         /// <summary>
         /// Represents the address of the <see cref="EnableFallingEdgeEvents"/> register. This field is constant.
         /// </summary>
         public const int Address = EnableFallingEdgeEvents.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="EnableFallingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="EnableFallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1129,9 +1208,11 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// Provides methods for manipulating FallingEdgeEvents register messages. Event Only. Returns a
+    /// timestamped message with the Port state when any of the pins specified in the
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
     /// </summary>
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
     public partial class FallingEdgeEvents
     {
         /// <summary>
@@ -1150,7 +1231,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="FallingEdgeEvents"/> register messages.
+        /// Returns the payload of the specified <see cref="FallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1160,7 +1241,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="FallingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="FallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1174,7 +1255,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="FallingEdgeEvents"/> register
         /// with the specified message type and payload.
@@ -1188,9 +1269,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="FallingEdgeEvents"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="FallingEdgeEvents"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1202,20 +1283,23 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// FallingEdgeEvents register.
+    /// Provides methods that return the timestamped payload of FallingEdgeEvents register messages.
+    /// Event Only. Returns a timestamped message with the Port state when any of the pins specified in
+    /// the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
     /// </summary>
     /// <seealso cref="FallingEdgeEvents"/>
-    [Description("Filters and selects timestamped messages from the FallingEdgeEvents register.")]
-    public partial class TimestampedFallingEdgeEvents
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    public partial class TimestampedFallingEdgeEvents : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(FallingEdgeEvents);
+
         /// <summary>
         /// Represents the address of the <see cref="FallingEdgeEvents"/> register. This field is constant.
         /// </summary>
         public const int Address = FallingEdgeEvents.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="FallingEdgeEvents"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="FallingEdgeEvents"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1226,7 +1310,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+    /// Provides methods for manipulating PwmState register messages. Write a nonzero value to this
+    /// register to start the PWM schedule. Write zero to stop the schedule. Receive an event with
+    /// payload=0 when the pwm schedule has finished.
     /// </summary>
     [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
     public partial class PwmState
@@ -1247,7 +1333,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmState"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1257,7 +1343,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmState"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1271,7 +1357,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmState"/> register
         /// with the specified message type and payload.
@@ -1285,9 +1371,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmState"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmState"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1299,20 +1385,23 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmState register.
+    /// Provides methods that return the timestamped payload of PwmState register messages. Write a
+    /// nonzero value to this register to start the PWM schedule. Write zero to stop the schedule.
+    /// Receive an event with payload=0 when the pwm schedule has finished.
     /// </summary>
     /// <seealso cref="PwmState"/>
-    [Description("Filters and selects timestamped messages from the PwmState register.")]
-    public partial class TimestampedPwmState
+    [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class TimestampedPwmState : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmState);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmState"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmState.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmState"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmState"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1323,7 +1412,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 0.
+    /// Provides methods for manipulating PwmSettings0 register messages. Configure the settings of the
+    /// PWM output on pin 0.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 0.")]
     public partial class PwmSettings0
@@ -1367,7 +1457,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings0"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings0"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1377,7 +1467,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings0"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings0"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1391,7 +1481,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings0"/> register
         /// with the specified message type and payload.
@@ -1405,9 +1495,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings0"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings0"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1419,20 +1509,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings0 register.
+    /// Provides methods that return the timestamped payload of PwmSettings0 register messages.
+    /// Configure the settings of the PWM output on pin 0.
     /// </summary>
     /// <seealso cref="PwmSettings0"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings0 register.")]
-    public partial class TimestampedPwmSettings0
+    [Description("Configure the settings of the PWM output on pin 0.")]
+    public partial class TimestampedPwmSettings0 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings0);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings0"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings0.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings0"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings0"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1443,7 +1535,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 1.
+    /// Provides methods for manipulating PwmSettings1 register messages. Configure the settings of the
+    /// PWM output on pin 1.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 1.")]
     public partial class PwmSettings1
@@ -1487,7 +1580,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings1"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings1"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1497,7 +1590,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings1"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings1"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1511,7 +1604,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings1"/> register
         /// with the specified message type and payload.
@@ -1525,9 +1618,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings1"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings1"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1539,20 +1632,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings1 register.
+    /// Provides methods that return the timestamped payload of PwmSettings1 register messages.
+    /// Configure the settings of the PWM output on pin 1.
     /// </summary>
     /// <seealso cref="PwmSettings1"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings1 register.")]
-    public partial class TimestampedPwmSettings1
+    [Description("Configure the settings of the PWM output on pin 1.")]
+    public partial class TimestampedPwmSettings1 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings1);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings1"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings1.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings1"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings1"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1563,7 +1658,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 2.
+    /// Provides methods for manipulating PwmSettings2 register messages. Configure the settings of the
+    /// PWM output on pin 2.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 2.")]
     public partial class PwmSettings2
@@ -1607,7 +1703,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings2"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings2"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1617,7 +1713,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings2"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings2"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1631,7 +1727,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings2"/> register
         /// with the specified message type and payload.
@@ -1645,9 +1741,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings2"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings2"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1659,20 +1755,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings2 register.
+    /// Provides methods that return the timestamped payload of PwmSettings2 register messages.
+    /// Configure the settings of the PWM output on pin 2.
     /// </summary>
     /// <seealso cref="PwmSettings2"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings2 register.")]
-    public partial class TimestampedPwmSettings2
+    [Description("Configure the settings of the PWM output on pin 2.")]
+    public partial class TimestampedPwmSettings2 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings2);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings2"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings2.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings2"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings2"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1683,7 +1781,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 3.
+    /// Provides methods for manipulating PwmSettings3 register messages. Configure the settings of the
+    /// PWM output on pin 3.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 3.")]
     public partial class PwmSettings3
@@ -1727,7 +1826,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings3"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings3"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1737,7 +1836,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings3"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings3"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1751,7 +1850,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings3"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings3"/> register
         /// with the specified message type and payload.
@@ -1765,9 +1864,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings3"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings3"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1779,20 +1878,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings3 register.
+    /// Provides methods that return the timestamped payload of PwmSettings3 register messages.
+    /// Configure the settings of the PWM output on pin 3.
     /// </summary>
     /// <seealso cref="PwmSettings3"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings3 register.")]
-    public partial class TimestampedPwmSettings3
+    [Description("Configure the settings of the PWM output on pin 3.")]
+    public partial class TimestampedPwmSettings3 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings3);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings3"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings3.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings3"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings3"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1803,7 +1904,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 4.
+    /// Provides methods for manipulating PwmSettings4 register messages. Configure the settings of the
+    /// PWM output on pin 4.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 4.")]
     public partial class PwmSettings4
@@ -1847,7 +1949,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings4"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings4"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1857,7 +1959,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings4"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings4"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1871,7 +1973,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings4"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings4"/> register
         /// with the specified message type and payload.
@@ -1885,9 +1987,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings4"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings4"/> register
         /// with the specified message type, timestamp, and payload.
@@ -1899,20 +2001,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings4 register.
+    /// Provides methods that return the timestamped payload of PwmSettings4 register messages.
+    /// Configure the settings of the PWM output on pin 4.
     /// </summary>
     /// <seealso cref="PwmSettings4"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings4 register.")]
-    public partial class TimestampedPwmSettings4
+    [Description("Configure the settings of the PWM output on pin 4.")]
+    public partial class TimestampedPwmSettings4 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings4);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings4"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings4.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings4"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings4"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1923,7 +2027,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 5.
+    /// Provides methods for manipulating PwmSettings5 register messages. Configure the settings of the
+    /// PWM output on pin 5.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 5.")]
     public partial class PwmSettings5
@@ -1967,7 +2072,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings5"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings5"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -1977,7 +2082,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings5"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings5"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -1991,7 +2096,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings5"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings5"/> register
         /// with the specified message type and payload.
@@ -2005,9 +2110,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings5"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings5"/> register
         /// with the specified message type, timestamp, and payload.
@@ -2019,20 +2124,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings5 register.
+    /// Provides methods that return the timestamped payload of PwmSettings5 register messages.
+    /// Configure the settings of the PWM output on pin 5.
     /// </summary>
     /// <seealso cref="PwmSettings5"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings5 register.")]
-    public partial class TimestampedPwmSettings5
+    [Description("Configure the settings of the PWM output on pin 5.")]
+    public partial class TimestampedPwmSettings5 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings5);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings5"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings5.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings5"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings5"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -2043,7 +2150,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 6.
+    /// Provides methods for manipulating PwmSettings6 register messages. Configure the settings of the
+    /// PWM output on pin 6.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 6.")]
     public partial class PwmSettings6
@@ -2087,7 +2195,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings6"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings6"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -2097,7 +2205,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings6"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings6"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -2111,7 +2219,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings6"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings6"/> register
         /// with the specified message type and payload.
@@ -2125,9 +2233,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings6"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings6"/> register
         /// with the specified message type, timestamp, and payload.
@@ -2139,20 +2247,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings6 register.
+    /// Provides methods that return the timestamped payload of PwmSettings6 register messages.
+    /// Configure the settings of the PWM output on pin 6.
     /// </summary>
     /// <seealso cref="PwmSettings6"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings6 register.")]
-    public partial class TimestampedPwmSettings6
+    [Description("Configure the settings of the PWM output on pin 6.")]
+    public partial class TimestampedPwmSettings6 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings6);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings6"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings6.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings6"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings6"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -2163,7 +2273,8 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents a register that configure the settings of the PWM output on pin 7.
+    /// Provides methods for manipulating PwmSettings7 register messages. Configure the settings of the
+    /// PWM output on pin 7.
     /// </summary>
     [Description("Configure the settings of the PWM output on pin 7.")]
     public partial class PwmSettings7
@@ -2207,7 +2318,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the payload data for <see cref="PwmSettings7"/> register messages.
+        /// Returns the payload of the specified <see cref="PwmSettings7"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
@@ -2217,7 +2328,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="PwmSettings7"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings7"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -2231,7 +2342,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a Harp message for the <see cref="PwmSettings7"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings7"/> register
         /// with the specified message type and payload.
@@ -2245,9 +2356,9 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// Returns a timestamped Harp message for the <see cref="PwmSettings7"/>
         /// register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <param name="value">The payload of the message.</param>
         /// <returns>
         /// A <see cref="HarpMessage"/> object for the <see cref="PwmSettings7"/> register
         /// with the specified message type, timestamp, and payload.
@@ -2259,20 +2370,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Provides methods for manipulating timestamped messages from the
-    /// PwmSettings7 register.
+    /// Provides methods that return the timestamped payload of PwmSettings7 register messages.
+    /// Configure the settings of the PWM output on pin 7.
     /// </summary>
     /// <seealso cref="PwmSettings7"/>
-    [Description("Filters and selects timestamped messages from the PwmSettings7 register.")]
-    public partial class TimestampedPwmSettings7
+    [Description("Configure the settings of the PWM output on pin 7.")]
+    public partial class TimestampedPwmSettings7 : ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings7);
+
         /// <summary>
         /// Represents the address of the <see cref="PwmSettings7"/> register. This field is constant.
         /// </summary>
         public const int Address = PwmSettings7.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="PwmSettings7"/> register messages.
+        /// Returns the timestamped payload of the specified <see cref="PwmSettings7"/> register message.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
@@ -2283,7 +2396,108 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator which creates standard message payloads for the
+    /// Provides methods for manipulating ScheduleStatus register messages. Event Only. Emitted when the
+    /// PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after
+    /// which the schedule is aborted.
+    /// </summary>
+    [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class ScheduleStatus
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 49;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 1;
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="ScheduleStatus"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static byte GetPayload(HarpMessage message)
+        {
+            return message.GetPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="ScheduleStatus"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetTimestampedPayload(HarpMessage message)
+        {
+            return message.GetTimestampedPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="ScheduleStatus"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="ScheduleStatus"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, messageType, value);
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="ScheduleStatus"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="ScheduleStatus"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, value);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of ScheduleStatus register messages. Event
+    /// Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a
+    /// missed deadline, after which the schedule is aborted.
+    /// </summary>
+    /// <seealso cref="ScheduleStatus"/>
+    [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class TimestampedScheduleStatus : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(ScheduleStatus);
+
+        /// <summary>
+        /// Represents the address of the <see cref="ScheduleStatus"/> register. This field is constant.
+        /// </summary>
+        public const int Address = ScheduleStatus.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="ScheduleStatus"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetPayload(HarpMessage message)
+        {
+            return ScheduleStatus.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates standard messages for the
     /// Cuttlefish device.
     /// </summary>
     /// <seealso cref="CreatePinDirectionPayload"/>
@@ -2303,6 +2517,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="CreatePwmSettings5Payload"/>
     /// <seealso cref="CreatePwmSettings6Payload"/>
     /// <seealso cref="CreatePwmSettings7Payload"/>
+    /// <seealso cref="CreateScheduleStatusPayload"/>
     [XmlInclude(typeof(CreatePinDirectionPayload))]
     [XmlInclude(typeof(CreatePinStatePayload))]
     [XmlInclude(typeof(CreatePinSetPayload))]
@@ -2320,6 +2535,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreatePwmSettings5Payload))]
     [XmlInclude(typeof(CreatePwmSettings6Payload))]
     [XmlInclude(typeof(CreatePwmSettings7Payload))]
+    [XmlInclude(typeof(CreateScheduleStatusPayload))]
     [XmlInclude(typeof(CreateTimestampedPinDirectionPayload))]
     [XmlInclude(typeof(CreateTimestampedPinStatePayload))]
     [XmlInclude(typeof(CreateTimestampedPinSetPayload))]
@@ -2337,8 +2553,9 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreateTimestampedPwmSettings5Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings6Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings7Payload))]
-    [Description("Creates standard message payloads for the Cuttlefish device.")]
-    public partial class CreateMessage : CreateMessageBuilder, INamedElement
+    [XmlInclude(typeof(CreateTimestampedScheduleStatusPayload))]
+    [Description("Creates standard messages for the Cuttlefish device.")]
+    public partial class CreateMessage : CreateMessageBuilder, INamedElement, ICustomTypeDescriptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateMessage"/> class.
@@ -2348,21 +2565,29 @@ namespace AllenNeuralDynamics.Cuttlefish
             Payload = new CreatePinDirectionPayload();
         }
 
-        string INamedElement.Name => $"{nameof(Cuttlefish)}.{GetElementDisplayName(Payload)}";
+        string INamedElement.Name => GetElementDisplayName(Payload);
+
+        AttributeCollection ICustomTypeDescriptor.GetAttributes() => Device.GetRegisterAttributes(GetType(), Payload,
+            Payload is ITimestampedRegister
+                ? "Creates timestamped Cuttlefish {0} register messages."
+                : "Creates Cuttlefish {0} register messages.");
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that set the direction of the pins. 0 = input; 1 = output.
+    /// Represents an operator that creates PinDirection register messages. Set the direction of the
+    /// pins. 0 = input; 1 = output.
     /// </summary>
     [DisplayName("PinDirectionPayload")]
-    [Description("Creates a message payload that set the direction of the pins. 0 = input; 1 = output.")]
-    public partial class CreatePinDirectionPayload
+    [Description("Set the direction of the pins. 0 = input; 1 = output.")]
+    public partial class CreatePinDirectionPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PinDirection);
+
         /// <summary>
-        /// Gets or sets the value that set the direction of the pins. 0 = input; 1 = output.
+        /// Gets or sets the value for the PinDirection register. Set the direction of the pins. 0 = input;
+        /// 1 = output.
         /// </summary>
-        [Description("The value that set the direction of the pins. 0 = input; 1 = output.")]
+        [Description("Set the direction of the pins. 0 = input; 1 = output.")]
         public Pins PinDirection { get; set; }
 
         /// <summary>
@@ -2375,7 +2600,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that set the direction of the pins. 0 = input; 1 = output.
+        /// Creates a message for the PinDirection register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PinDirection register.</returns>
@@ -2386,17 +2611,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that set the direction of the pins. 0 = input; 1 = output.
+    /// Represents an operator that creates timestamped PinDirection register messages. Set the
+    /// direction of the pins. 0 = input; 1 = output.
     /// </summary>
     [DisplayName("TimestampedPinDirectionPayload")]
-    [Description("Creates a timestamped message payload that set the direction of the pins. 0 = input; 1 = output.")]
-    public partial class CreateTimestampedPinDirectionPayload : CreatePinDirectionPayload
+    [Description("Set the direction of the pins. 0 = input; 1 = output.")]
+    public partial class CreateTimestampedPinDirectionPayload : CreatePinDirectionPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinDirection);
+
         /// <summary>
-        /// Creates a timestamped message that set the direction of the pins. 0 = input; 1 = output.
+        /// Creates a timestamped message for the PinDirection register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PinDirection register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2406,17 +2633,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that read or write the state of the pins.
+    /// Represents an operator that creates PinState register messages. Read or write the state of the
+    /// pins.
     /// </summary>
     [DisplayName("PinStatePayload")]
-    [Description("Creates a message payload that read or write the state of the pins.")]
-    public partial class CreatePinStatePayload
+    [Description("Read or write the state of the pins.")]
+    public partial class CreatePinStatePayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PinState);
+
         /// <summary>
-        /// Gets or sets the value that read or write the state of the pins.
+        /// Gets or sets the value for the PinState register. Read or write the state of the pins.
         /// </summary>
-        [Description("The value that read or write the state of the pins.")]
+        [Description("Read or write the state of the pins.")]
         public Pins PinState { get; set; }
 
         /// <summary>
@@ -2429,7 +2658,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that read or write the state of the pins.
+        /// Creates a message for the PinState register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PinState register.</returns>
@@ -2440,17 +2669,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that read or write the state of the pins.
+    /// Represents an operator that creates timestamped PinState register messages. Read or write the
+    /// state of the pins.
     /// </summary>
     [DisplayName("TimestampedPinStatePayload")]
-    [Description("Creates a timestamped message payload that read or write the state of the pins.")]
-    public partial class CreateTimestampedPinStatePayload : CreatePinStatePayload
+    [Description("Read or write the state of the pins.")]
+    public partial class CreateTimestampedPinStatePayload : CreatePinStatePayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinState);
+
         /// <summary>
-        /// Creates a timestamped message that read or write the state of the pins.
+        /// Creates a timestamped message for the PinState register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PinState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2460,17 +2691,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+    /// Represents an operator that creates PinSet register messages. Set pins specified in the mask to
+    /// logic HIGH by setting the corresponding bit.
     /// </summary>
     [DisplayName("PinSetPayload")]
-    [Description("Creates a message payload that set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
-    public partial class CreatePinSetPayload
+    [Description("Set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
+    public partial class CreatePinSetPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PinSet);
+
         /// <summary>
-        /// Gets or sets the value that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+        /// Gets or sets the value for the PinSet register. Set pins specified in the mask to logic HIGH by
+        /// setting the corresponding bit.
         /// </summary>
-        [Description("The value that set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
+        [Description("Set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
         public Pins PinSet { get; set; }
 
         /// <summary>
@@ -2483,7 +2717,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+        /// Creates a message for the PinSet register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PinSet register.</returns>
@@ -2494,17 +2728,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+    /// Represents an operator that creates timestamped PinSet register messages. Set pins specified in
+    /// the mask to logic HIGH by setting the corresponding bit.
     /// </summary>
     [DisplayName("TimestampedPinSetPayload")]
-    [Description("Creates a timestamped message payload that set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
-    public partial class CreateTimestampedPinSetPayload : CreatePinSetPayload
+    [Description("Set pins specified in the mask to logic HIGH by setting the corresponding bit.")]
+    public partial class CreateTimestampedPinSetPayload : CreatePinSetPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinSet);
+
         /// <summary>
-        /// Creates a timestamped message that set pins specified in the mask to logic HIGH by setting the corresponding bit.
+        /// Creates a timestamped message for the PinSet register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PinSet register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2514,17 +2750,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that set specified pins in the mask to logic LOW by setting the corresponding bit.
+    /// Represents an operator that creates PinClear register messages. Set specified pins in the mask
+    /// to logic LOW by setting the corresponding bit.
     /// </summary>
     [DisplayName("PinClearPayload")]
-    [Description("Creates a message payload that set specified pins in the mask to logic LOW by setting the corresponding bit.")]
-    public partial class CreatePinClearPayload
+    [Description("Set specified pins in the mask to logic LOW by setting the corresponding bit.")]
+    public partial class CreatePinClearPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PinClear);
+
         /// <summary>
-        /// Gets or sets the value that set specified pins in the mask to logic LOW by setting the corresponding bit.
+        /// Gets or sets the value for the PinClear register. Set specified pins in the mask to logic LOW by
+        /// setting the corresponding bit.
         /// </summary>
-        [Description("The value that set specified pins in the mask to logic LOW by setting the corresponding bit.")]
+        [Description("Set specified pins in the mask to logic LOW by setting the corresponding bit.")]
         public Pins PinClear { get; set; }
 
         /// <summary>
@@ -2537,7 +2776,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that set specified pins in the mask to logic LOW by setting the corresponding bit.
+        /// Creates a message for the PinClear register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PinClear register.</returns>
@@ -2548,17 +2787,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that set specified pins in the mask to logic LOW by setting the corresponding bit.
+    /// Represents an operator that creates timestamped PinClear register messages. Set specified pins
+    /// in the mask to logic LOW by setting the corresponding bit.
     /// </summary>
     [DisplayName("TimestampedPinClearPayload")]
-    [Description("Creates a timestamped message payload that set specified pins in the mask to logic LOW by setting the corresponding bit.")]
-    public partial class CreateTimestampedPinClearPayload : CreatePinClearPayload
+    [Description("Set specified pins in the mask to logic LOW by setting the corresponding bit.")]
+    public partial class CreateTimestampedPinClearPayload : CreatePinClearPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PinClear);
+
         /// <summary>
-        /// Creates a timestamped message that set specified pins in the mask to logic LOW by setting the corresponding bit.
+        /// Creates a timestamped message for the PinClear register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PinClear register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2568,17 +2809,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+    /// Represents an operator that creates EnableRisingEdgeEvents register messages. Enable Events from
+    /// the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding
+    /// pins transitions from logic LOW to logic HIGH.
     /// </summary>
     [DisplayName("EnableRisingEdgeEventsPayload")]
-    [Description("Creates a message payload that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.")]
-    public partial class CreateEnableRisingEdgeEventsPayload
+    [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH.")]
+    public partial class CreateEnableRisingEdgeEventsPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(EnableRisingEdgeEvents);
+
         /// <summary>
-        /// Gets or sets the value that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+        /// Gets or sets the value for the EnableRisingEdgeEvents register. Enable Events from the
+        /// RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins
+        /// transitions from logic LOW to logic HIGH.
         /// </summary>
-        [Description("The value that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.")]
+        [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH.")]
         public Pins EnableRisingEdgeEvents { get; set; }
 
         /// <summary>
@@ -2591,7 +2837,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+        /// Creates a message for the EnableRisingEdgeEvents register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the EnableRisingEdgeEvents register.</returns>
@@ -2602,17 +2848,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+    /// Represents an operator that creates timestamped EnableRisingEdgeEvents register messages. Enable
+    /// Events from the RisingEdgeEvents register for the specified pins in the mask when any of the
+    /// corresponding pins transitions from logic LOW to logic HIGH.
     /// </summary>
     [DisplayName("TimestampedEnableRisingEdgeEventsPayload")]
-    [Description("Creates a timestamped message payload that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.")]
-    public partial class CreateTimestampedEnableRisingEdgeEventsPayload : CreateEnableRisingEdgeEventsPayload
+    [Description("Enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic LOW to logic HIGH.")]
+    public partial class CreateTimestampedEnableRisingEdgeEventsPayload : CreateEnableRisingEdgeEventsPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(EnableRisingEdgeEvents);
+
         /// <summary>
-        /// Creates a timestamped message that enable Events from the RisingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic LOW to logic HIGH.
+        /// Creates a timestamped message for the EnableRisingEdgeEvents register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the EnableRisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2622,17 +2871,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// Represents an operator that creates RisingEdgeEvents register messages. Event Only. Returns a
+    /// timestamped message with the Port state when any of the pins specified in the
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
     /// </summary>
     [DisplayName("RisingEdgeEventsPayload")]
-    [Description("Creates a message payload that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
-    public partial class CreateRisingEdgeEventsPayload
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    public partial class CreateRisingEdgeEventsPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(RisingEdgeEvents);
+
         /// <summary>
-        /// Gets or sets the value that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+        /// Gets or sets the value for the RisingEdgeEvents register. Event Only. Returns a timestamped
+        /// message with the Port state when any of the pins specified in the EnableRisingEdgeEvents
+        /// register transitions from logic LOW to logic HIGH.
         /// </summary>
-        [Description("The value that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
         public Pins RisingEdgeEvents { get; set; }
 
         /// <summary>
@@ -2645,7 +2899,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+        /// Creates a message for the RisingEdgeEvents register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the RisingEdgeEvents register.</returns>
@@ -2656,17 +2910,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// Represents an operator that creates timestamped RisingEdgeEvents register messages. Event Only.
+    /// Returns a timestamped message with the Port state when any of the pins specified in the
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
     /// </summary>
     [DisplayName("TimestampedRisingEdgeEventsPayload")]
-    [Description("Creates a timestamped message payload that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
-    public partial class CreateTimestampedRisingEdgeEventsPayload : CreateRisingEdgeEventsPayload
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    public partial class CreateTimestampedRisingEdgeEventsPayload : CreateRisingEdgeEventsPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(RisingEdgeEvents);
+
         /// <summary>
-        /// Creates a timestamped message that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+        /// Creates a timestamped message for the RisingEdgeEvents register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the RisingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2676,17 +2933,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+    /// Represents an operator that creates EnableFallingEdgeEvents register messages. Enable Events
+    /// from the FallingEdgeEvents register for the specified pins in the mask when any of the
+    /// corresponding pins transitions from logic HIGH to logic LOW.
     /// </summary>
     [DisplayName("EnableFallingEdgeEventsPayload")]
-    [Description("Creates a message payload that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.")]
-    public partial class CreateEnableFallingEdgeEventsPayload
+    [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW.")]
+    public partial class CreateEnableFallingEdgeEventsPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(EnableFallingEdgeEvents);
+
         /// <summary>
-        /// Gets or sets the value that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+        /// Gets or sets the value for the EnableFallingEdgeEvents register. Enable Events from the
+        /// FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins
+        /// transitions from logic HIGH to logic LOW.
         /// </summary>
-        [Description("The value that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.")]
+        [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW.")]
         public Pins EnableFallingEdgeEvents { get; set; }
 
         /// <summary>
@@ -2699,7 +2961,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+        /// Creates a message for the EnableFallingEdgeEvents register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the EnableFallingEdgeEvents register.</returns>
@@ -2710,17 +2972,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+    /// Represents an operator that creates timestamped EnableFallingEdgeEvents register messages.
+    /// Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of
+    /// the corresponding pins transitions from logic HIGH to logic LOW.
     /// </summary>
     [DisplayName("TimestampedEnableFallingEdgeEventsPayload")]
-    [Description("Creates a timestamped message payload that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.")]
-    public partial class CreateTimestampedEnableFallingEdgeEventsPayload : CreateEnableFallingEdgeEventsPayload
+    [Description("Enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the corresponding pins transitions from logic HIGH to logic LOW.")]
+    public partial class CreateTimestampedEnableFallingEdgeEventsPayload : CreateEnableFallingEdgeEventsPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(EnableFallingEdgeEvents);
+
         /// <summary>
-        /// Creates a timestamped message that enable Events from the FallingEdgeEvents register for the specified pins in the mask when any of the the corresponding pins transitions from logic HIGH to logic LOW.
+        /// Creates a timestamped message for the EnableFallingEdgeEvents register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the EnableFallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2730,17 +2995,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// Represents an operator that creates FallingEdgeEvents register messages. Event Only. Returns a
+    /// timestamped message with the Port state when any of the pins specified in the
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
     /// </summary>
     [DisplayName("FallingEdgeEventsPayload")]
-    [Description("Creates a message payload that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.")]
-    public partial class CreateFallingEdgeEventsPayload
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    public partial class CreateFallingEdgeEventsPayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(FallingEdgeEvents);
+
         /// <summary>
-        /// Gets or sets the value that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+        /// Gets or sets the value for the FallingEdgeEvents register. Event Only. Returns a timestamped
+        /// message with the Port state when any of the pins specified in the EnableFallingEdgeEvents
+        /// register transitions from logic HIGH to logic LOW.
         /// </summary>
-        [Description("The value that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
         public Pins FallingEdgeEvents { get; set; }
 
         /// <summary>
@@ -2753,7 +3023,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+        /// Creates a message for the FallingEdgeEvents register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the FallingEdgeEvents register.</returns>
@@ -2764,17 +3034,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// Represents an operator that creates timestamped FallingEdgeEvents register messages. Event Only.
+    /// Returns a timestamped message with the Port state when any of the pins specified in the
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
     /// </summary>
     [DisplayName("TimestampedFallingEdgeEventsPayload")]
-    [Description("Creates a timestamped message payload that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.")]
-    public partial class CreateTimestampedFallingEdgeEventsPayload : CreateFallingEdgeEventsPayload
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    public partial class CreateTimestampedFallingEdgeEventsPayload : CreateFallingEdgeEventsPayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(FallingEdgeEvents);
+
         /// <summary>
-        /// Creates a timestamped message that event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic HIGH to logic LOW.
+        /// Creates a timestamped message for the FallingEdgeEvents register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the FallingEdgeEvents register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2784,17 +3057,22 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+    /// Represents an operator that creates PwmState register messages. Write a nonzero value to this
+    /// register to start the PWM schedule. Write zero to stop the schedule. Receive an event with
+    /// payload=0 when the pwm schedule has finished.
     /// </summary>
     [DisplayName("PwmStatePayload")]
-    [Description("Creates a message payload that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
-    public partial class CreatePwmStatePayload
+    [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class CreatePwmStatePayload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmState);
+
         /// <summary>
-        /// Gets or sets the value that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+        /// Gets or sets the value for the PwmState register. Write a nonzero value to this register to
+        /// start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when
+        /// the pwm schedule has finished.
         /// </summary>
-        [Description("The value that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+        [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
         public EnableFlag PwmState { get; set; }
 
         /// <summary>
@@ -2807,7 +3085,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+        /// Creates a message for the PwmState register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmState register.</returns>
@@ -2818,17 +3096,20 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+    /// Represents an operator that creates timestamped PwmState register messages. Write a nonzero
+    /// value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an
+    /// event with payload=0 when the pwm schedule has finished.
     /// </summary>
     [DisplayName("TimestampedPwmStatePayload")]
-    [Description("Creates a timestamped message payload that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
-    public partial class CreateTimestampedPwmStatePayload : CreatePwmStatePayload
+    [Description("Write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.")]
+    public partial class CreateTimestampedPwmStatePayload : CreatePwmStatePayload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmState);
+
         /// <summary>
-        /// Creates a timestamped message that write a nonzero value to this register to start the PWM schedule. Write zero to stop the schedule. Receive an event with payload=0 when the pwm schedule has finished.
+        /// Creates a timestamped message for the PwmState register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2838,39 +3119,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 0.
+    /// Represents an operator that creates PwmSettings0 register messages. Configure the settings of
+    /// the PWM output on pin 0.
     /// </summary>
     [DisplayName("PwmSettings0Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 0.")]
-    public partial class CreatePwmSettings0Payload
+    [Description("Configure the settings of the PWM output on pin 0.")]
+    public partial class CreatePwmSettings0Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings0);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -2891,7 +3179,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 0.
+        /// Creates a message for the PwmSettings0 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings0 register.</returns>
@@ -2902,17 +3190,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 0.
+    /// Represents an operator that creates timestamped PwmSettings0 register messages. Configure the
+    /// settings of the PWM output on pin 0.
     /// </summary>
     [DisplayName("TimestampedPwmSettings0Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 0.")]
-    public partial class CreateTimestampedPwmSettings0Payload : CreatePwmSettings0Payload
+    [Description("Configure the settings of the PWM output on pin 0.")]
+    public partial class CreateTimestampedPwmSettings0Payload : CreatePwmSettings0Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings0);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 0.
+        /// Creates a timestamped message for the PwmSettings0 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings0 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -2922,39 +3212,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 1.
+    /// Represents an operator that creates PwmSettings1 register messages. Configure the settings of
+    /// the PWM output on pin 1.
     /// </summary>
     [DisplayName("PwmSettings1Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 1.")]
-    public partial class CreatePwmSettings1Payload
+    [Description("Configure the settings of the PWM output on pin 1.")]
+    public partial class CreatePwmSettings1Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings1);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -2975,7 +3272,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 1.
+        /// Creates a message for the PwmSettings1 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings1 register.</returns>
@@ -2986,17 +3283,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 1.
+    /// Represents an operator that creates timestamped PwmSettings1 register messages. Configure the
+    /// settings of the PWM output on pin 1.
     /// </summary>
     [DisplayName("TimestampedPwmSettings1Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 1.")]
-    public partial class CreateTimestampedPwmSettings1Payload : CreatePwmSettings1Payload
+    [Description("Configure the settings of the PWM output on pin 1.")]
+    public partial class CreateTimestampedPwmSettings1Payload : CreatePwmSettings1Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings1);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 1.
+        /// Creates a timestamped message for the PwmSettings1 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings1 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3006,39 +3305,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 2.
+    /// Represents an operator that creates PwmSettings2 register messages. Configure the settings of
+    /// the PWM output on pin 2.
     /// </summary>
     [DisplayName("PwmSettings2Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 2.")]
-    public partial class CreatePwmSettings2Payload
+    [Description("Configure the settings of the PWM output on pin 2.")]
+    public partial class CreatePwmSettings2Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings2);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3059,7 +3365,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 2.
+        /// Creates a message for the PwmSettings2 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings2 register.</returns>
@@ -3070,17 +3376,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 2.
+    /// Represents an operator that creates timestamped PwmSettings2 register messages. Configure the
+    /// settings of the PWM output on pin 2.
     /// </summary>
     [DisplayName("TimestampedPwmSettings2Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 2.")]
-    public partial class CreateTimestampedPwmSettings2Payload : CreatePwmSettings2Payload
+    [Description("Configure the settings of the PWM output on pin 2.")]
+    public partial class CreateTimestampedPwmSettings2Payload : CreatePwmSettings2Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings2);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 2.
+        /// Creates a timestamped message for the PwmSettings2 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings2 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3090,39 +3398,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 3.
+    /// Represents an operator that creates PwmSettings3 register messages. Configure the settings of
+    /// the PWM output on pin 3.
     /// </summary>
     [DisplayName("PwmSettings3Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 3.")]
-    public partial class CreatePwmSettings3Payload
+    [Description("Configure the settings of the PWM output on pin 3.")]
+    public partial class CreatePwmSettings3Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings3);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3143,7 +3458,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 3.
+        /// Creates a message for the PwmSettings3 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings3 register.</returns>
@@ -3154,17 +3469,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 3.
+    /// Represents an operator that creates timestamped PwmSettings3 register messages. Configure the
+    /// settings of the PWM output on pin 3.
     /// </summary>
     [DisplayName("TimestampedPwmSettings3Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 3.")]
-    public partial class CreateTimestampedPwmSettings3Payload : CreatePwmSettings3Payload
+    [Description("Configure the settings of the PWM output on pin 3.")]
+    public partial class CreateTimestampedPwmSettings3Payload : CreatePwmSettings3Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings3);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 3.
+        /// Creates a timestamped message for the PwmSettings3 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings3 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3174,39 +3491,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 4.
+    /// Represents an operator that creates PwmSettings4 register messages. Configure the settings of
+    /// the PWM output on pin 4.
     /// </summary>
     [DisplayName("PwmSettings4Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 4.")]
-    public partial class CreatePwmSettings4Payload
+    [Description("Configure the settings of the PWM output on pin 4.")]
+    public partial class CreatePwmSettings4Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings4);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3227,7 +3551,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 4.
+        /// Creates a message for the PwmSettings4 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings4 register.</returns>
@@ -3238,17 +3562,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 4.
+    /// Represents an operator that creates timestamped PwmSettings4 register messages. Configure the
+    /// settings of the PWM output on pin 4.
     /// </summary>
     [DisplayName("TimestampedPwmSettings4Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 4.")]
-    public partial class CreateTimestampedPwmSettings4Payload : CreatePwmSettings4Payload
+    [Description("Configure the settings of the PWM output on pin 4.")]
+    public partial class CreateTimestampedPwmSettings4Payload : CreatePwmSettings4Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings4);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 4.
+        /// Creates a timestamped message for the PwmSettings4 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings4 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3258,39 +3584,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 5.
+    /// Represents an operator that creates PwmSettings5 register messages. Configure the settings of
+    /// the PWM output on pin 5.
     /// </summary>
     [DisplayName("PwmSettings5Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 5.")]
-    public partial class CreatePwmSettings5Payload
+    [Description("Configure the settings of the PWM output on pin 5.")]
+    public partial class CreatePwmSettings5Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings5);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3311,7 +3644,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 5.
+        /// Creates a message for the PwmSettings5 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings5 register.</returns>
@@ -3322,17 +3655,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 5.
+    /// Represents an operator that creates timestamped PwmSettings5 register messages. Configure the
+    /// settings of the PWM output on pin 5.
     /// </summary>
     [DisplayName("TimestampedPwmSettings5Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 5.")]
-    public partial class CreateTimestampedPwmSettings5Payload : CreatePwmSettings5Payload
+    [Description("Configure the settings of the PWM output on pin 5.")]
+    public partial class CreateTimestampedPwmSettings5Payload : CreatePwmSettings5Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings5);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 5.
+        /// Creates a timestamped message for the PwmSettings5 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings5 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3342,39 +3677,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 6.
+    /// Represents an operator that creates PwmSettings6 register messages. Configure the settings of
+    /// the PWM output on pin 6.
     /// </summary>
     [DisplayName("PwmSettings6Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 6.")]
-    public partial class CreatePwmSettings6Payload
+    [Description("Configure the settings of the PWM output on pin 6.")]
+    public partial class CreatePwmSettings6Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings6);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3395,7 +3737,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 6.
+        /// Creates a message for the PwmSettings6 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings6 register.</returns>
@@ -3406,17 +3748,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 6.
+    /// Represents an operator that creates timestamped PwmSettings6 register messages. Configure the
+    /// settings of the PWM output on pin 6.
     /// </summary>
     [DisplayName("TimestampedPwmSettings6Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 6.")]
-    public partial class CreateTimestampedPwmSettings6Payload : CreatePwmSettings6Payload
+    [Description("Configure the settings of the PWM output on pin 6.")]
+    public partial class CreateTimestampedPwmSettings6Payload : CreatePwmSettings6Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings6);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 6.
+        /// Creates a timestamped message for the PwmSettings6 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings6 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3426,39 +3770,46 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a message payload
-    /// that configure the settings of the PWM output on pin 7.
+    /// Represents an operator that creates PwmSettings7 register messages. Configure the settings of
+    /// the PWM output on pin 7.
     /// </summary>
     [DisplayName("PwmSettings7Payload")]
-    [Description("Creates a message payload that configure the settings of the PWM output on pin 7.")]
-    public partial class CreatePwmSettings7Payload
+    [Description("Configure the settings of the PWM output on pin 7.")]
+    public partial class CreatePwmSettings7Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PwmSettings7);
+
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains HIGH in one period.
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how long (in microseconds) the output remains LOW in one period.
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
         /// </summary>
         [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that how many pulses to produce, or zero to pulse until disabled.
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
         /// </summary>
         [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that whether the output is inverted (on-time refers to the output being LOW instead).
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
         /// </summary>
         [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert { get; set; }
@@ -3479,7 +3830,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Creates a message that configure the settings of the PWM output on pin 7.
+        /// Creates a message for the PwmSettings7 register.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the PwmSettings7 register.</returns>
@@ -3490,17 +3841,19 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents an operator that creates a timestamped message payload
-    /// that configure the settings of the PWM output on pin 7.
+    /// Represents an operator that creates timestamped PwmSettings7 register messages. Configure the
+    /// settings of the PWM output on pin 7.
     /// </summary>
     [DisplayName("TimestampedPwmSettings7Payload")]
-    [Description("Creates a timestamped message payload that configure the settings of the PWM output on pin 7.")]
-    public partial class CreateTimestampedPwmSettings7Payload : CreatePwmSettings7Payload
+    [Description("Configure the settings of the PWM output on pin 7.")]
+    public partial class CreateTimestampedPwmSettings7Payload : CreatePwmSettings7Payload, ITimestampedRegister
     {
+        Type ITimestampedRegister.RegisterType => typeof(PwmSettings7);
+
         /// <summary>
-        /// Creates a timestamped message that configure the settings of the PWM output on pin 7.
+        /// Creates a timestamped message for the PwmSettings7 register.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new timestamped message for the PwmSettings7 register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
@@ -3510,7 +3863,69 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Represents the payload of the PwmSettings register.
+    /// Represents an operator that creates ScheduleStatus register messages. Event Only. Emitted when
+    /// the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline,
+    /// after which the schedule is aborted.
+    /// </summary>
+    [DisplayName("ScheduleStatusPayload")]
+    [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class CreateScheduleStatusPayload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(ScheduleStatus);
+
+        /// <summary>
+        /// Gets or sets the value for the ScheduleStatus register. Event Only. Emitted when the PWM
+        /// schedule encounters an error while running. A value of 1 indicates a missed deadline, after
+        /// which the schedule is aborted.
+        /// </summary>
+        [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+        public byte ScheduleStatus { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the ScheduleStatus register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public byte GetPayload()
+        {
+            return ScheduleStatus;
+        }
+
+        /// <summary>
+        /// Creates a message for the ScheduleStatus register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the ScheduleStatus register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.ScheduleStatus.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped ScheduleStatus register messages. Event Only.
+    /// Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed
+    /// deadline, after which the schedule is aborted.
+    /// </summary>
+    [DisplayName("TimestampedScheduleStatusPayload")]
+    [Description("Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted.")]
+    public partial class CreateTimestampedScheduleStatusPayload : CreateScheduleStatusPayload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(ScheduleStatus);
+
+        /// <summary>
+        /// Creates a timestamped message for the ScheduleStatus register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the ScheduleStatus register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.ScheduleStatus.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents the PwmSettings payload.
     /// </summary>
     public struct PwmSettingsPayload
     {
@@ -3539,35 +3954,38 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
         /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
         public uint OffsetUs;
 
         /// <summary>
         /// How long (in microseconds) the output remains HIGH in one period.
         /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
         public uint OnDurationUs;
 
         /// <summary>
         /// How long (in microseconds) the output remains LOW in one period.
         /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
         public uint OffDurationUs;
 
         /// <summary>
         /// How many pulses to produce, or zero to pulse until disabled.
         /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
         public uint Cycles;
 
         /// <summary>
         /// Whether the output is inverted (on-time refers to the output being LOW instead).
         /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
         public bool Invert;
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the PwmSettings register.
+        /// Returns a <see cref="string"/> that represents the PwmSettings payload.
         /// </summary>
         /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// PwmSettings register.
+        /// A <see cref="string"/> that represents the PwmSettings payload.
         /// </returns>
         public override string ToString()
         {
@@ -3582,7 +4000,7 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
-    /// Available pins on the device
+    /// Available pins on the device.
     /// </summary>
     [Flags]
     public enum Pins : byte

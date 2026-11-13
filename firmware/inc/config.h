@@ -13,7 +13,7 @@ inline constexpr size_t PORT_DIR_MASK = 0x000000FF << PORT_DIR_BASE;
 inline constexpr uint32_t LED0 = 24;
 inline constexpr uint32_t HARP_CORE_LED_PIN = 25;
 
-inline constexpr semver_t FW_VERSION = {0, 1, 0};
+inline constexpr semver_t FW_VERSION = {0, 1, 1};
 inline constexpr semver_t HW_VERSION = {1, 2, 0};
 
 inline constexpr size_t HARP_DEVICE_ID = 1403;

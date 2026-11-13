@@ -53,7 +53,7 @@ int main()
     queue_init(&core1_ctrl_queue, sizeof(pwm_ctrl_msg_t), 8);
     queue_init(&core1_next_state_queue, sizeof(core1_next_state_msg_t), 8);
     queue_init(&pwm_settings_queue, sizeof(pwm_specs_core_msg_t), 32);
-    queue_init(&schedule_error_queue, sizeof(uint8_t), 2);
+    queue_init(&schedule_error_queue, sizeof(schedule_error_msg_t), 2);
 #if defined(DEBUG) || defined(PROFILE_CPU)
 #warning "Initializing printf from UART will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);

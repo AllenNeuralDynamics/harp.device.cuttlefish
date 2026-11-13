@@ -15,33 +15,61 @@ namespace AllenNeuralDynamics.Cuttlefish
     public partial class Device
     {
         /// <summary>
-        /// Initializes a new instance of the asynchronous API to configure and interface
-        /// with Cuttlefish devices on the specified serial port.
+        /// Asynchronously connects to the Cuttlefish device on the specified serial port and
+        /// verifies its identity.
         /// </summary>
         /// <param name="portName">
-        /// The name of the serial port used to communicate with the Harp device.
+        /// The name of the serial port used to communicate with the Cuttlefish device.
         /// </param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous initialization operation. The value of
-        /// the <see cref="Task{TResult}.Result"/> parameter contains a new instance of
-        /// the <see cref="AsyncDevice"/> class.
+        /// A task that represents the asynchronous connect operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains a new instance of the
+        /// <see cref="AsyncDevice"/> class.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device on the specified serial port does not report the WhoAmI of the
+        /// Cuttlefish device, or replied to the WhoAmI read request with an error.
+        /// This exception is stored into the returned task.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// The specified serial port could not be found or opened. This exception is stored
+        /// into the returned task.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">
+        /// Access to the specified serial port is denied, or another process already has it
+        /// open. This exception is stored into the returned task.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The specified port name is not valid. This exception is stored into the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public static async Task<AsyncDevice> CreateAsync(string portName, CancellationToken cancellationToken = default)
         {
             var device = new AsyncDevice(portName);
-            var whoAmI = await device.ReadWhoAmIAsync(cancellationToken);
-            if (whoAmI != Device.WhoAmI)
+            try
             {
-                var errorMessage = string.Format(
-                    "The device ID {1} on {0} was unexpected. Check whether a Cuttlefish device is connected to the specified serial port.",
-                    portName, whoAmI);
-                throw new HarpException(errorMessage);
-            }
+                var whoAmI = await device.ReadWhoAmIAsync(cancellationToken);
+                if (whoAmI != Device.WhoAmI)
+                {
+                    var errorMessage = string.Format(
+                        "The device on {0} reported WhoAmI {1}, which does not match the Cuttlefish device. Check whether the Cuttlefish device is connected to the specified serial port.",
+                        portName, whoAmI);
+                    throw new HarpException(errorMessage);
+                }
 
-            return device;
+                return device;
+            }
+            catch
+            {
+                device.Dispose();
+                throw;
+            }
         }
     }
 
@@ -56,15 +84,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PinDirection"/> register.
+        /// Asynchronously reads the payload of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadPinDirectionAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinDirection.Address), cancellationToken);
@@ -72,15 +108,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PinDirection"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PinDirection"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedPinDirectionAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinDirection.Address), cancellationToken);
@@ -88,13 +132,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PinDirection"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PinDirection"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePinDirectionAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = PinDirection.FromPayload(MessageType.Write, value);
@@ -102,15 +154,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PinState"/> register.
+        /// Asynchronously reads the payload of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadPinStateAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinState.Address), cancellationToken);
@@ -118,15 +178,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PinState"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PinState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedPinStateAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinState.Address), cancellationToken);
@@ -134,13 +202,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PinState"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PinState"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePinStateAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = PinState.FromPayload(MessageType.Write, value);
@@ -148,15 +224,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PinSet"/> register.
+        /// Asynchronously reads the payload of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadPinSetAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinSet.Address), cancellationToken);
@@ -164,15 +248,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PinSet"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PinSet"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedPinSetAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinSet.Address), cancellationToken);
@@ -180,13 +272,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PinSet"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PinSet"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePinSetAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = PinSet.FromPayload(MessageType.Write, value);
@@ -194,15 +294,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PinClear"/> register.
+        /// Asynchronously reads the payload of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadPinClearAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinClear.Address), cancellationToken);
@@ -210,15 +318,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PinClear"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PinClear"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedPinClearAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PinClear.Address), cancellationToken);
@@ -226,13 +342,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PinClear"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PinClear"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePinClearAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = PinClear.FromPayload(MessageType.Write, value);
@@ -240,15 +364,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="EnableRisingEdgeEvents"/> register.
+        /// Asynchronously reads the payload of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(EnableRisingEdgeEvents.Address), cancellationToken);
@@ -256,15 +388,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="EnableRisingEdgeEvents"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedEnableRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(EnableRisingEdgeEvents.Address), cancellationToken);
@@ -272,13 +412,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="EnableRisingEdgeEvents"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="EnableRisingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WriteEnableRisingEdgeEventsAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = EnableRisingEdgeEvents.FromPayload(MessageType.Write, value);
@@ -286,15 +434,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="RisingEdgeEvents"/> register.
+        /// Asynchronously reads the payload of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(RisingEdgeEvents.Address), cancellationToken);
@@ -302,15 +458,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="RisingEdgeEvents"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="RisingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedRisingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(RisingEdgeEvents.Address), cancellationToken);
@@ -318,15 +482,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="EnableFallingEdgeEvents"/> register.
+        /// Asynchronously reads the payload of the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(EnableFallingEdgeEvents.Address), cancellationToken);
@@ -334,15 +506,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="EnableFallingEdgeEvents"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedEnableFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(EnableFallingEdgeEvents.Address), cancellationToken);
@@ -350,13 +530,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="EnableFallingEdgeEvents"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="EnableFallingEdgeEvents"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WriteEnableFallingEdgeEventsAsync(Pins value, CancellationToken cancellationToken = default)
         {
             var request = EnableFallingEdgeEvents.FromPayload(MessageType.Write, value);
@@ -364,15 +552,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="FallingEdgeEvents"/> register.
+        /// Asynchronously reads the payload of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Pins> ReadFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(FallingEdgeEvents.Address), cancellationToken);
@@ -380,15 +576,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="FallingEdgeEvents"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="FallingEdgeEvents"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<Pins>> ReadTimestampedFallingEdgeEventsAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(FallingEdgeEvents.Address), cancellationToken);
@@ -396,15 +600,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmState"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<EnableFlag> ReadPwmStateAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
@@ -412,15 +624,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmState"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmState"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<EnableFlag>> ReadTimestampedPwmStateAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmState.Address), cancellationToken);
@@ -428,13 +648,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmState"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmState"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmStateAsync(EnableFlag value, CancellationToken cancellationToken = default)
         {
             var request = PwmState.FromPayload(MessageType.Write, value);
@@ -442,15 +670,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings0"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings0Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
@@ -458,15 +694,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings0"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings0"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings0Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings0.Address), cancellationToken);
@@ -474,13 +718,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings0"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings0"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings0Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings0.FromPayload(MessageType.Write, value);
@@ -488,15 +740,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings1"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings1Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
@@ -504,15 +764,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings1"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings1"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings1Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings1.Address), cancellationToken);
@@ -520,13 +788,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings1"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings1"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings1Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings1.FromPayload(MessageType.Write, value);
@@ -534,15 +810,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings2"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings2Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
@@ -550,15 +834,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings2"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings2"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings2Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings2.Address), cancellationToken);
@@ -566,13 +858,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings2"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings2"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings2Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings2.FromPayload(MessageType.Write, value);
@@ -580,15 +880,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings3"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings3"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings3Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
@@ -596,15 +904,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings3"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings3"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings3Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings3.Address), cancellationToken);
@@ -612,13 +928,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings3"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings3"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings3Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings3.FromPayload(MessageType.Write, value);
@@ -626,15 +950,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings4"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings4"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings4Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
@@ -642,15 +974,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings4"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings4"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings4Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings4.Address), cancellationToken);
@@ -658,13 +998,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings4"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings4"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings4Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings4.FromPayload(MessageType.Write, value);
@@ -672,15 +1020,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings5"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings5"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings5Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
@@ -688,15 +1044,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings5"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings5"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings5Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings5.Address), cancellationToken);
@@ -704,13 +1068,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings5"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings5"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings5Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings5.FromPayload(MessageType.Write, value);
@@ -718,15 +1090,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings6"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings6"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings6Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
@@ -734,15 +1114,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings6"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings6"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings6Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings6.Address), cancellationToken);
@@ -750,13 +1138,21 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings6"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings6"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings6Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings6.FromPayload(MessageType.Write, value);
@@ -764,15 +1160,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the <see cref="PwmSettings7"/> register.
+        /// Asynchronously reads the payload of the <see cref="PwmSettings7"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<PwmSettingsPayload> ReadPwmSettings7Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
@@ -780,15 +1184,23 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the <see cref="PwmSettings7"/> register.
+        /// Asynchronously reads the timestamped payload of the <see cref="PwmSettings7"/> register.
         /// </summary>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The task result contains
-        /// the timestamped register payload.
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
         /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task<Timestamped<PwmSettingsPayload>> ReadTimestampedPwmSettings7Async(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(PwmSettings7.Address), cancellationToken);
@@ -796,17 +1208,73 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the <see cref="PwmSettings7"/> register.
+        /// Asynchronously writes the specified payload to the <see cref="PwmSettings7"/> register.
         /// </summary>
-        /// <param name="value">The value to write in the register.</param>
+        /// <param name="value">The payload to write to the register.</param>
         /// <param name="cancellationToken">
-        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
         /// </param>
-        /// <returns>The task object representing the asynchronous write operation.</returns>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
         public async Task WritePwmSettings7Async(PwmSettingsPayload value, CancellationToken cancellationToken = default)
         {
             var request = PwmSettings7.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="ScheduleStatus"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<byte> ReadScheduleStatusAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(ScheduleStatus.Address), cancellationToken);
+            return ScheduleStatus.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="ScheduleStatus"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<byte>> ReadTimestampedScheduleStatusAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(ScheduleStatus.Address), cancellationToken);
+            return ScheduleStatus.GetTimestampedPayload(reply);
         }
     }
 }

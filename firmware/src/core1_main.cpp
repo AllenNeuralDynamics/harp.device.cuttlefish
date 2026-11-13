@@ -16,11 +16,10 @@ inline uint64_t time_us_64_unsafe()
 // Override default behavior of this function defined weakly elsewhere.
 void handle_missed_deadline()
 {
-    gpio_init(LED0);
-    gpio_set_dir(LED0, 1); // output
-    gpio_put(LED0, 1); // turn on auxilary LED.
     schedule_failed = true;
-    // TODO: push an error message back to core0.
+    schedule_error_msg_t msg{schedule_error_t::MISSED_DEADLINE,
+                             time_us_64_unsafe()};
+    queue_try_add(&schedule_error_queue, &msg);
 }
 
 
@@ -43,35 +42,35 @@ void sync_schedule()
         while (!scheduler.pq_.empty())
         {
             PWMTask& task = scheduler.pq_.top().get();
+            scheduler.pq_.pop();
+            tmp_tasks.push_back(task);
             if (task.pin_mask_ != (1u << settings.pin))
-            {
-                scheduler.pq_.pop();
-                tmp_tasks.push_back(task);
                 continue;
-            }
             // Update existing task specs.
-            task.delay_us_ = settings.specs.offset_us;
-            task.on_time_us_ = settings.specs.on_duration_us;
-            task.period_us_ = settings.specs.period_us();
-            task.count_ = settings.specs.cycles;
-            task.invert_ = bool(settings.specs.invert);
+            // Reapply specs and GPIO setup, including pin inversion.
+            task.apply_settings(settings.specs.offset_us,
+                                settings.specs.on_duration_us,
+                                settings.specs.period_us(),
+                                1u << settings.pin,
+                                settings.specs.cycles,
+                                bool(settings.specs.invert));
             updated_existing_task = true;
             break;
         }
         while (!tmp_tasks.empty())
         {
             PWMTask& task = tmp_tasks.back();
-            scheduler.pq_.push(task);
+            scheduler.schedule_pwm_task(task);
             tmp_tasks.pop_back();
         }
         if (!updated_existing_task)
         {
-            scheduler.schedule_pwm_task(settings.specs.offset_us,
-                                        settings.specs.on_duration_us,
-                                        settings.specs.period_us(),
-                                        1u << settings.pin,
-                                        settings.specs.cycles,
-                                        bool(settings.specs.invert));
+            scheduler.create_and_schedule_pwm_task(settings.specs.offset_us,
+                                                   settings.specs.on_duration_us,
+                                                   settings.specs.period_us(),
+                                                   1u << settings.pin,
+                                                   settings.specs.cycles,
+                                                   bool(settings.specs.invert));
         }
     }
 }
