@@ -67,12 +67,12 @@ int main()
     for (const auto& settings: pwm_settings)
     {
         // one task per pin.
-        scheduler.schedule_pwm_task(settings.offset_us,
-                                    settings.on_duration_us,
-                                    settings.period_us(),
-                                    pin_mask,
-                                    settings.cycles,
-                                    bool(settings.invert));
+        scheduler.create_and_schedule_pwm_task(settings.offset_us,
+                                               settings.on_duration_us,
+                                               settings.period_us(),
+                                               pin_mask,
+                                               settings.cycles,
+                                               bool(settings.invert));
         pin_mask <<= 1;
     }
     sleep_ms(100);

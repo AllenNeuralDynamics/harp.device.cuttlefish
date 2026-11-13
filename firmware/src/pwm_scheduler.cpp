@@ -34,9 +34,9 @@ void PWMScheduler::reset()
                 pq_.size(), pwm_tasks_.size());
 #endif
     cancel_alarm(); // Cancel any upcoming alarms.
-    pq_.clear(); // Remove all tasks in the priority queue.
-    pwm_tasks_.clear(); // Remove all scheduler tasks
-    port_event_queue_.clear(); // Remove all queued PortEvents
+    pq_.clear(); // Clear task ordering in the priority queue.
+    pwm_tasks_.clear(); // Clear all tasks
+    port_event_queue_.clear(); // Clear all queued PortEvents
     next_gpio_port_mask_ = 0;
     next_gpio_port_state_ = 0;
 #if defined(DEBUG)
@@ -46,28 +46,30 @@ void PWMScheduler::reset()
 
 void PWMScheduler::schedule_pwm_task(PWMTask& task)
 {
-    schedule_pwm_task(task.delay_us_, task.on_time_us_, task.period_us_,
-                      task.pin_mask_, task.count_, task.invert_);
-}
-
-void PWMScheduler::schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
-                                     uint32_t t_period_us, uint32_t pin_mask,
-                                     uint32_t count, bool invert)
-{
-    // Create PWMTask and push into the vector.
-    pwm_tasks_.emplace_back(delay_us, t_on_us, t_period_us, pin_mask, count,
-                            invert);
-    PWMTask& task = pwm_tasks_.back();
     // Aggreggate initial pin state vector.
     next_gpio_port_mask_ |= task.pin_mask_;
     if (task.starting_state() == PWMTask::update_state_t::HIGH)
         next_gpio_port_state_ |= task.pin_mask_;
+    else // in case settings were different from when task was created.
+        next_gpio_port_state_ &= ~task.pin_mask_;
     pq_.push(task); // PWMTasks are *sorted* since comparison is based on an
                     // unspecified (and therefore relative) t=0 start time.
 #ifdef DEBUG
     printf("Pushed PWMTask: (%d, %d, %d, 0x%08x)\r\n", task.delay_us_,
            task.on_time_us_, task.period_us_, task.pin_mask_);
 #endif
+
+}
+
+void PWMScheduler::create_and_schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
+                                                uint32_t t_period_us, uint32_t pin_mask,
+                                                uint32_t count, bool invert)
+{
+    // Create PWMTask and push into the vector.
+    pwm_tasks_.emplace_back(delay_us, t_on_us, t_period_us, pin_mask, count,
+                            invert);
+    PWMTask& task = pwm_tasks_.back();
+    schedule_pwm_task(task);
 }
 
 void PWMScheduler::start()

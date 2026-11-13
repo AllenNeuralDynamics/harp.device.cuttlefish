@@ -73,11 +73,11 @@ void PWMTask::update(bool force, bool skip_output_action)
         {
             case HIGH:
                 next_state = LOW;
-                next_update_time_us_ += on_time_us_;
+                next_update_time_us_ += period_us_ - on_time_us_;
                 break;
             case LOW:
                 next_state = HIGH;
-                next_update_time_us_ += period_us_ - on_time_us_;
+                next_update_time_us_ += on_time_us_;
                 break;
             case DONE:
                 next_state = DONE;

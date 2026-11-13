@@ -43,12 +43,10 @@ void sync_schedule()
         while (!scheduler.pq_.empty())
         {
             PWMTask& task = scheduler.pq_.top().get();
+            scheduler.pq_.pop();
+            tmp_tasks.push_back(task);
             if (task.pin_mask_ != (1u << settings.pin))
-            {
-                scheduler.pq_.pop();
-                tmp_tasks.push_back(task);
                 continue;
-            }
             // Update existing task specs.
             // Reapply specs and GPIO setup, including pin inversion.
             task.apply_settings(settings.specs.offset_us,
@@ -63,17 +61,17 @@ void sync_schedule()
         while (!tmp_tasks.empty())
         {
             PWMTask& task = tmp_tasks.back();
-            scheduler.pq_.push(task);
+            scheduler.schedule_pwm_task(task);
             tmp_tasks.pop_back();
         }
         if (!updated_existing_task)
         {
-            scheduler.schedule_pwm_task(settings.specs.offset_us,
-                                        settings.specs.on_duration_us,
-                                        settings.specs.period_us(),
-                                        1u << settings.pin,
-                                        settings.specs.cycles,
-                                        bool(settings.specs.invert));
+            scheduler.create_and_schedule_pwm_task(settings.specs.offset_us,
+                                                   settings.specs.on_duration_us,
+                                                   settings.specs.period_us(),
+                                                   1u << settings.pin,
+                                                   settings.specs.cycles,
+                                                   bool(settings.specs.invert));
         }
     }
 }
