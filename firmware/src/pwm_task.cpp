@@ -36,11 +36,11 @@ void PWMTask::apply_settings(uint32_t t_delay_us, uint32_t t_on_us,
 }
 
 
-PWMTask::~PWMTask()
+void PWMTask::release()
 {
     // Un reserve pins.
 #if defined(DEBUG)
-    printf("PWMTask Destroyed!\r\n");
+    printf("PWMTask Released!\r\n");
 #endif
     gpio_put_masked(pin_mask_, 0);
     gpio_set_dir_masked(pin_mask_, 0); // Configure as input so as not to drive

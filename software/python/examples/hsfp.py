@@ -66,15 +66,14 @@ def main() -> None:
 
         sleep(1)
 
-        print("Enabling schedule.")
-        reply = dev.write(cuttlefish.PwmState, True)
-        print(reply)
-        print()
-        sleep(10)
+        print("Enabling schedule. Press Enter to stop.")
+        dev.write(cuttlefish.PwmState, True)
+        try:
+            input()
+        finally:
+            dev.write(cuttlefish.PwmState, False)
+            print("Schedule stopped.")
 
-        print("Disabling schedule.")
-        reply = dev.write(cuttlefish.PwmState, False)
-        print(reply)
 
 
 if __name__ == "__main__":

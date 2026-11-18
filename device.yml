@@ -38,7 +38,11 @@ registers:
     access: Event
     description: "Event Only. Returns a timestamped message with the Port state
                   when any of the pins specified in the EnableRisingEdgeEvents
-                  register transitions from logic LOW to logic HIGH."
+                  register transitions from logic LOW to logic HIGH. For
+                  pins configured with PwmSettings or AnalogPwmSettings,
+                  events are produced from the scheduled output changes
+                  (for AnalogPwmSettings, the nominal output rather than
+                  every edge of the high-frequency output)."
   EnableFallingEdgeEvents:
     <<: *IORegister
     address: 38
@@ -51,7 +55,11 @@ registers:
     access: Event
     description: "Event Only. Returns a timestamped message with the Port state
                   when any of the pins specified in the EnableFallingEdgeEvents
-                  register transitions from logic HIGH to logic LOW."
+                  register transitions from logic HIGH to logic LOW. For
+                  pins configured with PwmSettings or AnalogPwmSettings,
+                  events are produced from the scheduled output changes
+                  (for AnalogPwmSettings, the nominal output rather than
+                  every edge of the high-frequency output)."
   PwmState:
     address: 40
     access: [Write, Event]
@@ -125,8 +133,100 @@ registers:
     <<: *PwmSettingsRegister
     address: 48
     description: "Configure the settings of the PWM output on pin 7."
-  ScheduleStatus:
+  AnalogPwmSettings0: &AnalogPwmSettingsRegister
     address: 49
+    type: U8
+    access: Write
+    length: 25
+    description: "Configure the settings of an analog PWM output on pin 0.
+                  The output follows the same nominal waveform as PwmSettings0,
+                  but, while the nominal output is HIGH, the pin produces a
+                  high-frequency PWM signal with the specified frequency and
+                  duty cycle. Writing this register replaces any settings
+                  previously written to PwmSettings0 (and vice versa). Pins
+                  0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the
+                  analog outputs on a shared pair must use the same frequency."
+    interfaceType: AnalogPwmSettingsPayload
+    payloadSpec:
+      OffsetUs:
+        offset: 0
+        length: 4
+        interfaceType: uint
+        description: "How long (in microseconds) the output remains LOW before
+                      switching HIGH in one period."
+      OnDurationUs:
+        offset: 4
+        length: 4
+        interfaceType: uint
+        description: "How long (in microseconds) the output remains HIGH in one
+                      period."
+      OffDurationUs:
+        offset: 8
+        length: 4
+        interfaceType: uint
+        description: "How long (in microseconds) the output remains LOW in one
+                      period."
+      Cycles:
+        offset: 12
+        length: 4
+        interfaceType: uint
+        description: "How many pulses to produce, or zero to pulse until
+                      disabled."
+      Invert:
+        offset: 16
+        interfaceType: bool
+        description: "Whether the output is inverted (on-time refers to the
+                      output being LOW instead)."
+      AnalogFrequencyHz:
+        offset: 17
+        length: 4
+        interfaceType: float
+        description: "Frequency (in Hz) of the high-frequency PWM output
+                      produced while the nominal output is HIGH. Valid range:
+                      10Hz to 1MHz (recommended: 1KHz to 100KHz)."
+      AnalogDutyCycle:
+        offset: 21
+        length: 4
+        interfaceType: float
+        description: "Duty cycle (0.0 to 1.0) of the high-frequency PWM output
+                      produced while the nominal output is HIGH."
+  AnalogPwmSettings1:
+    <<: *AnalogPwmSettingsRegister
+    address: 50
+    description: "Configure the settings of an analog PWM output on pin 1.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings2:
+    <<: *AnalogPwmSettingsRegister
+    address: 51
+    description: "Configure the settings of an analog PWM output on pin 2.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings3:
+    <<: *AnalogPwmSettingsRegister
+    address: 52
+    description: "Configure the settings of an analog PWM output on pin 3.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings4:
+    <<: *AnalogPwmSettingsRegister
+    address: 53
+    description: "Configure the settings of an analog PWM output on pin 4.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings5:
+    <<: *AnalogPwmSettingsRegister
+    address: 54
+    description: "Configure the settings of an analog PWM output on pin 5.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings6:
+    <<: *AnalogPwmSettingsRegister
+    address: 55
+    description: "Configure the settings of an analog PWM output on pin 6.
+                  See AnalogPwmSettings0 for details."
+  AnalogPwmSettings7:
+    <<: *AnalogPwmSettingsRegister
+    address: 56
+    description: "Configure the settings of an analog PWM output on pin 7.
+                  See AnalogPwmSettings0 for details."
+  ScheduleStatus:
+    address: 57
     access: Event
     type: U8
     description: "Event Only. Emitted when the PWM schedule encounters an

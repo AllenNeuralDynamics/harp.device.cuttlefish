@@ -41,3 +41,18 @@ Each IO pin is capable of producing a PWM output. Here are the settings availabl
 
 > [!NOTE]
 > Although multiple PWM channels can be set to different settings and produce outputs concurrently, all PWM outputs must be started at the same time.
+
+> [!NOTE]
+> Rising and falling edge events for pins configured with PWM (or analog PWM) settings are produced from the scheduled output changes rather than from monitoring the physical pin. For analog PWM outputs, events reflect the nominal output switching HIGH and LOW rather than every edge of the high-frequency output.
+
+### Analog PWM Outputs
+Any IO pin can instead be configured (via the `AnalogPwmSettings0`-`AnalogPwmSettings7` registers) to produce a high-frequency PWM output (i.e: a "virtual analog" output) while the nominal PWM output described above is HIGH.
+These registers accept all of the PWM settings above, plus:
+* _analog_frequency_hz_: frequency of the high-frequency output (10Hz to 1MHz; 1KHz to 100KHz recommended).
+* _analog_duty_cycle_: duty cycle of the high-frequency output (0.0 to 1.0).
+
+The high-frequency output is produced by the RP2040's hardware PWM peripheral and restarts at the beginning of its period every time the nominal output switches HIGH.
+Writing to `AnalogPwmSettingsN` replaces any settings previously written to `PwmSettingsN` for that pin (and vice versa).
+
+> [!NOTE]
+> Pins 0-1, 2-3, 4-5, and 6-7 each share a hardware PWM peripheral. Analog PWM outputs on the same pair must use the same frequency (but may use different duty cycles). Writing a different frequency to one pin of a pair while the other is configured as an analog PWM output returns an error.

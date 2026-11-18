@@ -10,6 +10,7 @@
 #include "edge_event_queue.h"
 #include "schedule_ctrl_queues.h"
 #include "core1_main.h"
+#include "analog_pwm_task.h"
 #include "pico/multicore.h"
 #include "hardware/irq.h"
 #include "hardware/gpio.h"
@@ -33,7 +34,7 @@ inline constexpr uint8_t FALLING_EDGE_EVENTS_ADDRESS =
 inline constexpr uint8_t PWM_STATE_ADDRESS =
     Harp::APP_REG_START_ADDRESS + 8;
 inline constexpr uint8_t SCHEDULE_STATUS_ADDRESS =
-    Harp::APP_REG_START_ADDRESS + 17;
+    Harp::APP_REG_START_ADDRESS + 25;
 
 extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
@@ -55,12 +56,14 @@ struct app_regs_t
 
     uint8_t pwm_state;
     pwm_settings_t pwm_settings[NUM_GPIOS];
-    uint8_t pwm_ready;
+    volatile uint8_t pwm_ready; // pins controlled by tasks. Read in ISRs.
+    analog_pwm_settings_t analog_pwm_settings[NUM_GPIOS];
     uint8_t schedule_status; // EVENT-only. See schedule_error_t.
 };
 #pragma pack(pop)
 
 extern app_regs_t app_regs;
+extern volatile uint8_t analog_pwm_mask; // pins assigned an AnalogPWMTask.
 
 
 inline uint32_t time_us_32_fast()
@@ -90,6 +93,15 @@ void write_port_set(msg_t& msg);
 void write_port_clear(msg_t& msg);
 
 
+/**
+ * \brief enable/disable GPIO edge interrupts for the specified pin according to
+ *  the edge event enable registers.
+ * \note GPIO edge interrupts are disabled for pins controlled by tasks (see
+ *  `pwm_ready`). Edge events for these pins are produced from scheduled
+ *  output changes instead (see handle_scheduled_edges()).
+ */
+void update_edge_event_irqs(size_t pwm_index);
+
 void write_enable_rising_edge_events(msg_t& msg);
 void write_enable_falling_edge_events(msg_t& msg);
 
@@ -104,6 +116,14 @@ void write_pwm_state(msg_t& msg);
  * \note this handler function is shared across all `pwm_settings` registers.
  */
 void write_any_pwm_settings(msg_t& msg);
+
+/**
+ * \brief App register handler function to write analog pwm settings to the
+ *  given PWM output (1 per IO).
+ * \note this handler function is shared across all `analog_pwm_settings`
+ *  registers.
+ */
+void write_any_analog_pwm_settings(msg_t& msg);
 
 /**
  * \brief a single callback to handle all GPIO pin change events including

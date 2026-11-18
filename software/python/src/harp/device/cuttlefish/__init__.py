@@ -37,6 +37,7 @@ __all__ = [
     "FallingEdgeEventsPayload",
     "PwmStatePayload",
     "PwmSettingsPayload",
+    "AnalogPwmSettingsPayload",
     "PinDirection",
     "PinState",
     "PinSet",
@@ -54,6 +55,14 @@ __all__ = [
     "PwmSettings5",
     "PwmSettings6",
     "PwmSettings7",
+    "AnalogPwmSettings0",
+    "AnalogPwmSettings1",
+    "AnalogPwmSettings2",
+    "AnalogPwmSettings3",
+    "AnalogPwmSettings4",
+    "AnalogPwmSettings5",
+    "AnalogPwmSettings6",
+    "AnalogPwmSettings7",
     "ScheduleStatus",
     "REGISTER_MAP",
 ]
@@ -148,6 +157,31 @@ class PwmSettingsPayload(StructPayload[np.uint8], length=17):
     """Whether the output is inverted (on-time refers to the output being LOW instead)."""
 
 
+class AnalogPwmSettingsPayload(StructPayload[np.uint8], length=25):
+    """Represents the AnalogPwmSettings payload."""
+
+    offset_us: np.uint32 = Field(IdentityConverter(np.uint32))
+    """How long (in microseconds) the output remains LOW before switching HIGH in one period."""
+
+    on_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=4)
+    """How long (in microseconds) the output remains HIGH in one period."""
+
+    off_duration_us: np.uint32 = Field(IdentityConverter(np.uint32), offset=8)
+    """How long (in microseconds) the output remains LOW in one period."""
+
+    cycles: np.uint32 = Field(IdentityConverter(np.uint32), offset=12)
+    """How many pulses to produce, or zero to pulse until disabled."""
+
+    invert: bool = Field(BoolConverter(), offset=16)
+    """Whether the output is inverted (on-time refers to the output being LOW instead)."""
+
+    analog_frequency_hz: np.float32 = Field(IdentityConverter(np.float32), offset=17)
+    """Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz)."""
+
+    analog_duty_cycle: np.float32 = Field(IdentityConverter(np.float32), offset=21)
+    """Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH."""
+
+
 class PinDirection(RegisterBase[Pins]):
     """Set the direction of the pins. 0 = input; 1 = output"""
 
@@ -189,7 +223,7 @@ class EnableRisingEdgeEvents(RegisterBase[Pins]):
 
 
 class RisingEdgeEvents(RegisterBase[Pins]):
-    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH."""
+    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output)."""
 
     address: ClassVar[int] = 37
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -205,7 +239,7 @@ class EnableFallingEdgeEvents(RegisterBase[Pins]):
 
 
 class FallingEdgeEvents(RegisterBase[Pins]):
-    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW."""
+    """Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output)."""
 
     address: ClassVar[int] = 39
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -284,10 +318,74 @@ class PwmSettings7(RegisterBase[PwmSettingsPayload]):
     payload_class = PwmSettingsPayload
 
 
+class AnalogPwmSettings0(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the specified frequency and duty cycle. Writing this register replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency."""
+
+    address: ClassVar[int] = 49
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings1(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 50
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings2(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 51
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings3(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 52
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings4(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 53
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings5(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 54
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings6(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 55
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
+class AnalogPwmSettings7(RegisterBase[AnalogPwmSettingsPayload]):
+    """Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details."""
+
+    address: ClassVar[int] = 56
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = AnalogPwmSettingsPayload
+
+
 class ScheduleStatus(RegisterU8):
     """Event Only. Emitted when the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after which the schedule is aborted."""
 
-    address: ClassVar[int] = 49
+    address: ClassVar[int] = 57
 
 
 REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
@@ -309,5 +407,13 @@ REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     46: PwmSettings5,
     47: PwmSettings6,
     48: PwmSettings7,
-    49: ScheduleStatus,
+    49: AnalogPwmSettings0,
+    50: AnalogPwmSettings1,
+    51: AnalogPwmSettings2,
+    52: AnalogPwmSettings3,
+    53: AnalogPwmSettings4,
+    54: AnalogPwmSettings5,
+    55: AnalogPwmSettings6,
+    56: AnalogPwmSettings7,
+    57: ScheduleStatus,
 }

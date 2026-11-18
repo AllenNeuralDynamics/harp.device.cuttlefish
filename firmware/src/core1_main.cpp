@@ -1,4 +1,5 @@
 #include "core1_main.h"
+#include <etl/algorithm.h>
 
 __not_in_flash("core1_next_state") core1_state_t state;
 __not_in_flash("schedule_failed") bool schedule_failed;
@@ -25,54 +26,62 @@ void handle_missed_deadline()
 
 void sync_schedule()
 {
-    /// friend function to PWMScheduler and PWMTask.
+    /// friend function to PWMScheduler, PWMTask, and AnalogPWMTask.
     /// Should only be called before running the schedule.
     pwm_specs_core_msg_t settings;
+    bool schedule_changed = false;
     while (queue_try_remove(&pwm_settings_queue, &settings))
     {
-        // If the pin is already assigned to a specific set of settings in the
-        // schedule, update them. Otherwise, create a new PWMTask and
-        // push it into the schedule.
-        //
-        // Note that since the schedule is presorted, we need to pop out
-        // all tasks until we find the right one, update it, and then push
-        // them all back--gross.
-        bool updated_existing_task = false;
-        etl::vector<std::reference_wrapper<PWMTask>, NUM_TTL_IOS> tmp_tasks;
-        while (!scheduler.pq_.empty())
+        // If the pin is already assigned to a task of the same type, update
+        // its settings. Otherwise, remove any task of the other type assigned
+        // to this pin and create a new task.
+        // Note: tasks hold no resources upon destruction, so they can be
+        //  safely erased. Their pins are reconfigured by the new task.
+        schedule_changed = true;
+        uint32_t pin_mask = 1u << settings.pin;
+        const pwm_settings_t& specs = settings.specs;
+        auto& pwm_tasks = scheduler.pwm_tasks_;
+        auto& analog_tasks = scheduler.analog_pwm_tasks_;
+        auto pwm_it = etl::find_if(pwm_tasks.begin(), pwm_tasks.end(),
+            [pin_mask](const PWMTask& t){return t.pin_mask_ == pin_mask;});
+        auto analog_it = etl::find_if(analog_tasks.begin(), analog_tasks.end(),
+            [pin_mask](const AnalogPWMTask& t){return t.pin_mask_ == pin_mask;});
+        if (settings.analog)
         {
-            PWMTask& task = scheduler.pq_.top().get();
-            scheduler.pq_.pop();
-            tmp_tasks.push_back(task);
-            if (task.pin_mask_ != (1u << settings.pin))
-                continue;
-            // Update existing task specs.
-            // Reapply specs and GPIO setup, including pin inversion.
-            task.apply_settings(settings.specs.offset_us,
-                                settings.specs.on_duration_us,
-                                settings.specs.period_us(),
-                                1u << settings.pin,
-                                settings.specs.cycles,
-                                bool(settings.specs.invert));
-            updated_existing_task = true;
-            break;
+            if (pwm_it != pwm_tasks.end())
+                pwm_tasks.erase(pwm_it);
+            if (analog_it != analog_tasks.end())
+                analog_it->apply_settings(specs.offset_us, specs.on_duration_us,
+                                          specs.period_us(), pin_mask,
+                                          specs.cycles, bool(specs.invert),
+                                          settings.analog_frequency_hz,
+                                          settings.analog_duty_cycle);
+            else
+                analog_tasks.emplace_back(specs.offset_us,
+                                          specs.on_duration_us,
+                                          specs.period_us(), pin_mask,
+                                          specs.cycles, bool(specs.invert),
+                                          settings.analog_frequency_hz,
+                                          settings.analog_duty_cycle);
         }
-        while (!tmp_tasks.empty())
+        else
         {
-            PWMTask& task = tmp_tasks.back();
-            scheduler.schedule_pwm_task(task);
-            tmp_tasks.pop_back();
-        }
-        if (!updated_existing_task)
-        {
-            scheduler.create_and_schedule_pwm_task(settings.specs.offset_us,
-                                                   settings.specs.on_duration_us,
-                                                   settings.specs.period_us(),
-                                                   1u << settings.pin,
-                                                   settings.specs.cycles,
-                                                   bool(settings.specs.invert));
+            if (analog_it != analog_tasks.end())
+                analog_tasks.erase(analog_it);
+            if (pwm_it != pwm_tasks.end())
+                pwm_it->apply_settings(specs.offset_us, specs.on_duration_us,
+                                       specs.period_us(), pin_mask,
+                                       specs.cycles, bool(specs.invert));
+            else
+                pwm_tasks.emplace_back(specs.offset_us, specs.on_duration_us,
+                                       specs.period_us(), pin_mask,
+                                       specs.cycles, bool(specs.invert));
         }
     }
+    // Containers may have been modified, so references in the priority queue
+    // may be stale. Reschedule everything.
+    if (schedule_changed)
+        scheduler.rebuild_schedule();
 }
 
 

@@ -35,6 +35,7 @@ add_library(pwm_scheduler
 
 add_library(pwm_task
     ../../src/pwm_task.cpp
+    ../../src/analog_pwm_task.cpp
 )
 
 add_executable(${PROJECT_NAME}
@@ -49,8 +50,9 @@ include_directories(inc)
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fverbose-asm")
 
 # Link libraries to the targets that need them.
-target_link_libraries(pwm_scheduler PUBLIC pico_stdlib etl::etl)
-target_link_libraries(pwm_task PUBLIC hardware_gpio pico_stdlib)
+target_link_libraries(pwm_scheduler PUBLIC pico_stdlib etl::etl pwm_task)
+target_link_libraries(pwm_task PUBLIC hardware_gpio hardware_pwm hardware_clocks
+                      pico_stdlib)
 target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib
                       pwm_scheduler pwm_task)
 

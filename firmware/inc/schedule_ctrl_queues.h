@@ -31,10 +31,19 @@ struct pwm_specs_core_msg_t
 {
     size_t pin; // Limit 1 pin per PWMTask.
     pwm_settings_t specs;
+    bool analog; // true if this pin should be driven by an AnalogPWMTask.
+    float analog_frequency_hz; // Only used if analog is true.
+    float analog_duty_cycle; // Only used if analog is true.
 
     // Custom constructor that works off of references.
     pwm_specs_core_msg_t(size_t& pin, pwm_settings_t& specs)
-    :pin(pin), specs(specs) {}
+    :pin(pin), specs(specs), analog{false}, analog_frequency_hz{0},
+     analog_duty_cycle{0} {}
+
+    pwm_specs_core_msg_t(size_t& pin, analog_pwm_settings_t& analog_specs)
+    :pin(pin), specs(analog_specs.pwm), analog{true},
+     analog_frequency_hz{analog_specs.frequency_hz},
+     analog_duty_cycle{analog_specs.duty_cycle} {}
 
     // Enable default constructor.
     pwm_specs_core_msg_t() = default;

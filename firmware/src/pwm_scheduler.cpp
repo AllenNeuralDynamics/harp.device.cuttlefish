@@ -9,6 +9,9 @@ volatile int32_t __not_in_flash("alarm_num") PWMScheduler::alarm_num_ = -1;
 volatile bool __not_in_flash("alarm_queued") PWMScheduler::alarm_queued_ = false;
 volatile uint32_t __not_in_flash("next_gpio_port_mask") PWMScheduler::next_gpio_port_mask_ = 0;
 volatile uint32_t __not_in_flash("next_gpio_port_state") PWMScheduler::next_gpio_port_state_ = 0;
+volatile uint32_t __not_in_flash("analog_pin_mask") PWMScheduler::analog_pin_mask_ = 0;
+volatile uint32_t __not_in_flash("invert_mask") PWMScheduler::invert_mask_ = 0;
+volatile uint32_t __not_in_flash("on_mask") PWMScheduler::on_mask_ = 0;
 etl::deque<PWMScheduler::PortEvent, NUM_TTL_IOS> __not_in_flash("port_event_queue_") PWMScheduler::port_event_queue_;
 
 PWMScheduler::PWMScheduler()
@@ -35,10 +38,19 @@ void PWMScheduler::reset()
 #endif
     cancel_alarm(); // Cancel any upcoming alarms.
     pq_.clear(); // Clear task ordering in the priority queue.
-    pwm_tasks_.clear(); // Clear all tasks
+    // Release all pins and clear all tasks.
+    for (auto& task: pwm_tasks_)
+        task.release();
+    for (auto& task: analog_pwm_tasks_)
+        task.release();
+    pwm_tasks_.clear();
+    analog_pwm_tasks_.clear();
     port_event_queue_.clear(); // Clear all queued PortEvents
     next_gpio_port_mask_ = 0;
     next_gpio_port_state_ = 0;
+    analog_pin_mask_ = 0;
+    invert_mask_ = 0;
+    on_mask_ = 0;
 #if defined(DEBUG)
         printf("Done resetting PWMScheduler.\r\n");
 #endif
@@ -48,6 +60,10 @@ void PWMScheduler::schedule_pwm_task(PWMTask& task)
 {
     // Aggreggate initial pin state vector.
     next_gpio_port_mask_ |= task.pin_mask_;
+    if (task.invert_)
+        invert_mask_ |= task.pin_mask_;
+    else
+        invert_mask_ &= ~task.pin_mask_;
     if (task.starting_state() == PWMTask::update_state_t::HIGH)
         next_gpio_port_state_ |= task.pin_mask_;
     else // in case settings were different from when task was created.
@@ -59,6 +75,35 @@ void PWMScheduler::schedule_pwm_task(PWMTask& task)
            task.on_time_us_, task.period_us_, task.pin_mask_);
 #endif
 
+}
+
+void PWMScheduler::schedule_analog_pwm_task(AnalogPWMTask& task)
+{
+    analog_pin_mask_ |= task.pin_mask_;
+    schedule_pwm_task(task);
+}
+
+void PWMScheduler::rebuild_schedule()
+{
+    pq_.clear();
+    next_gpio_port_mask_ = 0;
+    next_gpio_port_state_ = 0;
+    analog_pin_mask_ = 0;
+    invert_mask_ = 0;
+    on_mask_ = 0;
+    for (auto& task: pwm_tasks_)
+        schedule_pwm_task(task);
+    for (auto& task: analog_pwm_tasks_)
+        schedule_analog_pwm_task(task);
+}
+
+void PWMScheduler::create_and_schedule_analog_pwm_task(uint32_t delay_us,
+    uint32_t t_on_us, uint32_t t_period_us, uint32_t pin_mask, uint32_t count,
+    bool invert, float frequency_hz, float duty_cycle)
+{
+    analog_pwm_tasks_.emplace_back(delay_us, t_on_us, t_period_us, pin_mask,
+                                   count, invert, frequency_hz, duty_cycle);
+    schedule_analog_pwm_task(analog_pwm_tasks_.back());
 }
 
 void PWMScheduler::create_and_schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
@@ -79,8 +124,8 @@ void PWMScheduler::start()
     uint32_t start_time_us = timer_hw->timerawl;
     // Apply initial pending GPIO change immediately so the schedule starts now.
     // Note: starting GPIO state was aggregated when we add each PWMTask.
-    gpio_put_masked(next_gpio_port_mask_,
-                    next_gpio_port_state_ );
+    on_mask_ = 0;
+    apply_port_state(next_gpio_port_mask_, next_gpio_port_state_);
 #if defined(DEBUG)
     printf("GPIO Put: 0x%08x (mask), 0x%08x (val)\r\n",
            next_gpio_port_mask_, next_gpio_port_state_);
@@ -91,6 +136,11 @@ void PWMScheduler::start()
     for (auto& task: pwm_tasks_)
     {
         task.reset(true); // Reset to starting state but do not drive pin output.
+        task.set_time_started(start_time_us);
+    }
+    for (auto& task: analog_pwm_tasks_)
+    {
+        task.reset(true);
         task.set_time_started(start_time_us);
     }
 #if defined(DEBUG)
@@ -172,19 +222,26 @@ void PWMScheduler::stop()
     cancel_alarm(); // Cancel any upcoming alarms.
     pq_.clear(); // Remove all tasks in the priority queue.
     port_event_queue_.clear(); // Remove all queued PortEvents
-    next_gpio_port_mask_ = 0;
-    next_gpio_port_state_ = 0;
     // Reset all pwm tasks and reinsert them into the pq_ as if we were
     // inserting them for the first time.
     for (auto& task: pwm_tasks_)
     {
-        task.stop(); // Kill GPIO output. // Clear task start time.
+        task.stop(); // Kill GPIO output.
         task.reset(true); // Clear internal counters. Do not drive GPIO.
-        next_gpio_port_mask_ |= task.pin_mask_;
-        if (task.starting_state() == PWMTask::update_state_t::HIGH)
-            next_gpio_port_state_ |= task.pin_mask_;
-        pq_.push(task); // pushes task with unset "t=0" time.
     }
+    // Report outputs that were on as switching to their idle level.
+    uint32_t turning_off = on_mask_;
+    uint32_t invert_mask = invert_mask_;
+    on_mask_ = 0;
+    for (auto& task: analog_pwm_tasks_)
+    {
+        task.stop();
+        task.reset(true);
+    }
+    if (turning_off)
+        handle_scheduled_edges(turning_off & invert_mask,
+                               turning_off & ~invert_mask);
+    rebuild_schedule(); // pushes tasks with unset "t=0" time.
 }
 
 void PWMScheduler::cancel_alarm()
@@ -197,8 +254,8 @@ void PWMScheduler::cancel_alarm()
 void __not_in_flash_func(set_new_ttl_pin_state)(void)
 {
     // Apply the next GPIO state.
-    gpio_put_masked(PWMScheduler::next_gpio_port_mask_,
-                    PWMScheduler::next_gpio_port_state_);
+    PWMScheduler::apply_port_state(PWMScheduler::next_gpio_port_mask_,
+                                   PWMScheduler::next_gpio_port_state_);
     // Clear the latched hardware interrupt.
     timer_hw->intr |= (1u << PWMScheduler::alarm_num_);
 
@@ -217,6 +274,10 @@ void __not_in_flash_func(set_new_ttl_pin_state)(void)
     // Remove the next port event from the queue.
     PWMScheduler::port_event_queue_.pop_back();
 }
+
+void __attribute__((weak)) __not_in_flash_func(handle_scheduled_edges)(
+    uint32_t rise_pins, uint32_t fall_pins)
+{} // Do nothing by default.
 
 void __attribute__((weak)) handle_missed_deadline()
 {

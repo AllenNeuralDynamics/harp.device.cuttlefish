@@ -1,6 +1,7 @@
 #include "cuttlefish_app.h"
 
 app_regs_t app_regs;
+volatile uint8_t analog_pwm_mask = 0;
 
 // Define "specs" per-register
 RegSpec app_reg_specs[]
@@ -39,6 +40,22 @@ RegSpec app_reg_specs[]
         Harp::read_reg_generic, write_any_pwm_settings),
     RegSpec::U8Array(&app_regs.pwm_settings[7], sizeof(pwm_settings_t),
         Harp::read_reg_generic, write_any_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[0], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[1], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[2], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[3], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[4], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[5], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[6], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
+    RegSpec::U8Array(&app_regs.analog_pwm_settings[7], sizeof(analog_pwm_settings_t),
+        Harp::read_reg_generic, write_any_analog_pwm_settings),
     RegSpec::U8(&app_regs.schedule_status,
         Harp::read_reg_error, Harp::write_reg_error)
 };
@@ -105,12 +122,25 @@ void write_port_clear(msg_t& msg)
 }
 
 
+void update_edge_event_irqs(size_t pwm_index)
+{
+    bool task_pin = (app_regs.pwm_ready >> pwm_index) & 1u;
+    bool rise = ((app_regs.enable_rising_edge_events >> pwm_index) & 1u);
+    bool fall = ((app_regs.enable_falling_edge_events >> pwm_index) & 1u);
+    gpio_set_irq_enabled(pwm_index + PORT_BASE, GPIO_IRQ_EDGE_RISE,
+                         rise && !task_pin);
+    gpio_set_irq_enabled(pwm_index + PORT_BASE, GPIO_IRQ_EDGE_FALL,
+                         fall && !task_pin);
+}
+
+
 void write_enable_rising_edge_events(msg_t& msg)
 {
     Harp::copy_msg_payload_to_register(msg);
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
-        bool enabled = ((app_regs.enable_rising_edge_events >> i) & 1u);
+        bool enabled = ((app_regs.enable_rising_edge_events >> i) & 1u)
+                       && !((app_regs.pwm_ready >> i) & 1u);
         gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_RISE, enabled);
     }
     if (!Harp::is_muted())
@@ -125,7 +155,8 @@ void write_enable_falling_edge_events(msg_t& msg)
     Harp::copy_msg_payload_to_register(msg);
     for (size_t i = 0; i < NUM_GPIOS; ++i)
     {
-        bool enabled = ((app_regs.enable_falling_edge_events >> i) & 1u);
+        bool enabled = ((app_regs.enable_falling_edge_events >> i) & 1u)
+                       && !((app_regs.pwm_ready >> i) & 1u);
         gpio_set_irq_enabled(i + PORT_BASE, GPIO_IRQ_EDGE_FALL, enabled);
     }
     if (!Harp::is_muted())
@@ -190,6 +221,33 @@ void write_pwm_state(msg_t& msg)
 }
 
 
+/**
+ * \brief mark the pin as an armed PWM output, push the new settings to core1,
+ *  and configure the buffer to drive an output.
+ * \return false if the settings could not be pushed to core1.
+ */
+bool arm_pwm_output(size_t pwm_index, pwm_specs_core_msg_t& pwm_msg)
+{
+    // Record that this pwm pin is now armed.
+    bool newly_armed = !((app_regs.pwm_ready >> pwm_index) & 1u);
+    app_regs.pwm_ready |= 1u << pwm_index;
+    // Detach this pin from GPIO edge interrupts. Its edge events now come from
+    // the schedule (see handle_scheduled_edges()).
+    if (newly_armed)
+        update_edge_event_irqs(pwm_index);
+    // Mark pin as OUTPUT in app registers and update buffer ctrl pin to match.
+    app_regs.port_dir |= 1u << pwm_index;
+    set_io_port_dir(app_regs.port_dir);
+    // Push new pwm settings to core1.
+    if (!queue_try_add(&pwm_settings_queue, &pwm_msg))
+        return false;
+    // Set buffer ctrl pins to drive an output to passthrough PWM signal.
+    uint32_t buffer_mask = 1u << (PORT_DIR_BASE + pwm_index);
+    gpio_put_masked(buffer_mask, 0xFFFFFFFF);
+    return true;
+}
+
+
 void write_any_pwm_settings(msg_t& msg)
 {
     // Error if core1 is busy.
@@ -204,23 +262,71 @@ void write_any_pwm_settings(msg_t& msg)
     const RegSpec& spec = Harp::reg_address_to_spec(msg.header.address);
     pwm_settings_t& pwm_settings = *((pwm_settings_t*)spec.base_ptr);
     size_t pwm_index = &pwm_settings - app_regs.pwm_settings; // subtract ptrs.
-    // Record that this pwm pin is now armed.
-    app_regs.pwm_ready |= 1u << pwm_index;
-    // Mark pin as OUTPUT in app registers and update buffer ctrl pin to match.
-    app_regs.port_dir |= 1u << pwm_index;
-    set_io_port_dir(app_regs.port_dir);
-    // Push new pwm settings to core1.
     size_t pwm_pin = pwm_index + PORT_BASE;
     pwm_specs_core_msg_t pwm_msg(pwm_pin, pwm_settings);
-    if (!queue_try_add(&pwm_settings_queue, &pwm_msg))
+    if (!arm_pwm_output(pwm_index, pwm_msg))
     {
         if (!Harp::is_muted())
             Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
-    // Set buffer ctrl pins to drive an output to passthrough PWM signal.
-    uint32_t buffer_mask = 1u << (PORT_DIR_BASE + pwm_index);
-    gpio_put_masked(buffer_mask, 0xFFFFFFFF);
+    // This pin's (analog) PWMTask, if any, is replaced by a PWMTask.
+    analog_pwm_mask &= ~(1u << pwm_index);
+    // Finish write transaction successfully.
+    if (!Harp::is_muted())
+        Harp::send_harp_reply(WRITE, msg.header.address);
+}
+
+
+void write_any_analog_pwm_settings(msg_t& msg)
+{
+    // Backtrack both data and index in the corresponding array it belongs to.
+    const RegSpec& spec = Harp::reg_address_to_spec(msg.header.address);
+    analog_pwm_settings_t& analog_settings =
+        *((analog_pwm_settings_t*)spec.base_ptr);
+    size_t pwm_index = &analog_settings - app_regs.analog_pwm_settings;
+    // Error if core1 is busy.
+    if (app_regs.pwm_state)
+    {
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    // Apply new settings, but keep the old ones in case they are invalid.
+    analog_pwm_settings_t old_settings = analog_settings;
+    Harp::copy_msg_payload_to_register(msg);
+    AnalogPWMTask::slice_config_t config;
+    bool valid = AnalogPWMTask::valid_settings(analog_settings.frequency_hz,
+                                               analog_settings.duty_cycle)
+        && AnalogPWMTask::compute_slice_config(analog_settings.frequency_hz,
+                                               config);
+    // Pins 2n and 2n+1 share a hardware PWM slice and therefore a frequency.
+    size_t partner_index = pwm_index ^ 1u;
+    if (valid && ((analog_pwm_mask >> partner_index) & 1u))
+    {
+        AnalogPWMTask::slice_config_t partner_config;
+        float partner_frequency_hz =
+            app_regs.analog_pwm_settings[partner_index].frequency_hz;
+        valid = AnalogPWMTask::compute_slice_config(partner_frequency_hz,
+                                                    partner_config)
+                && (partner_config == config);
+    }
+    if (!valid)
+    {
+        analog_settings = old_settings;
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    size_t pwm_pin = pwm_index + PORT_BASE;
+    pwm_specs_core_msg_t pwm_msg(pwm_pin, analog_settings);
+    if (!arm_pwm_output(pwm_index, pwm_msg))
+    {
+        if (!Harp::is_muted())
+            Harp::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    analog_pwm_mask |= 1u << pwm_index;
     // Finish write transaction successfully.
     if (!Harp::is_muted())
         Harp::send_harp_reply(WRITE, msg.header.address);
@@ -247,11 +353,31 @@ void handle_edge_event_callback(void)
         event.rise_pins |= (((gpio_flags >> 3) & 1u) << i + PORT_BASE);
         event.fall_pins |= (((gpio_flags >> 2) & 1u) << i + PORT_BASE);
     }
+    // Ignore (raw) edges latched on pins driven by tasks.
+    // Their edge events come from the schedule (see handle_scheduled_edges()).
+    uint32_t task_pins = uint32_t(app_regs.pwm_ready) << PORT_BASE;
+    event.rise_pins &= ~task_pins;
+    event.fall_pins &= ~task_pins;
     // Push the event
-    queue_try_add(&edge_event_queue, &event);
+    if (event.rise_pins | event.fall_pins)
+        queue_try_add(&edge_event_queue, &event);
     // Clear the INTR[n] state since we dealt with all pin changes.
     // Clear by "writing a 1" to the set bits.
     io_bank0_hw->intr[PORT_BASE >> 3] = 0xFFFFFFFF; // >> 3: floor-divide by 8
+}
+
+
+// Override weakly-defined scheduler hook. Called from the scheduler ISR.
+void __not_in_flash_func(handle_scheduled_edges)(uint32_t rise_pins,
+                                                 uint32_t fall_pins)
+{
+    // Only push events for enabled pins to minimize time spent in the ISR.
+    rise_pins &= uint32_t(app_regs.enable_rising_edge_events) << PORT_BASE;
+    fall_pins &= uint32_t(app_regs.enable_falling_edge_events) << PORT_BASE;
+    if (!(rise_pins | fall_pins))
+        return;
+    EdgeEvent event{time_us_64(), rise_pins, fall_pins}; // ISR safe.
+    queue_try_add(&edge_event_queue, &event);
 }
 
 
@@ -299,8 +425,16 @@ void update_app_state()
     // without being stopped via external Harp command.
     if (state_change_msg.next_state == core1_state_t::RESET)
     {
+        // core1 cleared all tasks. Restore physical edge events.
+        uint8_t old_pwm_ready = app_regs.pwm_ready;
         app_regs.pwm_ready = 0;
         app_regs.pwm_state = 0; // "finished"
+        analog_pwm_mask = 0;
+        for (size_t i = 0; i < NUM_GPIOS; ++i)
+        {
+            if ((old_pwm_ready >> i) & 1u)
+                update_edge_event_irqs(i);
+        }
     }
     else if (state_change_msg.next_state == core1_state_t::READY)
     {
@@ -340,6 +474,9 @@ void reset_app()
     app_regs.schedule_status = 0;
     for (size_t i = 0; i < NUM_GPIOS; ++i)
         app_regs.pwm_settings[i] = pwm_settings_t();
+    for (size_t i = 0; i < NUM_GPIOS; ++i)
+        app_regs.analog_pwm_settings[i] = analog_pwm_settings_t();
+    analog_pwm_mask = 0;
 
     // Drain the EdgeEvent queue.
     EdgeEvent dummy_event;

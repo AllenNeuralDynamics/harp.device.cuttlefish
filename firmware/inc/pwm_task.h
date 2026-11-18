@@ -16,7 +16,13 @@ public:
     PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
             uint32_t pin_mask, uint32_t count = 0, bool invert = false);
 
-    ~PWMTask();
+/**
+ * \brief release the GPIO pins used by this task (drive LOW, then configure
+ *  as inputs).
+ * \note this is not done in the destructor so that tasks can be safely
+ *  moved/erased in containers.
+ */
+    void release();
 
 /**
  * \brief (re)apply all settings, including GPIO setup and pin inversion.
@@ -92,7 +98,7 @@ public:
     inline update_state_t starting_state()
     {return (delay_us_ == 0)? HIGH : LOW;}
 
-private:
+protected:
     friend class PWMScheduler;
     friend void sync_schedule();
 

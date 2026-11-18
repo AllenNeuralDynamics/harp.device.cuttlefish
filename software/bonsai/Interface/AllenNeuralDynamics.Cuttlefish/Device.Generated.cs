@@ -61,7 +61,15 @@ namespace AllenNeuralDynamics.Cuttlefish
             { 46, typeof(PwmSettings5) },
             { 47, typeof(PwmSettings6) },
             { 48, typeof(PwmSettings7) },
-            { 49, typeof(ScheduleStatus) }
+            { 49, typeof(AnalogPwmSettings0) },
+            { 50, typeof(AnalogPwmSettings1) },
+            { 51, typeof(AnalogPwmSettings2) },
+            { 52, typeof(AnalogPwmSettings3) },
+            { 53, typeof(AnalogPwmSettings4) },
+            { 54, typeof(AnalogPwmSettings5) },
+            { 55, typeof(AnalogPwmSettings6) },
+            { 56, typeof(AnalogPwmSettings7) },
+            { 57, typeof(ScheduleStatus) }
         };
 
         /// <summary>
@@ -331,6 +339,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="AnalogPwmSettings0"/>
+    /// <seealso cref="AnalogPwmSettings1"/>
+    /// <seealso cref="AnalogPwmSettings2"/>
+    /// <seealso cref="AnalogPwmSettings3"/>
+    /// <seealso cref="AnalogPwmSettings4"/>
+    /// <seealso cref="AnalogPwmSettings5"/>
+    /// <seealso cref="AnalogPwmSettings6"/>
+    /// <seealso cref="AnalogPwmSettings7"/>
     /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
@@ -349,6 +365,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(AnalogPwmSettings0))]
+    [XmlInclude(typeof(AnalogPwmSettings1))]
+    [XmlInclude(typeof(AnalogPwmSettings2))]
+    [XmlInclude(typeof(AnalogPwmSettings3))]
+    [XmlInclude(typeof(AnalogPwmSettings4))]
+    [XmlInclude(typeof(AnalogPwmSettings5))]
+    [XmlInclude(typeof(AnalogPwmSettings6))]
+    [XmlInclude(typeof(AnalogPwmSettings7))]
     [XmlInclude(typeof(ScheduleStatus))]
     [Description("Filters register-specific messages reported by the Cuttlefish device.")]
     public class FilterRegister : FilterRegisterBuilder, INamedElement, ICustomTypeDescriptor
@@ -388,6 +412,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="AnalogPwmSettings0"/>
+    /// <seealso cref="AnalogPwmSettings1"/>
+    /// <seealso cref="AnalogPwmSettings2"/>
+    /// <seealso cref="AnalogPwmSettings3"/>
+    /// <seealso cref="AnalogPwmSettings4"/>
+    /// <seealso cref="AnalogPwmSettings5"/>
+    /// <seealso cref="AnalogPwmSettings6"/>
+    /// <seealso cref="AnalogPwmSettings7"/>
     /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
@@ -406,6 +438,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(AnalogPwmSettings0))]
+    [XmlInclude(typeof(AnalogPwmSettings1))]
+    [XmlInclude(typeof(AnalogPwmSettings2))]
+    [XmlInclude(typeof(AnalogPwmSettings3))]
+    [XmlInclude(typeof(AnalogPwmSettings4))]
+    [XmlInclude(typeof(AnalogPwmSettings5))]
+    [XmlInclude(typeof(AnalogPwmSettings6))]
+    [XmlInclude(typeof(AnalogPwmSettings7))]
     [XmlInclude(typeof(ScheduleStatus))]
     [XmlInclude(typeof(TimestampedPinDirection))]
     [XmlInclude(typeof(TimestampedPinState))]
@@ -424,6 +464,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(TimestampedPwmSettings5))]
     [XmlInclude(typeof(TimestampedPwmSettings6))]
     [XmlInclude(typeof(TimestampedPwmSettings7))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings0))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings1))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings2))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings3))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings4))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings5))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings6))]
+    [XmlInclude(typeof(TimestampedAnalogPwmSettings7))]
     [XmlInclude(typeof(TimestampedScheduleStatus))]
     [Description("Filters and selects specific messages reported by the Cuttlefish device.")]
     public partial class Parse : ParseBuilder, INamedElement, ICustomTypeDescriptor
@@ -465,6 +513,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="PwmSettings5"/>
     /// <seealso cref="PwmSettings6"/>
     /// <seealso cref="PwmSettings7"/>
+    /// <seealso cref="AnalogPwmSettings0"/>
+    /// <seealso cref="AnalogPwmSettings1"/>
+    /// <seealso cref="AnalogPwmSettings2"/>
+    /// <seealso cref="AnalogPwmSettings3"/>
+    /// <seealso cref="AnalogPwmSettings4"/>
+    /// <seealso cref="AnalogPwmSettings5"/>
+    /// <seealso cref="AnalogPwmSettings6"/>
+    /// <seealso cref="AnalogPwmSettings7"/>
     /// <seealso cref="ScheduleStatus"/>
     [XmlInclude(typeof(PinDirection))]
     [XmlInclude(typeof(PinState))]
@@ -483,6 +539,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(PwmSettings5))]
     [XmlInclude(typeof(PwmSettings6))]
     [XmlInclude(typeof(PwmSettings7))]
+    [XmlInclude(typeof(AnalogPwmSettings0))]
+    [XmlInclude(typeof(AnalogPwmSettings1))]
+    [XmlInclude(typeof(AnalogPwmSettings2))]
+    [XmlInclude(typeof(AnalogPwmSettings3))]
+    [XmlInclude(typeof(AnalogPwmSettings4))]
+    [XmlInclude(typeof(AnalogPwmSettings5))]
+    [XmlInclude(typeof(AnalogPwmSettings6))]
+    [XmlInclude(typeof(AnalogPwmSettings7))]
     [XmlInclude(typeof(ScheduleStatus))]
     [Description("Formats a sequence of values as specific Cuttlefish register messages.")]
     public partial class Format : FormatBuilder, INamedElement, ICustomTypeDescriptor
@@ -1006,9 +1070,11 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Provides methods for manipulating RisingEdgeEvents register messages. Event Only. Returns a
     /// timestamped message with the Port state when any of the pins specified in the
-    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class RisingEdgeEvents
     {
         /// <summary>
@@ -1081,10 +1147,13 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Provides methods that return the timestamped payload of RisingEdgeEvents register messages.
     /// Event Only. Returns a timestamped message with the Port state when any of the pins specified in
-    /// the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins
+    /// configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output
+    /// changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency
+    /// output).
     /// </summary>
     /// <seealso cref="RisingEdgeEvents"/>
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class TimestampedRisingEdgeEvents : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(RisingEdgeEvents);
@@ -1210,9 +1279,11 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Provides methods for manipulating FallingEdgeEvents register messages. Event Only. Returns a
     /// timestamped message with the Port state when any of the pins specified in the
-    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class FallingEdgeEvents
     {
         /// <summary>
@@ -1285,10 +1356,13 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Provides methods that return the timestamped payload of FallingEdgeEvents register messages.
     /// Event Only. Returns a timestamped message with the Port state when any of the pins specified in
-    /// the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins
+    /// configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output
+    /// changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency
+    /// output).
     /// </summary>
     /// <seealso cref="FallingEdgeEvents"/>
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class TimestampedFallingEdgeEvents : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(FallingEdgeEvents);
@@ -2396,6 +2470,1031 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings0 register messages. Configure the settings
+    /// of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0,
+    /// but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the
+    /// specified frequency and duty cycle. Writing this register replaces any settings previously
+    /// written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM
+    /// peripheral; the analog outputs on a shared pair must use the same frequency.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the specified frequency and duty cycle. Writing this register replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency.")]
+    public partial class AnalogPwmSettings0
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings0"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 49;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings0"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings0"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings0"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings0"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings0"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings0"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings0"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings0"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings0 register messages.
+    /// Configure the settings of an analog PWM output on pin 0. The output follows the same nominal
+    /// waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a
+    /// high-frequency PWM signal with the specified frequency and duty cycle. Writing this register
+    /// replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5,
+    /// and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same
+    /// frequency.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings0"/>
+    [Description("Configure the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the specified frequency and duty cycle. Writing this register replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency.")]
+    public partial class TimestampedAnalogPwmSettings0 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings0);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings0"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings0.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings0"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings0.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings1 register messages. Configure the settings
+    /// of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings1
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings1"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 50;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings1"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings1"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings1"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings1"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings1"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings1"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings1"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings1"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings1 register messages.
+    /// Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings1"/>
+    [Description("Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings1 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings1);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings1"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings1.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings1"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings1.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings2 register messages. Configure the settings
+    /// of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings2
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings2"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 51;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings2"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings2"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings2"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings2"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings2"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings2"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings2"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings2"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings2 register messages.
+    /// Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings2"/>
+    [Description("Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings2 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings2);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings2"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings2.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings2"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings2.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings3 register messages. Configure the settings
+    /// of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings3
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings3"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 52;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings3"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings3"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings3"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings3"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings3"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings3"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings3"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings3"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings3 register messages.
+    /// Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings3"/>
+    [Description("Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings3 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings3);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings3"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings3.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings3"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings3.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings4 register messages. Configure the settings
+    /// of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings4
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings4"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 53;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings4"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings4"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings4"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings4"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings4"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings4"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings4"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings4"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings4 register messages.
+    /// Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings4"/>
+    [Description("Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings4 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings4);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings4"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings4.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings4"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings4.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings5 register messages. Configure the settings
+    /// of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings5
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings5"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 54;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings5"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings5"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings5"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings5"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings5"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings5"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings5"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings5"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings5 register messages.
+    /// Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings5"/>
+    [Description("Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings5 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings5);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings5"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings5.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings5"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings5.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings6 register messages. Configure the settings
+    /// of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings6
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings6"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 55;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings6"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings6"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings6"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings6"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings6"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings6"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings6"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings6"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings6 register messages.
+    /// Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings6"/>
+    [Description("Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings6 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings6);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings6"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings6.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings6"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings6.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating AnalogPwmSettings7 register messages. Configure the settings
+    /// of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [Description("Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.")]
+    public partial class AnalogPwmSettings7
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings7"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 56;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogPwmSettings7"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogPwmSettings7"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 25;
+
+        static AnalogPwmSettingsPayload ParsePayload(byte[] payload)
+        {
+            AnalogPwmSettingsPayload result;
+            result.OffsetUs = PayloadMarshal.ReadUInt32(payload, 0);
+            result.OnDurationUs = PayloadMarshal.ReadUInt32(payload, 4);
+            result.OffDurationUs = PayloadMarshal.ReadUInt32(payload, 8);
+            result.Cycles = PayloadMarshal.ReadUInt32(payload, 12);
+            result.Invert = payload[16] != 0;
+            result.AnalogFrequencyHz = PayloadMarshal.ReadSingle(payload, 17);
+            result.AnalogDutyCycle = PayloadMarshal.ReadSingle(payload, 21);
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogPwmSettingsPayload value)
+        {
+            byte[] result;
+            result = new byte[25];
+            PayloadMarshal.Write(result, 0, value.OffsetUs);
+            PayloadMarshal.Write(result, 4, value.OnDurationUs);
+            PayloadMarshal.Write(result, 8, value.OffDurationUs);
+            PayloadMarshal.Write(result, 12, value.Cycles);
+            result[16] = (byte)(value.Invert ? 1 : 0);
+            PayloadMarshal.Write(result, 17, value.AnalogFrequencyHz);
+            PayloadMarshal.Write(result, 21, value.AnalogDutyCycle);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="AnalogPwmSettings7"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogPwmSettingsPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings7"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogPwmSettings7"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings7"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogPwmSettings7"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogPwmSettings7"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogPwmSettingsPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of AnalogPwmSettings7 register messages.
+    /// Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.
+    /// </summary>
+    /// <seealso cref="AnalogPwmSettings7"/>
+    [Description("Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.")]
+    public partial class TimestampedAnalogPwmSettings7 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings7);
+
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogPwmSettings7"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogPwmSettings7.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="AnalogPwmSettings7"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogPwmSettingsPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogPwmSettings7.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
     /// Provides methods for manipulating ScheduleStatus register messages. Event Only. Emitted when the
     /// PWM schedule encounters an error while running. A value of 1 indicates a missed deadline, after
     /// which the schedule is aborted.
@@ -2406,7 +3505,7 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Represents the address of the <see cref="ScheduleStatus"/> register. This field is constant.
         /// </summary>
-        public const int Address = 49;
+        public const int Address = 57;
 
         /// <summary>
         /// Represents the payload type of the <see cref="ScheduleStatus"/> register. This field is constant.
@@ -2517,6 +3616,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <seealso cref="CreatePwmSettings5Payload"/>
     /// <seealso cref="CreatePwmSettings6Payload"/>
     /// <seealso cref="CreatePwmSettings7Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings0Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings1Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings2Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings3Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings4Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings5Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings6Payload"/>
+    /// <seealso cref="CreateAnalogPwmSettings7Payload"/>
     /// <seealso cref="CreateScheduleStatusPayload"/>
     [XmlInclude(typeof(CreatePinDirectionPayload))]
     [XmlInclude(typeof(CreatePinStatePayload))]
@@ -2535,6 +3642,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreatePwmSettings5Payload))]
     [XmlInclude(typeof(CreatePwmSettings6Payload))]
     [XmlInclude(typeof(CreatePwmSettings7Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings0Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings1Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings2Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings3Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings4Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings5Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings6Payload))]
+    [XmlInclude(typeof(CreateAnalogPwmSettings7Payload))]
     [XmlInclude(typeof(CreateScheduleStatusPayload))]
     [XmlInclude(typeof(CreateTimestampedPinDirectionPayload))]
     [XmlInclude(typeof(CreateTimestampedPinStatePayload))]
@@ -2553,6 +3668,14 @@ namespace AllenNeuralDynamics.Cuttlefish
     [XmlInclude(typeof(CreateTimestampedPwmSettings5Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings6Payload))]
     [XmlInclude(typeof(CreateTimestampedPwmSettings7Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings0Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings1Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings2Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings3Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings4Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings5Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings6Payload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogPwmSettings7Payload))]
     [XmlInclude(typeof(CreateTimestampedScheduleStatusPayload))]
     [Description("Creates standard messages for the Cuttlefish device.")]
     public partial class CreateMessage : CreateMessageBuilder, INamedElement, ICustomTypeDescriptor
@@ -2873,10 +3996,12 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Represents an operator that creates RisingEdgeEvents register messages. Event Only. Returns a
     /// timestamped message with the Port state when any of the pins specified in the
-    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
     [DisplayName("RisingEdgeEventsPayload")]
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class CreateRisingEdgeEventsPayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(RisingEdgeEvents);
@@ -2884,9 +4009,11 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Gets or sets the value for the RisingEdgeEvents register. Event Only. Returns a timestamped
         /// message with the Port state when any of the pins specified in the EnableRisingEdgeEvents
-        /// register transitions from logic LOW to logic HIGH.
+        /// register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or
+        /// AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings,
+        /// the nominal output rather than every edge of the high-frequency output).
         /// </summary>
-        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
         public Pins RisingEdgeEvents { get; set; }
 
         /// <summary>
@@ -2912,10 +4039,12 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Represents an operator that creates timestamped RisingEdgeEvents register messages. Event Only.
     /// Returns a timestamped message with the Port state when any of the pins specified in the
-    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.
+    /// EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
     [DisplayName("TimestampedRisingEdgeEventsPayload")]
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableRisingEdgeEvents register transitions from logic LOW to logic HIGH. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class CreateTimestampedRisingEdgeEventsPayload : CreateRisingEdgeEventsPayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(RisingEdgeEvents);
@@ -2997,10 +4126,12 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Represents an operator that creates FallingEdgeEvents register messages. Event Only. Returns a
     /// timestamped message with the Port state when any of the pins specified in the
-    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
     [DisplayName("FallingEdgeEventsPayload")]
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class CreateFallingEdgeEventsPayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(FallingEdgeEvents);
@@ -3008,9 +4139,11 @@ namespace AllenNeuralDynamics.Cuttlefish
         /// <summary>
         /// Gets or sets the value for the FallingEdgeEvents register. Event Only. Returns a timestamped
         /// message with the Port state when any of the pins specified in the EnableFallingEdgeEvents
-        /// register transitions from logic HIGH to logic LOW.
+        /// register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or
+        /// AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings,
+        /// the nominal output rather than every edge of the high-frequency output).
         /// </summary>
-        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+        [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
         public Pins FallingEdgeEvents { get; set; }
 
         /// <summary>
@@ -3036,10 +4169,12 @@ namespace AllenNeuralDynamics.Cuttlefish
     /// <summary>
     /// Represents an operator that creates timestamped FallingEdgeEvents register messages. Event Only.
     /// Returns a timestamped message with the Port state when any of the pins specified in the
-    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.
+    /// EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured
+    /// with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes
+    /// (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).
     /// </summary>
     [DisplayName("TimestampedFallingEdgeEventsPayload")]
-    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW.")]
+    [Description("Event Only. Returns a timestamped message with the Port state when any of the pins specified in the EnableFallingEdgeEvents register transitions from logic HIGH to logic LOW. For pins configured with PwmSettings or AnalogPwmSettings, events are produced from the scheduled output changes (for AnalogPwmSettings, the nominal output rather than every edge of the high-frequency output).")]
     public partial class CreateTimestampedFallingEdgeEventsPayload : CreateFallingEdgeEventsPayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(FallingEdgeEvents);
@@ -3863,6 +4998,894 @@ namespace AllenNeuralDynamics.Cuttlefish
     }
 
     /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings0 register messages. Configure the settings
+    /// of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0,
+    /// but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the
+    /// specified frequency and duty cycle. Writing this register replaces any settings previously
+    /// written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM
+    /// peripheral; the analog outputs on a shared pair must use the same frequency.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings0Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the specified frequency and duty cycle. Writing this register replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency.")]
+    public partial class CreateAnalogPwmSettings0Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings0);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings0 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings0 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings0 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings0.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings0 register messages. Configure
+    /// the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as
+    /// PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM
+    /// signal with the specified frequency and duty cycle. Writing this register replaces any settings
+    /// previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a
+    /// hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings0Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 0. The output follows the same nominal waveform as PwmSettings0, but, while the nominal output is HIGH, the pin produces a high-frequency PWM signal with the specified frequency and duty cycle. Writing this register replaces any settings previously written to PwmSettings0 (and vice versa). Pins 0-1, 2-3, 4-5, and 6-7 share a hardware PWM peripheral; the analog outputs on a shared pair must use the same frequency.")]
+    public partial class CreateTimestampedAnalogPwmSettings0Payload : CreateAnalogPwmSettings0Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings0);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings0 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings0 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings0.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings1 register messages. Configure the settings
+    /// of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings1Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings1Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings1);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings1 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings1 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings1 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings1.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings1 register messages. Configure
+    /// the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings1Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 1. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings1Payload : CreateAnalogPwmSettings1Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings1);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings1 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings1 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings1.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings2 register messages. Configure the settings
+    /// of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings2Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings2Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings2);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings2 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings2 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings2 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings2.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings2 register messages. Configure
+    /// the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings2Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 2. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings2Payload : CreateAnalogPwmSettings2Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings2);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings2 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings2 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings2.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings3 register messages. Configure the settings
+    /// of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings3Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings3Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings3);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings3 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings3 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings3 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings3.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings3 register messages. Configure
+    /// the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings3Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 3. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings3Payload : CreateAnalogPwmSettings3Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings3);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings3 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings3 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings3.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings4 register messages. Configure the settings
+    /// of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings4Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings4Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings4);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings4 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings4 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings4 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings4.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings4 register messages. Configure
+    /// the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings4Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 4. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings4Payload : CreateAnalogPwmSettings4Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings4);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings4 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings4 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings4.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings5 register messages. Configure the settings
+    /// of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings5Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings5Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings5);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings5 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings5 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings5 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings5.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings5 register messages. Configure
+    /// the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings5Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 5. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings5Payload : CreateAnalogPwmSettings5Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings5);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings5 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings5 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings5.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings6 register messages. Configure the settings
+    /// of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings6Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings6Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings6);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings6 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings6 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings6 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings6.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings6 register messages. Configure
+    /// the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings6Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 6. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings6Payload : CreateAnalogPwmSettings6Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings6);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings6 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings6 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings6.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates AnalogPwmSettings7 register messages. Configure the settings
+    /// of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("AnalogPwmSettings7Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.")]
+    public partial class CreateAnalogPwmSettings7Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(AnalogPwmSettings7);
+
+        /// <summary>
+        /// Gets or sets the value of the OffsetUs payload member. How long (in microseconds) the output
+        /// remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OnDurationUs payload member. How long (in microseconds) the output
+        /// remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the OffDurationUs payload member. How long (in microseconds) the
+        /// output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Cycles payload member. How many pulses to produce, or zero to
+        /// pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Invert payload member. Whether the output is inverted (on-time
+        /// refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogFrequencyHz payload member. Frequency (in Hz) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz
+        /// (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the AnalogDutyCycle payload member. Duty cycle (0.0 to 1.0) of the
+        /// high-frequency PWM output produced while the nominal output is HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogPwmSettings7 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogPwmSettingsPayload GetPayload()
+        {
+            AnalogPwmSettingsPayload value;
+            value.OffsetUs = OffsetUs;
+            value.OnDurationUs = OnDurationUs;
+            value.OffDurationUs = OffDurationUs;
+            value.Cycles = Cycles;
+            value.Invert = Invert;
+            value.AnalogFrequencyHz = AnalogFrequencyHz;
+            value.AnalogDutyCycle = AnalogDutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the AnalogPwmSettings7 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogPwmSettings7 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings7.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped AnalogPwmSettings7 register messages. Configure
+    /// the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.
+    /// </summary>
+    [DisplayName("TimestampedAnalogPwmSettings7Payload")]
+    [Description("Configure the settings of an analog PWM output on pin 7. See AnalogPwmSettings0 for details.")]
+    public partial class CreateTimestampedAnalogPwmSettings7Payload : CreateAnalogPwmSettings7Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(AnalogPwmSettings7);
+
+        /// <summary>
+        /// Creates a timestamped message for the AnalogPwmSettings7 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogPwmSettings7 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return AllenNeuralDynamics.Cuttlefish.AnalogPwmSettings7.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
     /// Represents an operator that creates ScheduleStatus register messages. Event Only. Emitted when
     /// the PWM schedule encounters an error while running. A value of 1 indicates a missed deadline,
     /// after which the schedule is aborted.
@@ -3995,6 +6018,103 @@ namespace AllenNeuralDynamics.Cuttlefish
                 "OffDurationUs = " + OffDurationUs + ", " +
                 "Cycles = " + Cycles + ", " +
                 "Invert = " + Invert + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the AnalogPwmSettings payload.
+    /// </summary>
+    public struct AnalogPwmSettingsPayload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnalogPwmSettingsPayload"/> structure.
+        /// </summary>
+        /// <param name="offsetUs">How long (in microseconds) the output remains LOW before switching HIGH in one period.</param>
+        /// <param name="onDurationUs">How long (in microseconds) the output remains HIGH in one period.</param>
+        /// <param name="offDurationUs">How long (in microseconds) the output remains LOW in one period.</param>
+        /// <param name="cycles">How many pulses to produce, or zero to pulse until disabled.</param>
+        /// <param name="invert">Whether the output is inverted (on-time refers to the output being LOW instead).</param>
+        /// <param name="analogFrequencyHz">Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).</param>
+        /// <param name="analogDutyCycle">Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.</param>
+        public AnalogPwmSettingsPayload(
+            uint offsetUs,
+            uint onDurationUs,
+            uint offDurationUs,
+            uint cycles,
+            bool invert,
+            float analogFrequencyHz,
+            float analogDutyCycle)
+        {
+            OffsetUs = offsetUs;
+            OnDurationUs = onDurationUs;
+            OffDurationUs = offDurationUs;
+            Cycles = cycles;
+            Invert = invert;
+            AnalogFrequencyHz = analogFrequencyHz;
+            AnalogDutyCycle = analogDutyCycle;
+        }
+
+        /// <summary>
+        /// How long (in microseconds) the output remains LOW before switching HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW before switching HIGH in one period.")]
+        public uint OffsetUs;
+
+        /// <summary>
+        /// How long (in microseconds) the output remains HIGH in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains HIGH in one period.")]
+        public uint OnDurationUs;
+
+        /// <summary>
+        /// How long (in microseconds) the output remains LOW in one period.
+        /// </summary>
+        [Description("How long (in microseconds) the output remains LOW in one period.")]
+        public uint OffDurationUs;
+
+        /// <summary>
+        /// How many pulses to produce, or zero to pulse until disabled.
+        /// </summary>
+        [Description("How many pulses to produce, or zero to pulse until disabled.")]
+        public uint Cycles;
+
+        /// <summary>
+        /// Whether the output is inverted (on-time refers to the output being LOW instead).
+        /// </summary>
+        [Description("Whether the output is inverted (on-time refers to the output being LOW instead).")]
+        public bool Invert;
+
+        /// <summary>
+        /// Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH.
+        /// Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).
+        /// </summary>
+        [Description("Frequency (in Hz) of the high-frequency PWM output produced while the nominal output is HIGH. Valid range: 10Hz to 1MHz (recommended: 1KHz to 100KHz).")]
+        public float AnalogFrequencyHz;
+
+        /// <summary>
+        /// Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is
+        /// HIGH.
+        /// </summary>
+        [Description("Duty cycle (0.0 to 1.0) of the high-frequency PWM output produced while the nominal output is HIGH.")]
+        public float AnalogDutyCycle;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the AnalogPwmSettings payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the AnalogPwmSettings payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "AnalogPwmSettingsPayload { " +
+                "OffsetUs = " + OffsetUs + ", " +
+                "OnDurationUs = " + OnDurationUs + ", " +
+                "OffDurationUs = " + OffDurationUs + ", " +
+                "Cycles = " + Cycles + ", " +
+                "Invert = " + Invert + ", " +
+                "AnalogFrequencyHz = " + AnalogFrequencyHz + ", " +
+                "AnalogDutyCycle = " + AnalogDutyCycle + " " +
             "}";
         }
     }
