@@ -1230,6 +1230,566 @@ namespace AllenNeuralDynamics.Cuttlefish
         }
 
         /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings0"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings0Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings0.Address), cancellationToken);
+            return AnalogPwmSettings0.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings0"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings0Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings0.Address), cancellationToken);
+            return AnalogPwmSettings0.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings0"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings0Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings0.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings1"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings1Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings1.Address), cancellationToken);
+            return AnalogPwmSettings1.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings1"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings1Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings1.Address), cancellationToken);
+            return AnalogPwmSettings1.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings1"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings1Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings1.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings2"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings2Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings2.Address), cancellationToken);
+            return AnalogPwmSettings2.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings2"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings2Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings2.Address), cancellationToken);
+            return AnalogPwmSettings2.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings2"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings2Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings2.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings3"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings3Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings3.Address), cancellationToken);
+            return AnalogPwmSettings3.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings3"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings3Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings3.Address), cancellationToken);
+            return AnalogPwmSettings3.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings3"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings3Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings3.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings4"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings4Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings4.Address), cancellationToken);
+            return AnalogPwmSettings4.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings4"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings4Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings4.Address), cancellationToken);
+            return AnalogPwmSettings4.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings4"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings4Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings4.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings5"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings5Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings5.Address), cancellationToken);
+            return AnalogPwmSettings5.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings5"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings5Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings5.Address), cancellationToken);
+            return AnalogPwmSettings5.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings5"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings5Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings5.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings6"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings6Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings6.Address), cancellationToken);
+            return AnalogPwmSettings6.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings6"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings6Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings6.Address), cancellationToken);
+            return AnalogPwmSettings6.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings6"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings6Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings6.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="AnalogPwmSettings7"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<AnalogPwmSettingsPayload> ReadAnalogPwmSettings7Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings7.Address), cancellationToken);
+            return AnalogPwmSettings7.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="AnalogPwmSettings7"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<AnalogPwmSettingsPayload>> ReadTimestampedAnalogPwmSettings7Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogPwmSettings7.Address), cancellationToken);
+            return AnalogPwmSettings7.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="AnalogPwmSettings7"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WriteAnalogPwmSettings7Async(AnalogPwmSettingsPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = AnalogPwmSettings7.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Asynchronously reads the payload of the <see cref="ScheduleStatus"/> register.
         /// </summary>
         /// <param name="cancellationToken">
